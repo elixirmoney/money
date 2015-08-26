@@ -27,11 +27,13 @@ M.to_string(M.cny(500))             # ¥ 5.00
 Installation
 ------------
 
+Money comes with no dependencies, is still in dev state.
+
 Install the library using [mix deps.get][1]. Add the following to your `mix.exs`:
 
 ```json
 def deps do
-  [ { :decimal, "~> 0.0.1" } ]
+  [ { :money, "~> 0.0.1-dev" } ]
 end
 ```
 

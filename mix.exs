@@ -3,7 +3,7 @@ defmodule Money.Mixfile do
 
   def project do
     [app: :money,
-     version: "0.0.1",
+     version: "0.0.1-dev",
      elixir: "~> 1.0",
      deps: [],
      source_url: "https://github.com/liuggio/money",
