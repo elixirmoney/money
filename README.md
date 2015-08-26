@@ -33,7 +33,7 @@ Money comes with no dependencies, is still in dev state.
 
 Install the library using [mix deps.get][1]. Add the following to your `mix.exs`:
 
-```json
+```elixir
 def deps do
   [ { :money, "~> 0.0.1-dev" } ]
 end
