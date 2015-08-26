@@ -9,6 +9,8 @@ is an interpretation of the Fowler's Money pattern in fun.prog.
 In short: You shouldn't represent monetary values by a float. Wherever
 you need to represent money, use this Money.
 
+[![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
+
 ```elixir
 alias Money, as: M
 
