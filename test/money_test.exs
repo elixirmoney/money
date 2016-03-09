@@ -120,7 +120,7 @@ defmodule MoneyTest do
 	end
 
 	test "test to_string" do
-		assert Money.to_string(Money.usd(500)) == "$ 5.0"
-		assert Money.to_string(Money.eur(123)) == "€ 1.23"
+		assert Money.to_string(Money.usd(500)) == "$5.00"
+		assert Money.to_string(Money.eur(123)) == "€1.23"
 	end
 end
