@@ -6,11 +6,11 @@ defmodule Money do
     }
 
 	defstruct [amount: 0, currency: :USD]
- 
+
 	@spec new(integer, atom) :: t
 	def new(%Money{} = num),
 		do: num
- 
+
 	def new(int, currency) when is_integer(int) do
 		cond do
 			currency_exist?(currency) ->
@@ -31,7 +31,7 @@ defmodule Money do
 
     def currency_name(currency) do
     	case currency_exist?(currency) do
-      		true -> 
+      		true ->
       			get_currency(currency) |> Dict.get(:name)
      		_ -> nil
      	end
@@ -43,7 +43,7 @@ defmodule Money do
 
     def currency_symbol(currency) do
     	case currency_exist?(currency) do
-      		true -> 
+      		true ->
       			get_currency(currency) |> Dict.get(:symbol)
      		_ -> nil
      	end
