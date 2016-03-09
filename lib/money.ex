@@ -346,7 +346,7 @@ defmodule Money do
 		symbol = currency_symbol(m)
     super_unit = div(m.amount, 100)
     sub_unit = rem(abs(m.amount), 100)
-		"#{symbol}#{super_unit}.#{String.rjust(Integer.to_string(sub_unit), 2, ?0)}"
+		"#{symbol}#{super_unit}.#{String.rjust(Integer.to_string(sub_unit), 2, ?0)}" |> String.lstrip
 	end
 
 	defp fail_currencies_must_be_equal(a, b) do
