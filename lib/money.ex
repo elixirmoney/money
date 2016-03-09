@@ -343,13 +343,10 @@ defmodule Money do
 
 	@spec to_string(t) :: String.t
 	def to_string(%Money{} = m) do
-		decimal_amount = decimal_amount(m)
 		symbol = currency_symbol(m)
-		"#{symbol} #{decimal_amount}"
-	end
-
-	def decimal_amount(%Money{amount: money_amount} = money) do
-		Float.round(money_amount/100 ,2)
+    super_unit = div(m.amount, 100)
+    sub_unit = rem(abs(m.amount), 100)
+		"#{symbol}#{super_unit}.#{String.rjust(Integer.to_string(sub_unit), 2, ?0)}"
 	end
 
 	defp fail_currencies_must_be_equal(a, b) do
