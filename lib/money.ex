@@ -344,12 +344,24 @@ defmodule Money do
 	@spec to_string(t) :: String.t
 	def to_string(%Money{} = m) do
 		symbol = currency_symbol(m)
-    super_unit = div(m.amount, 100)
-    sub_unit = rem(abs(m.amount), 100)
-		"#{symbol}#{super_unit}.#{String.rjust(Integer.to_string(sub_unit), 2, ?0)}" |> String.lstrip
+    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(",")
+    sub_unit = rem(abs(m.amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
+    number = [super_unit, sub_unit] |> Enum.join(".")
+    [symbol, number] |> Enum.join |> String.lstrip
 	end
 
 	defp fail_currencies_must_be_equal(a, b) do
 		raise ArgumentError, message: "Currency of #{a.currency} must be the same as #{b.currency}"
 	end
+
+  defp reverse_group(str, count) when is_binary(str) do
+    reverse_group(str, abs(count), [])
+  end
+  defp reverse_group("", count, list) do
+    list
+  end
+  defp reverse_group(str, count, list) do
+    { first, last } = String.split_at(str, -count)
+    reverse_group(first, count, [ last | list ])
+  end
 end

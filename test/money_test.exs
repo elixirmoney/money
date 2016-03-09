@@ -123,5 +123,6 @@ defmodule MoneyTest do
 		assert Money.to_string(Money.usd(500)) == "$5.00"
 		assert Money.to_string(Money.eur(123)) == "€1.23"
 		assert Money.to_string(Money.nad(203)) == "2.03"
+		assert Money.to_string(Money.zar(1234567890)) == "R12,345,678.90"
 	end
 end
