@@ -225,14 +225,12 @@ defmodule Money do
 			:XTS => %{:name => "Codes specifically reserved for testing purposes", :symbol => " "},
 			:YER => %{:name => "Yemeni Rial", :symbol => "﷼"},
 			:ZAR => %{:name => "Rand", :symbol => "R"},
-			:ZAR => %{:name => "Rand Loti", :symbol => " "},
-			:ZAR => %{:name => "Rand Namibia Dollar", :symbol => " "},
 			:ZMK => %{:name => "Zambian Kwacha", :symbol => " "},
 			:ZWL => %{:name => "Zimbabwe Dollar", :symbol => " "}
 		}
 	end
 
-	[:AED, :AFN, :ALL, :AMD, :ANG, :AOA, :ARS, :AUD, :AWG, :AZN, :BAM, :BBD, :BDT, :BGN, :BHD, :BIF, :BMD, :BND, :BOB, :BOV, :BRL, :BSD, :BWP, :BYR, :BZD, :CAD, :CDF, :CHF, :CLF, :CLP, :CNY, :COP, :COU, :CRC, :CUP, :CUC, :CVE, :CZK, :DJF, :DKK, :DOP, :DZD, :EEK, :EGP, :ERN, :ETB, :EUR, :FJD, :FKP, :GBP, :GEL, :GHS, :GIP, :GMD, :GNF, :GTQ, :GYD, :HKD, :HNL, :HRK, :HTG, :HUF, :IDR, :ILS, :INR, :INR, :BTN, :IQD, :IRR, :ISK, :JMD, :JOD, :JPY, :KES, :KGS, :KHR, :KMF, :KPW, :KRW, :KWD, :KYD, :KZT, :LAK, :LBP, :LKR, :LRD, :LTL, :LVL, :LYD, :MAD, :MDL, :MGA, :MKD, :MMK, :MNT, :MOP, :MRO, :MUR, :MVR, :MWK, :MXN, :MXV, :MYR, :MZN, :NGN, :NIO, :NOK, :NPR, :NZD, :OMR, :PAB, :PEN, :PGK, :PHP, :PKR, :PLN, :PYG, :QAR, :RON, :RSD, :RUB, :RWF, :SAR, :SBD, :SCR, :SDG, :SEK, :SGD, :SHP, :SLL, :SOS, :SRD, :STD, :SVC, :SYP, :SZL, :THB, :TJS, :TMT, :TND, :TOP, :TRY, :TTD, :TWD, :TZS, :UAH, :UGX, :USD, :UYU, :UYI, :UZS, :VEF, :VND, :VUV, :WST, :XAF, :XAG, :XAU, :XBA, :XBB, :XBC, :XBD, :XCD, :XDR, :XFU, :XOF, :XPD, :XPF, :XPT, :XTS, :YER, :ZAR, :ZAR, :LSL, :ZAR, :NAD, :ZMK, :ZWL] |> Enum.each fn name ->
+	[:AED, :AFN, :ALL, :AMD, :ANG, :AOA, :ARS, :AUD, :AWG, :AZN, :BAM, :BBD, :BDT, :BGN, :BHD, :BIF, :BMD, :BND, :BOB, :BOV, :BRL, :BSD, :BWP, :BYR, :BZD, :CAD, :CDF, :CHF, :CLF, :CLP, :CNY, :COP, :COU, :CRC, :CUP, :CUC, :CVE, :CZK, :DJF, :DKK, :DOP, :DZD, :EEK, :EGP, :ERN, :ETB, :EUR, :FJD, :FKP, :GBP, :GEL, :GHS, :GIP, :GMD, :GNF, :GTQ, :GYD, :HKD, :HNL, :HRK, :HTG, :HUF, :IDR, :ILS, :INR, :INR, :BTN, :IQD, :IRR, :ISK, :JMD, :JOD, :JPY, :KES, :KGS, :KHR, :KMF, :KPW, :KRW, :KWD, :KYD, :KZT, :LAK, :LBP, :LKR, :LRD, :LTL, :LVL, :LYD, :MAD, :MDL, :MGA, :MKD, :MMK, :MNT, :MOP, :MRO, :MUR, :MVR, :MWK, :MXN, :MXV, :MYR, :MZN, :NGN, :NIO, :NOK, :NPR, :NZD, :OMR, :PAB, :PEN, :PGK, :PHP, :PKR, :PLN, :PYG, :QAR, :RON, :RSD, :RUB, :RWF, :SAR, :SBD, :SCR, :SDG, :SEK, :SGD, :SHP, :SLL, :SOS, :SRD, :STD, :SVC, :SYP, :SZL, :THB, :TJS, :TMT, :TND, :TOP, :TRY, :TTD, :TWD, :TZS, :UAH, :UGX, :USD, :UYU, :UYI, :UZS, :VEF, :VND, :VUV, :WST, :XAF, :XAG, :XAU, :XBA, :XBB, :XBC, :XBD, :XCD, :XDR, :XFU, :XOF, :XPD, :XPF, :XPT, :XTS, :YER, :LSL, :ZAR, :NAD, :ZMK, :ZWL] |> Enum.each fn name ->
 		currency = to_string(name) |> String.Unicode.downcase
 		def unquote(:"#{currency}")(amount) do
 			 new(amount, unquote(name))
