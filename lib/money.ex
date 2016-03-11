@@ -356,7 +356,7 @@ defmodule Money do
   defp reverse_group(str, count) when is_binary(str) do
     reverse_group(str, abs(count), [])
   end
-  defp reverse_group("", count, list) do
+  defp reverse_group("", _count, list) do
     list
   end
   defp reverse_group(str, count, list) do
