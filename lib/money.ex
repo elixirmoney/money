@@ -1,53 +1,52 @@
 defmodule Money do
 
 	@type t :: %__MODULE__{
-    	amount: integer,
-    	currency: atom
-    }
+    amount: integer,
+    currency: atom
+  }
 
 	defstruct [amount: 0, currency: :USD]
 
 	@spec new(integer, atom) :: t
-	def new(%Money{} = num),
-		do: num
+	def new(%Money{} = num), do: num
 
 	def new(int, currency) when is_integer(int) do
 		cond do
 			currency_exist?(currency) ->
 				%Money{amount: int, currency: currency}
 		end
-  	end
+  end
 
-  	def new(bitstr, currency) when is_bitstring(bitstr) do
+  def new(bitstr, currency) when is_bitstring(bitstr) do
 		case Integer.parse(bitstr) do
 			:error -> raise ArgumentError
 			{x, _} -> %Money{amount: x, currency: currency}
 		end
-  	end
+  end
 
  	def currency_name(%Money{currency: cur1}) do
-    	 currency_name(cur1)
-    end
+    currency_name(cur1)
+  end
 
-    def currency_name(currency) do
-    	case currency_exist?(currency) do
-      		true ->
-      			get_currency(currency) |> Dict.get(:name)
-     		_ -> nil
-     	end
+  def currency_name(currency) do
+    case currency_exist?(currency) do
+      true ->
+      	get_currency(currency) |> Dict.get(:name)
+     	_ -> nil
     end
+  end
 
  	def currency_symbol(%Money{currency: cur1}) do
-    	 currency_symbol(cur1)
-    end
+    currency_symbol(cur1)
+  end
 
-    def currency_symbol(currency) do
-    	case currency_exist?(currency) do
-      		true ->
-      			get_currency(currency) |> Dict.get(:symbol)
-     		_ -> nil
-     	end
+  def currency_symbol(currency) do
+    case currency_exist?(currency) do
+      true ->
+      	get_currency(currency) |> Dict.get(:symbol)
+     	_ -> nil
     end
+  end
 
 	def currency_all() do
 		%{
@@ -233,7 +232,7 @@ defmodule Money do
 	[:AED, :AFN, :ALL, :AMD, :ANG, :AOA, :ARS, :AUD, :AWG, :AZN, :BAM, :BBD, :BDT, :BGN, :BHD, :BIF, :BMD, :BND, :BOB, :BOV, :BRL, :BSD, :BWP, :BYR, :BZD, :CAD, :CDF, :CHF, :CLF, :CLP, :CNY, :COP, :COU, :CRC, :CUP, :CUC, :CVE, :CZK, :DJF, :DKK, :DOP, :DZD, :EEK, :EGP, :ERN, :ETB, :EUR, :FJD, :FKP, :GBP, :GEL, :GHS, :GIP, :GMD, :GNF, :GTQ, :GYD, :HKD, :HNL, :HRK, :HTG, :HUF, :IDR, :ILS, :INR, :INR, :BTN, :IQD, :IRR, :ISK, :JMD, :JOD, :JPY, :KES, :KGS, :KHR, :KMF, :KPW, :KRW, :KWD, :KYD, :KZT, :LAK, :LBP, :LKR, :LRD, :LTL, :LVL, :LYD, :MAD, :MDL, :MGA, :MKD, :MMK, :MNT, :MOP, :MRO, :MUR, :MVR, :MWK, :MXN, :MXV, :MYR, :MZN, :NGN, :NIO, :NOK, :NPR, :NZD, :OMR, :PAB, :PEN, :PGK, :PHP, :PKR, :PLN, :PYG, :QAR, :RON, :RSD, :RUB, :RWF, :SAR, :SBD, :SCR, :SDG, :SEK, :SGD, :SHP, :SLL, :SOS, :SRD, :STD, :SVC, :SYP, :SZL, :THB, :TJS, :TMT, :TND, :TOP, :TRY, :TTD, :TWD, :TZS, :UAH, :UGX, :USD, :UYU, :UYI, :UZS, :VEF, :VND, :VUV, :WST, :XAF, :XAG, :XAU, :XBA, :XBB, :XBC, :XBD, :XCD, :XDR, :XFU, :XOF, :XPD, :XPF, :XPT, :XTS, :YER, :LSL, :ZAR, :NAD, :ZMK, :ZWL] |> Enum.each fn name ->
 		currency = to_string(name) |> String.Unicode.downcase
 		def unquote(:"#{currency}")(amount) do
-			 new(amount, unquote(name))
+			new(amount, unquote(name))
 		end
 	end
 
@@ -243,7 +242,7 @@ defmodule Money do
 		|> Dict.has_key?(currency)
 	end
 
-    def get_currency(currency) do
+  def get_currency(currency) do
 		currency_all
 		|> Dict.get(currency)
 	end
@@ -251,9 +250,9 @@ defmodule Money do
 	@spec compare(t, t) :: t
 	def compare(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
 		case a.amount - b.amount do
-			x when x>0 -> 1
-			x when x<0 -> -1
-			x when x==0 -> 0
+			              x when x>0 -> 1
+			              x when x<0 -> -1
+			              x when x==0 -> 0
 		end
 	end
 
