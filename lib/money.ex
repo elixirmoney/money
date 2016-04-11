@@ -190,7 +190,7 @@ defmodule Money do
 	}
 
   Map.keys(@currencies) |> Enum.each(fn name ->
-		currency = to_string(name) |> String.Unicode.downcase
+		currency = to_string(name) |> String.downcase
 		def unquote(:"#{currency}")(amount) do
 			new(amount, unquote(name))
 		end
