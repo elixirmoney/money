@@ -205,6 +205,13 @@ defmodule Money do
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
+
+  It can also be interpolated (It implements the String.Chars protocol)
+
+  ## Example:
+
+      iex> "Total: #{Money.new(100_00, :USD)}"
+      "Total: $100.00"
   """
   def to_string(%Money{} = m) do
     symbol = Currency.symbol(m)
