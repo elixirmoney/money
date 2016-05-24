@@ -4,7 +4,6 @@ defmodule Money do
 
   ## Example:
 
-
       iex> money = Money.new(500, :USD)
       %Money{amount: 500, currency: :USD}
       iex> money = Money.add(money, 550)
@@ -45,97 +44,158 @@ defmodule Money do
   end
 
   @spec compare(t, t) :: t
-  def compare(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
+  @doc ~S"""
+  Compares two `Money` structs with each other.
+  They must each be of the same currency and then their amounts are compared
+
+  ## Example:
+
+      iex> Money.compare(Money.new(100, :USD), Money.new(100, :USD))
+      0
+      iex> Money.compare(Money.new(100, :USD), Money.new(101, :USD))
+      -1
+      iex> Money.compare(Money.new(101, :USD), Money.new(100, :USD))
+      1
+  """
+  def compare(%Money{currency: cur} = a, %Money{currency: cur} = b) do
     case a.amount - b.amount do
                     x when x >  0 -> 1
                     x when x <  0 -> -1
                     x when x == 0 -> 0
     end
   end
-
-  def compare(a, b) do
-    raise fail_currencies_must_be_equal(a,b)
-  end
+  def compare(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec zero?(t) :: boolean
-  def zero?(a) do
-    a.amount == 0
+  @doc ~S"""
+  Returns true if the amount of a `Money` struct is zero
+
+  ## Example:
+
+      iex> Money.zero?(Money.new(0, :USD))
+      true
+      iex> Money.zero?(Money.new(1, :USD))
+      false
+  """
+  def zero?(%Money{amount: amount}) do
+    amount == 0
   end
 
   @spec positive?(t) :: boolean
-  def positive?(a) do
-    a.amount > 0
+  @doc ~S"""
+  Returns true if the amount of a `Money` is greater than zero
+
+  ## Example:
+
+      iex> Money.positive?(Money.new(0, :USD))
+      false
+      iex> Money.positive?(Money.new(1, :USD))
+      true
+      iex> Money.positive?(Money.new(-1, :USD))
+      false
+  """
+  def positive?(%Money{amount: amount}) do
+    amount > 0
   end
 
   @spec negative?(t) :: boolean
-  def negative?(a) do
-    a.amount < 0
+  @doc ~S"""
+  Returns true if the amount of a `Money` is less than zero
+
+  ## Example:
+
+      iex> Money.negative?(Money.new(0, :USD))
+      false
+      iex> Money.negative?(Money.new(1, :USD))
+      false
+      iex> Money.negative?(Money.new(-1, :USD))
+      true
+  """
+  def negative?(%Money{amount: amount}) do
+    amount < 0
   end
 
   @spec equals?(t, t) :: boolean
-  def equals?(a, b) do
-    compare(a, b) == 0
-  end
+  @doc ~S"""
+  Returns true if two `Money` of the same currency have the same amount
 
-  @spec add(t, t|integer) :: t
-  def add(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
-    x = a.amount + b.amount
-    Money.new(x, cur1)
-  end
+  ## Example:
 
-  def add(%Money{currency: cur1} = a, addend) when is_integer(addend) do
-    x = a.amount + addend
-    Money.new(x, cur1)
-  end
+      iex> Money.equals?(Money.new(100, :USD), Money.new(100, :USD))
+      true
+      iex> Money.equals?(Money.new(101, :USD), Money.new(100, :USD))
+      false
+  """
+  def equals?(%Money{amount: amount, currency: cur}, %Money{amount: amount, currency: cur}), do: true
+  def equals?(%Money{currency: cur}, %Money{currency: cur}), do: false
+  def equals?(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  def add(a, b) do
-    fail_currencies_must_be_equal(a, b)
-  end
+  @spec add(t, t | integer) :: t
+  @doc ~S"""
+  Adds two `Money` together or an integer (cents) amount to a `Money`
 
-  @spec subtract(t, t|integer) :: t
-  def subtract(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
-    x = a.amount - b.amount
-    Money.new(x, cur1)
-  end
 
-  def subtract(%Money{currency: cur1} = a, subtrahend) when is_integer(subtrahend) do
-    x = a.amount - subtrahend
-    Money.new(x, cur1)
-  end
+  ## Example:
 
-  def subtract(a, b) do
-    fail_currencies_must_be_equal(a, b)
-  end
+      iex> Money.add(Money.new(100, :USD), Money.new(50, :USD))
+      %Money{amount: 150, currency: :USD}
+      iex> Money.add(Money.new(100, :USD), 50)
+      %Money{amount: 150, currency: :USD}
+  """
+  def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
+    do: Money.new(a + b, cur)
+  def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
+    do: Money.new(amount + addend, cur)
+  def add(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec multiply(t, t|integer) :: t
-  def multiply(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
-    x = a.amount * b.amount
-    Money.new(x, cur1)
-  end
+  @spec subtract(t, t | integer) :: t
+  @doc ~S"""
+  Subtracts one `Money` from another or an integer (cents) from a `Money`
 
-  def multiply(%Money{currency: cur1} = a, multiplier) when is_integer(multiplier) do
-    x = a.amount * multiplier
-    Money.new(x, cur1)
-  end
+  ## Example:
 
-  def multiply(a, b) do
-    fail_currencies_must_be_equal(a, b)
-  end
+      iex> Money.subtract(Money.new(150, :USD), Money.new(50, :USD))
+      %Money{amount: 100, currency: :USD}
+      iex> Money.subtract(Money.new(150, :USD), 50)
+      %Money{amount: 100, currency: :USD}
+  """
+  def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
+    do: Money.new(a - b, cur)
+  def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
+    do: Money.new(a - subtractend, cur)
+  def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec divide(t, t|integer) :: t
-  def divide(%Money{currency: cur1} = a, %Money{currency: cur1} = b) do
-    x = round(a.amount / b.amount)
-    Money.new(x, cur1)
-  end
+  @spec multiply(t, t | integer) :: t
+  @doc ~S"""
+  Multiplies two `Money` together or a `Money` with an integer
 
-  def divide(%Money{currency: cur1} = a, divisor) when is_integer(divisor) do
-    x = round(a.amount / divisor)
-    Money.new(x, cur1)
-  end
+  ## Example:
+      iex> Money.multiply(Money.new(100, :USD), Money.new(10, :USD))
+      %Money{amount: 1000, currency: :USD}
+      iex> Money.multiply(Money.new(100, :USD), 10)
+      %Money{amount: 1000, currency: :USD}
+  """
+  def multiply(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
+    do: Money.new(a * b, cur)
+  def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
+    do: Money.new(amount * multiplier, cur)
+  def multiply(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  def divide(a, b) do
-    fail_currencies_must_be_equal(a, b)
-  end
+  @spec divide(t, t | integer) :: t
+  @doc ~S"""
+  Divide one `Money` from another or a `Money` with an integer
+
+  ## Example:
+      iex> Money.divide(Money.new(100, :USD), Money.new(10, :USD))
+      %Money{amount: 10, currency: :USD}
+      iex> Money.divide(Money.new(100, :USD), 10)
+      %Money{amount: 10, currency: :USD}
+  """
+  def divide(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
+    do: Money.new(div(a, b), cur)
+  def divide(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor),
+    do: Money.new(div(amount, divisor), cur)
+  def divide(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec to_string(t) :: String.t
   @doc ~S"""
@@ -145,13 +205,6 @@ defmodule Money do
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
-
-  Can also be used in string interpolation (Money implements the String.Chars protocol
-
-  ## Example:
-
-      iex> "Total: #{Money.new(5432, :USD)}"
-      "Total: $54.32"
   """
   def to_string(%Money{} = m) do
     symbol = Currency.symbol(m)

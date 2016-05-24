@@ -60,7 +60,6 @@ MIT License please see the [LICENSE](./LICENSE) file.
 ToDo
 ----
 
-- doc
 - options: round_up or round_down now is the simple round
 
 
