@@ -1,5 +1,6 @@
 defmodule MoneyTest do
 	use ExUnit.Case
+  doctest Money
 
   require Money.Currency
   import Money.Currency

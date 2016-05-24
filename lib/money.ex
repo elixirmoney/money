@@ -1,4 +1,18 @@
 defmodule Money do
+  @moduledoc """
+  Defines a `Money` struct along with convenience methods for working with currencies.
+
+  ## Example:
+
+
+      iex> money = Money.new(500, :USD)
+      %Money{amount: 500, currency: :USD}
+      iex> money = Money.add(money, 550)
+      %Money{amount: 1050, currency: :USD}
+      iex> Money.to_string(money)
+      "$10.50"
+  """
+
   @type t :: %__MODULE__{
     amount: integer,
     currency: atom
@@ -9,6 +23,16 @@ defmodule Money do
   alias Money.Currency
 
   @spec new(String.t | integer | t, atom) :: t
+
+  @spec new(String.t | integer | t, atom | String.t) :: t
+  @doc """
+  Create a new money struct from currency sub-units (cents)
+
+  ## Example:
+
+      iex> Money.new(1_000_00, :USD)
+      %Money{amount: 1_000_00, currency: :USD}
+  """
   def new(int, currency) when is_integer(int) do
     %Money{amount: int, currency: Currency.to_atom(currency)}
   end
@@ -114,6 +138,21 @@ defmodule Money do
   end
 
   @spec to_string(t) :: String.t
+  @doc ~S"""
+  Converts a `Money` struct to a string representation
+
+  ## Example:
+
+      iex> Money.to_string(Money.new(123456, :GBP))
+      "£1,234.56"
+
+  Can also be used in string interpolation (Money implements the String.Chars protocol
+
+  ## Example:
+
+      iex> "Total: #{Money.new(5432, :USD)}"
+      "Total: $54.32"
+  """
   def to_string(%Money{} = m) do
     symbol = Currency.symbol(m)
     super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(",")
