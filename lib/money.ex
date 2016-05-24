@@ -136,4 +136,10 @@ defmodule Money do
     {first, last} = String.split_at(str, -count)
     reverse_group(first, count, [last | list])
   end
+
+  defimpl String.Chars do
+    def to_string(%Money{} = m) do
+      Money.to_string(m)
+    end
+  end
 end
