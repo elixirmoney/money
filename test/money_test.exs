@@ -109,7 +109,7 @@ defmodule MoneyTest do
 	end
 
   test "to_string protocol" do
-    m = Money.usd(500)
+    m = usd(500)
     assert to_string(m) == Money.to_string(m)
   end
 end
