@@ -107,4 +107,9 @@ defmodule MoneyTest do
 		assert Money.to_string(nad(203)) == "2.03"
 		assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
 	end
+
+  test "to_string protocol" do
+    m = Money.usd(500)
+    assert to_string(m) == Money.to_string(m)
+  end
 end
