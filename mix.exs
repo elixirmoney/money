@@ -45,8 +45,8 @@ defmodule Money.Mixfile do
 
   defp package do
     [
-     maintainers: ["Giulio De Donato"],
-     contributors: ["Giulio De Donato"],
+     maintainers: ["Giulio De Donato", "Andrew Timberlake"],
+     contributors: ["Giulio De Donato", "Andrew Timberlake"],
      licenses: ["MIT"],
      links: %{"GitHub" => @github_url}]
   end
