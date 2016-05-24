@@ -21,6 +21,11 @@ defmodule MoneyTest do
 		assert Money.new("+124", :EUR) == Money.eur(124)
 	end
 
+  test "use string currency key" do
+    assert Money.new(1000, "USD") == Money.usd(1000)
+    assert Money.new(1000, "usd") == Money.usd(1000)
+  end
+
 	test "conversion error" do
 		assert_raise FunctionClauseError, fn ->
 		  Money.new(:atom, :USD)
