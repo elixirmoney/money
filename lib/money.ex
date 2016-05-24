@@ -350,7 +350,7 @@ defmodule Money do
 		"#{symbol} #{decimal_amount}"
 	end
 
-	def decimal_amount(%Money{amount: money_amount} = money) do
+	def decimal_amount(%Money{amount: money_amount}) do
 		Float.round(money_amount/100 ,2)
 	end
 
