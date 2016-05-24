@@ -1,7 +1,7 @@
 Money
 =====
 
-Elixir library for working with Money safer, easier, and fun, 
+Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
 
 > "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have $999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
@@ -21,9 +21,9 @@ ten_eur_div_2  = M.divide(ten_eur, 2);
 M.equals?(ten_eur_div_2, five_eur); # true
 M.zero?(five_eur);                  # false
 M.currency_symbol(:USD)             # $
-M.currency_symbol(M.afn(500))       # ؋ 
+M.currency_symbol(M.afn(500))       # ؋
 M.currency_name(M.afn(500))         # Afghani
-M.to_string(M.cny(500))             # ¥ 5.00 
+M.to_string(M.cny(500))             # ¥ 5.00
 ```
 
 Installation
@@ -62,7 +62,6 @@ ToDo
 
 - doc
 - options: round_up or round_down now is the simple round
-- create the money type as struct 
 
 
 [1]: http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html
