@@ -28,7 +28,9 @@ defmodule Money.Mixfile do
   end
 
   defp package do
-    [contributors: ["Giulio De Donato"],
+    [
+     maintainers: ["Giulio De Donato"],
+     contributors: ["Giulio De Donato"],
      licenses: ["MIT"],
      links: %{"GitHub" => "https://github.com/liuggio/money"}]
   end
