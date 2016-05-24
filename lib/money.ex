@@ -194,12 +194,11 @@ defmodule Money do
 
   @spec new(String.t | integer | t, atom) :: t
   def new(int, currency) when is_integer(int) do
-    cond do
-      currency_exist?(currency) ->
-        %Money{amount: int, currency: currency}
-    end
+    check_currency(currency)
+    %Money{amount: int, currency: currency}
   end
   def new(bitstr, currency) when is_bitstring(bitstr) do
+    check_currency(currency)
     case Integer.parse(bitstr) do
       :error -> raise ArgumentError
       {x, _} -> %Money{amount: x, currency: currency}
@@ -355,5 +354,9 @@ defmodule Money do
   defp reverse_group(str, count, list) do
     {first, last} = String.split_at(str, -count)
     reverse_group(first, count, [last | list])
+  end
+
+  defp check_currency(currency) do
+    if !Map.has_key?(@currencies, currency), do: raise ArgumentError, "currency #{currency} doesn’t exist"
   end
 end

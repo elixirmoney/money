@@ -3,6 +3,12 @@ defmodule MoneyTest do
 
 	require Money
 
+  test "new/2 requires existing currency" do
+    assert_raise ArgumentError, fn ->
+      Money.new(123, :ABC)
+    end
+  end
+
 	test "test factory USD" do
 		assert Money.new(123, :USD) == Money.usd(123)
 	end
@@ -13,12 +19,6 @@ defmodule MoneyTest do
 
 	test "test factory with string" do
 		assert Money.new("+124", :EUR) == Money.eur(124)
-	end
-
-	test "test factory non esistent Currency" do
-		assert_raise CondClauseError, fn ->
-		    Money.new(124, :paradise) == nil
-		end
 	end
 
 	test "conversion error" do
