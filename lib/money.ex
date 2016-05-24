@@ -192,14 +192,13 @@ defmodule Money do
     end
   end)
 
-  @spec new(String.t | integer | t, atom) :: t
+  @spec new(String.t | integer | t, atom | String.t) :: t
   def new(int, currency) when is_integer(int) do
-    cond do
-      currency_exist?(currency) ->
-        %Money{amount: int, currency: currency}
-    end
+    currency = convert_currency(currency)
+    %Money{amount: int, currency: currency}
   end
   def new(bitstr, currency) when is_bitstring(bitstr) do
+    currency = convert_currency(currency)
     case Integer.parse(bitstr) do
       :error -> raise ArgumentError
       {x, _} -> %Money{amount: x, currency: currency}
@@ -355,5 +354,12 @@ defmodule Money do
   defp reverse_group(str, count, list) do
     {first, last} = String.split_at(str, -count)
     reverse_group(first, count, [last | list])
+  end
+
+  defp convert_currency(currency) when is_binary(currency),
+    do: currency |> String.upcase |> String.to_existing_atom |> convert_currency
+  defp convert_currency(currency) do
+    if !Map.has_key?(@currencies, currency), do: raise ArgumentError, "currency #{currency} doesn’t exist"
+    currency
   end
 end
