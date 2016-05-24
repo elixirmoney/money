@@ -16,7 +16,7 @@ alias Money, as: M
 
 five_eur       = M.eur(500);
 ten_eur        = M.add(five_eur, five_eur);
-ten_eur_div_2  = M.divide(five_eur, 2);
+ten_eur_div_2  = M.divide(ten_eur, 2);
 
 M.equals?(ten_eur_div_2, five_eur); # true
 M.zero?(five_eur);                  # false
