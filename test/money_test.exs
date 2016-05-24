@@ -1,7 +1,8 @@
 defmodule MoneyTest do
 	use ExUnit.Case
 
-	require Money
+  require Money.Currency
+  import Money.Currency
 
   test "new/2 requires existing currency" do
     assert_raise ArgumentError, fn ->
@@ -10,42 +11,26 @@ defmodule MoneyTest do
   end
 
 	test "test factory USD" do
-		assert Money.new(123, :USD) == Money.usd(123)
+		assert Money.new(123, :USD) == usd(123)
 	end
 
 	test "test factory EUR" do
-		assert Money.new(124, :EUR) == Money.eur(124)
+		assert Money.new(124, :EUR) == eur(124)
 	end
 
 	test "test factory with string" do
-		assert Money.new("+124", :EUR) == Money.eur(124)
+		assert Money.new("+124", :EUR) == eur(124)
 	end
 
   test "use string currency key" do
-    assert Money.new(1000, "USD") == Money.usd(1000)
-    assert Money.new(1000, "usd") == Money.usd(1000)
+    assert Money.new(1000, "USD") == usd(1000)
+    assert Money.new(1000, "usd") == usd(1000)
   end
 
 	test "conversion error" do
 		assert_raise FunctionClauseError, fn ->
 		  Money.new(:atom, :USD)
 		end
-	end
-
-	test "currencies name" do
-		assert Money.currency_name(:USD) == "US Dollar"
-	end
-
-	test "currencies nil name" do
-		assert Money.currency_name(:liuggio) == nil
-	end
-
-	test "currencies symbol" do
-		assert Money.currency_symbol(:USD) == "$"
-	end
-
-	test "currencies nil symbol" do
-		assert Money.currency_symbol(:liuggio) == nil
 	end
 
 	test "test compare" do
@@ -65,7 +50,7 @@ defmodule MoneyTest do
 	end
 
 	test "test equals?" do
-		assert Money.equals?(Money.new(123, :USD), Money.usd(123))
+		assert Money.equals?(Money.new(123, :USD), usd(123))
 	end
 
 	test "test add" do
@@ -86,14 +71,6 @@ defmodule MoneyTest do
 		assert_raise ArgumentError, fn ->
 			Money.subtract(Money.new(124, :EUR), Money.new(123, :USD))
 		end
-	end
-
-	test "test currency symbol to a Money map" do
-		assert Money.currency_symbol(Money.afn(500)) == "؋"
-	end
-
-	test "test currency name to a Money map" do
-		assert Money.currency_name(Money.afn(500)) == "Afghani"
 	end
 
 	test "test multiply" do
@@ -125,9 +102,9 @@ defmodule MoneyTest do
 	end
 
 	test "test to_string" do
-		assert Money.to_string(Money.usd(500)) == "$5.00"
-		assert Money.to_string(Money.eur(123)) == "€1.23"
-		assert Money.to_string(Money.nad(203)) == "2.03"
-		assert Money.to_string(Money.zar(1234567890)) == "R12,345,678.90"
+		assert Money.to_string(usd(500)) == "$5.00"
+		assert Money.to_string(eur(123)) == "€1.23"
+		assert Money.to_string(nad(203)) == "2.03"
+		assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
 	end
 end
