@@ -1,16 +1,7 @@
-language: erlang
-otp_release:
-  - 17.0
-sudo: false
-before_install:
-  - wget http://s3.hex.pm/builds/elixir/master.zip
-  - unzip -d elixir master.zip
-before_script:
-  - export PATH=`pwd`/elixir/bin:$PATH
-  - mix local.hex --force
-  - mix deps.get
-script:
-  - mix test
+language: elixir
+elixir:
+  - 1.1.1
+  - 1.2.2
 notifications:
   recipients:
     - liuggio@gmail.com
