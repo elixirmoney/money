@@ -183,7 +183,7 @@ defmodule Money do
 
   @spec divide(t, t | integer) :: t
   @doc ~S"""
-  Divide one `Money` from another or a `Money` with an integer
+  Divides one `Money` from another or a `Money` with an integer
 
   ## Example:
       iex> Money.divide(Money.new(100, :USD), Money.new(10, :USD))
