@@ -285,16 +285,34 @@ defmodule Money do
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
 
-  @spec divide(t, integer) :: t
+  @spec divide(t, integer) :: [t]
   @doc ~S"""
-  Divides a `Money` by an amount
+  Divides up `Money` by an amount
 
   ## Example:
-      iex> Money.divide(Money.new(100, :USD), 10)
-      %Money{amount: 10, currency: :USD}
+      iex> Money.divide(Money.new(100, :USD), 2)
+      [%Money{amount: 50, currency: :USD}, %Money{amount: 50, currency: :USD}]
+      iex> Money.divide(Money.new(101, :USD), 2)
+      [%Money{amount: 51, currency: :USD}, %Money{amount: 50, currency: :USD}]
   """
-  def divide(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor),
-    do: Money.new(div(amount, divisor), cur)
+  def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
+    value = div(amount, denominator)
+    rem   = rem(amount, denominator)
+    do_divide(cur, value, rem, denominator, [])
+  end
+
+  defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse
+  defp do_divide(currency, value, 0, count, acc) do
+    count = count - 1
+    acc   = [new(value, currency) | acc]
+    do_divide(currency, value, 0, count, acc)
+  end
+  defp do_divide(currency, value, rem, count, acc) do
+    rem   = rem - 1
+    count = count - 1
+    acc   = [new(value + 1, currency) | acc]
+    do_divide(currency, value, rem, count, acc)
+  end
 
   @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
