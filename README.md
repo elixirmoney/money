@@ -75,7 +75,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 0.0.1-dev"}]
+  [{:money, "~> 1.0.0-beta"}]
 end
 ```
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
