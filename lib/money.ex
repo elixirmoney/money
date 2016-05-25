@@ -272,23 +272,18 @@ defmodule Money do
 
   @spec multiply(t, t | integer | float) :: t
   @doc ~S"""
-  Multiplies two `Money` together or a `Money` with an integer
+  Multiplies a `Money` by an amount
 
   ## Example:
-      iex> Money.multiply(Money.new(100, :USD), Money.new(10, :USD))
-      %Money{amount: 1000, currency: :USD}
       iex> Money.multiply(Money.new(100, :USD), 10)
       %Money{amount: 1000, currency: :USD}
       iex> Money.multiply(Money.new(100, :USD), 1.5)
       %Money{amount: 150, currency: :USD}
   """
-  def multiply(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
-    do: Money.new(a * b, cur)
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
-  def multiply(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec divide(t, t | integer) :: t
   @doc ~S"""

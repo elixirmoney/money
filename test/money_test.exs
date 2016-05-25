@@ -120,17 +120,10 @@ defmodule MoneyTest do
   end
 
   test "test multiply" do
-    assert Money.multiply(Money.new(200, :USD), Money.new(100, :USD)) == Money.new(20000, :USD)
     assert Money.multiply(Money.new(200, :USD), 100) == Money.new(20000, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.5) == Money.new(300, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.333) == Money.new(267, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.335) == Money.new(267, :USD)
-  end
-
-  test "multiply error" do
-    assert_raise ArgumentError, fn ->
-      Money.multiply(Money.new(124, :EUR), Money.new(123, :USD))
-    end
   end
 
   test "test divide" do
