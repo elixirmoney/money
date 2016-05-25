@@ -1,4 +1,25 @@
 defmodule Money.Currency do
+  @moduledoc """
+  Provides currency support to `Money`
+
+  Some useful helper methods include:
+  - `get/1`
+  - `get!/1`
+  - `exists?/1`
+  - `to_atom/1`
+  - `name/1`
+  - `name!/1`
+  - `symbol/1`
+  - `symbol!/1`
+
+  A helper function exists for each currency using the lowercase three-character currency code
+
+  ## Example:
+
+      iex> Money.Currency.usd(100)
+      %Money{amount: 100, currency: :USD}
+  """
+
   @currencies %{
     AED: %{name: "UAE Dirham",                                             symbol: " "},
     AFN: %{name: "Afghani",                                                symbol: "؋"},
@@ -178,26 +199,82 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar",                                        symbol: " "}
   }
 
-  @currencies |> Map.keys |> Enum.each(fn (cur) ->
+  @currencies |> Enum.each(fn ({cur, detail}) ->
     currency = to_string(cur) |> String.downcase
+    @doc """
+    Convenience method to create a `Money` object for the #{detail.name} (#{cur}) currency.
+
+    ## Example:
+
+        iex> Money.Currency.#{currency}(100)
+        %Money{amount: 100, currency: :#{cur}}
+    """
     def unquote(:"#{currency}")(amount) do
       Money.new(amount, unquote(cur))
     end
   end)
 
+  @spec exists?(Money.t | String.t | atom) :: boolean
+  @doc ~S"""
+  Returns true if a currency is defined
+
+  ## Example:
+
+      iex> Money.Currency.exists?(:USD)
+      true
+      iex> Money.Currency.exists?("USD")
+      true
+      iex> Money.Currency.exists?(:WRONG)
+      false
+  """
   def exists?(%Money{currency: currency}),
     do: exists?(currency)
   def exists?(currency),
     do: Map.has_key?(@currencies, convert_currency(currency))
 
+  @spec get(Money.t | String.t | atom) :: map | nil
+  @doc ~S"""
+  Returns a map with the name and symbol of the currency or nil if it doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.get(:USD)
+      %{name: "US Dollar", symbol: "$"}
+      iex> Money.Currency.get(:WRONG)
+      nil
+  """
   def get(%Money{currency: currency}),
     do: get(currency)
   def get(currency),
     do: @currencies[convert_currency(currency)]
 
+  @spec get!(Money.t | String.t | atom) :: map
+  @doc ~S"""
+  Returns a map with the name and symbol of the currency.
+  An ArgumentError is raised if the currency doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.get!(:USD)
+      %{name: "US Dollar", symbol: "$"}
+      iex> Money.Currency.get!(:WRONG)
+      ** (ArgumentError) currency WRONG doesn’t exist
+  """
   def get!(currency),
     do: get(currency) || currency_doesnt_exist_error(currency)
 
+  @spec to_atom(Money.t | String.t | atom) :: atom
+  @doc ~S"""
+  Returns the atom representation of the currency key
+  An ArgumentError is raised if the currency doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.to_atom("usd")
+      :USD
+      iex> Money.Currency.to_atom(:WRONG)
+      ** (ArgumentError) currency WRONG doesn’t exist
+  """
   def to_atom(%Money{currency: currency}),
     do: to_atom(currency)
   def to_atom(currency) do
@@ -206,19 +283,65 @@ defmodule Money.Currency do
     currency
   end
 
+  @spec name(Money.t | String.t | atom) :: String.t
+  @doc ~S"""
+  Returns the name of the currency or nil if it doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.name(:USD)
+      "US Dollar"
+      iex> Money.Currency.name(:WRONG)
+      nil
+  """
   def name(%Money{currency: currency}),
     do: name(currency)
   def name(currency),
     do: get(currency)[:name]
 
+  @spec name!(Money.t | String.t | atom) :: String.t
+  @doc ~S"""
+  Returns the name of the currency.
+  An ArgumentError is raised if the currency doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.name!(:USD)
+      "US Dollar"
+      iex> Money.Currency.name!(:WRONG)
+      ** (ArgumentError) currency WRONG doesn’t exist
+  """
   def name!(currency),
     do: name(currency) || currency_doesnt_exist_error(currency)
 
+  @spec symbol(Money.t | String.t | atom) :: String.t
+  @doc ~S"""
+  Returns the symbol of the currency or nil if it doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.symbol(:USD)
+      "$"
+      iex> Money.Currency.symbol(:WRONG)
+      nil
+  """
   def symbol(%Money{currency: currency}),
     do: symbol(currency)
   def symbol(currency),
     do: get(currency)[:symbol]
 
+  @spec symbol!(Money.t | String.t | atom) :: String.t
+  @doc ~S"""
+  Returns the symbol of the currency.
+  An ArgumentError is raised if the currency doesn’t exist.
+
+  ## Example:
+
+      iex> Money.Currency.symbol!(:USD)
+      "$"
+      iex> Money.Currency.symbol!(:WRONG)
+      ** (ArgumentError) currency WRONG doesn’t exist
+  """
   def symbol!(currency),
     do: symbol(currency) || currency_doesnt_exist_error(currency)
 
