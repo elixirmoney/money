@@ -21,11 +21,33 @@ defmodule Money do
 
   alias Money.Currency
 
-  @spec new(String.t | integer | t, atom) :: t
+  @spec new(integer | String.t) :: t
+  @doc ~S"""
+  Create a new `Money` struct using a default currency.
+  The default currency can be set in the system Mix config.
 
-  @spec new(String.t | integer | t, atom | String.t) :: t
+  ## Example Config:
+
+      config :money,
+        default_currency: :USD
+
+  ## Example:
+
+      Money.new(123)
+      %Money{amount: 123, currency: :USD}
+  """
+  def new(amount) do
+    currency = Application.get_env(:money, :default_currency)
+    if currency do
+      new(amount, currency)
+    else
+      raise ArgumentError, "to use Money.new/1 you must set a default currency in your application config."
+    end
+  end
+
+  @spec new(integer | String.t, atom | String.t) :: t
   @doc """
-  Create a new money struct from currency sub-units (cents)
+  Create a new `Money` struct from currency sub-units (cents)
 
   ## Example:
 
