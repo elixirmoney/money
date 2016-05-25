@@ -34,10 +34,6 @@ defmodule MoneyTest do
     assert Money.new(124, :EUR) == eur(124)
   end
 
-  test "test factory with string" do
-    assert Money.new("+124", :EUR) == eur(124)
-  end
-
   test "use string currency key" do
     assert Money.new(1000, "USD") == usd(1000)
     assert Money.new(1000, "usd") == usd(1000)
@@ -71,6 +67,9 @@ defmodule MoneyTest do
 
   test "test add" do
     assert Money.add(Money.new(100, :USD), Money.new(200, :USD)) == Money.new(300, :USD)
+    assert Money.add(Money.new(100, :USD), 200) == Money.new(300, :USD)
+    assert Money.add(Money.new(100, :USD), 3.333) == Money.new(433, :USD)
+    assert Money.add(Money.new(100, :USD), 3.335) == Money.new(434, :USD)
   end
 
   test "add error" do
@@ -81,6 +80,10 @@ defmodule MoneyTest do
 
   test "test subtract" do
     assert Money.subtract(Money.new(200, :USD), Money.new(100, :USD)) == Money.new(100, :USD)
+    assert Money.subtract(Money.new(200, :USD), 100) == Money.new(100, :USD)
+    assert Money.subtract(Money.new(200, :USD), 0.5) == Money.new(150, :USD)
+    assert Money.subtract(Money.new(200, :USD), 0.333) == Money.new(167, :USD)
+    assert Money.subtract(Money.new(200, :USD), 0.335) == Money.new(166, :USD)
   end
 
   test "subtract error" do
@@ -91,10 +94,10 @@ defmodule MoneyTest do
 
   test "test multiply" do
     assert Money.multiply(Money.new(200, :USD), Money.new(100, :USD)) == Money.new(20000, :USD)
-  end
-
-  test "test multiply with a multiplier" do
-    assert Money.multiply(Money.new(200, :USD), 3) == Money.new(600, :USD)
+    assert Money.multiply(Money.new(200, :USD), 100) == Money.new(20000, :USD)
+    assert Money.multiply(Money.new(200, :USD), 1.5) == Money.new(300, :USD)
+    assert Money.multiply(Money.new(200, :USD), 1.333) == Money.new(267, :USD)
+    assert Money.multiply(Money.new(200, :USD), 1.335) == Money.new(267, :USD)
   end
 
   test "multiply error" do
