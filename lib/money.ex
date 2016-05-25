@@ -235,7 +235,7 @@ defmodule Money do
     do: Money.new(div(amount, divisor), cur)
   def divide(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec to_string(t) :: String.t
+  @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
   Converts a `Money` struct to a string representation
 
