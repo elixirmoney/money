@@ -31,11 +31,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     @spec cast(String.t | integer) :: {:ok, Money.t}
     def cast(val)
     def cast(str) when is_binary(str) do
-      value = str |> String.replace(",", "") |> String.replace(~r/.*?([\d]+(?:\.\d+)?)/, "\\1")
-      case Float.parse(value) do
-        {float, _} -> {:ok, Money.new(Kernel.round(float * 100))}
-        :error -> :error
-      end
+      Money.parse(str)
     end
     def cast(int) when is_integer(int), do: {:ok, Money.new(int)}
     def cast(_), do: :error

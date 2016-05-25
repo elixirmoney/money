@@ -26,6 +26,33 @@ defmodule MoneyTest do
     end
   end
 
+  test "parse/3" do
+    assert Money.parse("$1,000.00", :USD) == {:ok, usd(100000)}
+    assert Money.parse("$ 1,000.00", :USD) == {:ok, usd(100000)}
+    assert Money.parse("$ 1,000.0", :USD) == {:ok, usd(100000)}
+    assert Money.parse("$ 1000.0", :USD) == {:ok, usd(100000)}
+    assert Money.parse("1000.0", :USD) == {:ok, usd(100000)}
+
+    assert Money.parse("1000.0", :WRONG) == :error
+  end
+
+  test "parse/3 with options" do
+    assert Money.parse("€1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+    assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+    assert Money.parse("$ 1.000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+    assert Money.parse("€ 1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+    assert Money.parse("1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+  end
+
+  test "parse/2 with default currency set" do
+    try do
+      Application.put_env(:money, :default_currency, :GBP)
+      assert Money.parse("£1,234.56") == {:ok, Money.new(123456, :GBP)}
+    after
+      Application.delete_env(:money, :default_currency)
+    end
+  end
+
   test "test factory USD" do
     assert Money.new(123, :USD) == usd(123)
   end

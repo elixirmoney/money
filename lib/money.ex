@@ -69,6 +69,77 @@ defmodule Money do
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
+  @spec parse(String.t | float, atom | String.t, Keyword.t) :: {:ok, t}
+  @doc ~S"""
+  Parse a value into a `Money` type.
+
+  The following options are available:
+
+    - `separator` - default `","`, sets the separator for groups of thousands.
+      "1,000"
+    - `delimeter` - default `"."`, sets the decimal delimeter.
+      "1.23"
+
+  ## Examples:
+
+      iex> Money.parse("$1,234.56", :USD)
+      {:ok, %Money{amount: 123456, currency: :USD}}
+      iex> Money.parse("1.234,56", :EUR, separator: ".", delimeter: ",")
+      {:ok, %Money{amount: 123456, currency: :EUR}}
+      iex> Money.parse("1.234,56", :WRONG)
+      :error
+      iex> Money.parse(1_234.56, :USD)
+      {:ok, %Money{amount: 123456, currency: :USD}}
+  """
+  def parse(value, currency \\ nil, opts \\ [])
+  def parse(value, nil, opts) do
+    currency = Application.get_env(:money, :default_currency)
+    if currency do
+      parse(value, currency, opts)
+    else
+      raise ArgumentError, "to use Money.new/1 you must set a default currency in your application config."
+    end
+  end
+  def parse(str, currency, opts) when is_binary(str) do
+    try do
+      {separator, delimeter} = get_parse_options(opts)
+      regex = Regex.compile!(".*?([\\d]+(?:[#{delimeter}]\\d+)?)")
+      value = str
+      |> String.replace(separator, "")
+      |> String.replace(regex, "\\1")
+      |> String.replace(delimeter, ".")
+      case Float.parse(value) do
+        {float, _} -> {:ok, new(round(float * 100), currency)}
+        :error -> :error
+      end
+    rescue
+      _ -> :error
+    end
+  end
+  def parse(float, currency, _opts) when is_float(float) do
+    {:ok, new(round(float * 100), currency)}
+  end
+
+
+  @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
+  @doc ~S"""
+  Parse a value into a `Money` type.
+  Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
+
+  ## Example:
+
+      iex> Money.parse!("1,234.56", :USD)
+      %Money{amount: 123456, currency: :USD}
+      iex> Money.parse!("wrong", :USD)
+      ** (ArgumentError) unable to parse "wrong"
+  """
+  def parse!(value, currency \\ nil, opts \\ []) do
+    case parse(value, currency, opts) do
+      {:ok, money} -> money
+      :error -> raise ArgumentError, "unable to parse #{inspect(value)}"
+    end
+  end
+
   @spec compare(t, t) :: t
   @doc ~S"""
   Compares two `Money` structs with each other.
@@ -277,13 +348,18 @@ defmodule Money do
   end
 
   defp get_display_options(m, opts) do
+    {separator, delimeter} = get_parse_options(opts)
+    default_symbol = Application.get_env(:money, :symbol, true)
+    symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
+    {separator, delimeter, symbol}
+  end
+
+  defp get_parse_options(opts) do
     default_separator = Application.get_env(:money, :separator, ",")
     separator = Keyword.get(opts, :separator, default_separator)
     default_delimeter = Application.get_env(:money, :delimeter, ".")
     delimeter = Keyword.get(opts, :delimeter, default_delimeter)
-    default_symbol = Application.get_env(:money, :symbol, true)
-    symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
-    {separator, delimeter, symbol}
+    {separator, delimeter}
   end
 
   defp fail_currencies_must_be_equal(a, b) do
