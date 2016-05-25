@@ -287,19 +287,14 @@ defmodule Money do
 
   @spec divide(t, t | integer) :: t
   @doc ~S"""
-  Divides one `Money` from another or a `Money` with an integer
+  Divides a `Money` by an amount
 
   ## Example:
-      iex> Money.divide(Money.new(100, :USD), Money.new(10, :USD))
-      %Money{amount: 10, currency: :USD}
       iex> Money.divide(Money.new(100, :USD), 10)
       %Money{amount: 10, currency: :USD}
   """
-  def divide(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
-    do: Money.new(div(a, b), cur)
   def divide(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor),
     do: Money.new(div(amount, divisor), cur)
-  def divide(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
