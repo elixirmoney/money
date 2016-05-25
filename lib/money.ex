@@ -270,41 +270,31 @@ defmodule Money do
     do: subtract(m, round(subtractend * 100))
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec multiply(t, t | integer | float) :: t
+  @spec multiply(t, integer | float) :: t
   @doc ~S"""
-  Multiplies two `Money` together or a `Money` with an integer
+  Multiplies a `Money` by an amount
 
   ## Example:
-      iex> Money.multiply(Money.new(100, :USD), Money.new(10, :USD))
-      %Money{amount: 1000, currency: :USD}
       iex> Money.multiply(Money.new(100, :USD), 10)
       %Money{amount: 1000, currency: :USD}
       iex> Money.multiply(Money.new(100, :USD), 1.5)
       %Money{amount: 150, currency: :USD}
   """
-  def multiply(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
-    do: Money.new(a * b, cur)
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
-  def multiply(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec divide(t, t | integer) :: t
+  @spec divide(t, integer) :: t
   @doc ~S"""
-  Divides one `Money` from another or a `Money` with an integer
+  Divides a `Money` by an amount
 
   ## Example:
-      iex> Money.divide(Money.new(100, :USD), Money.new(10, :USD))
-      %Money{amount: 10, currency: :USD}
       iex> Money.divide(Money.new(100, :USD), 10)
       %Money{amount: 10, currency: :USD}
   """
-  def divide(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
-    do: Money.new(div(a, b), cur)
   def divide(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor),
     do: Money.new(div(amount, divisor), cur)
-  def divide(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
