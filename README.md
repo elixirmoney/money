@@ -1,5 +1,4 @@
-Money
-=====
+# Money [![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
 
 Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
@@ -7,60 +6,101 @@ is an interpretation of the Fowler's Money pattern in fun.prog.
 > "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have $999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
 
 In short: You shouldn't represent monetary values by a float. Wherever
-you need to represent money, use this Money.
+you need to represent money, use `Money`.
 
-[![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
+## USAGE
 
 ```elixir
-alias Money, as: M
+five_eur         = Money.new(500, :EUR)             # %Money{amount: 500, currency: :EUR}
+ten_eur          = Money.add(five_eur, five_eur)    # %Money{amount: 10_00, currency: :EUR}
+hundred_eur      = Money.multiply(ten_eur, 10)      # %Money{amount: 100_00, currency: :EUR}
+ninety_nine_eur  = Money.subtract(hundred_eur, 1)   # %Money{amount: 99_00, currency: :EUR}
+shares           = Money.divide(ninety_nine_eur, 2)
+[%Money{amount: 50, currency: :EUR}, %Money{amount: 49, currency: :EUR}]
 
-five_eur       = M.eur(500);
-ten_eur        = M.add(five_eur, five_eur);
-ten_eur_div_2  = M.divide(ten_eur, 2);
+Money.equals?(five_eur, Money.new(500, :EUR)) # true
+Money.zero?(five_eur);                        # false
+Money.positive?(five_eur);                    # true
 
-M.equals?(ten_eur_div_2, five_eur); # true
-M.zero?(five_eur);                  # false
-M.currency_symbol(:USD)             # $
-M.currency_symbol(M.afn(500))       # ؋
-M.currency_name(M.afn(500))         # Afghani
-M.to_string(M.cny(500))             # ¥ 5.00
+Money.Currency.symbol(:USD)                   # $
+Money.Currency.symbol(Money.new(500, :AFN))   # ؋
+Money.Currency.name(Money.new(500, :AFN))     # Afghani
+
+Money.to_string(Money.new(500, :CNY))         # ¥ 5.00
+Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbol: false)
+"1.234,56"
 ```
 
-Installation
-------------
-
-Money comes with no dependencies, is still in dev state.
-
-Install the library using [mix deps.get][1]. Add the following to your `mix.exs`:
+### Money.Currency
 
 ```elixir
-def deps do
-  [ { :money, "~> 0.0.1-dev" } ]
+# Currency convenience methods
+import Money.Currency, only: [usd: 1, eur: 1, afn: 1]
+
+iex> usd(100_00)
+%Money{amount: 10000, currency: :USD}
+iex> eur(100_00)
+%Money{amount: 10000, currency: :EUR}
+iex> afn(100_00)
+%Money{amount: 10000, currency: :AFN}
+
+Money.Currency.symbol(:USD)     # $
+Money.Currency.symbol(afn(500)) # ؋
+Money.Currency.name(afn(500))   # Afghani
+Money.Currency.get(:AFN)        # %{name: "Afghani", symbol: "؋"}
+```
+
+### Money.Ecto.Type
+
+Bring `Money` to your Ecto project.
+The underlying database type is `integer`
+
+```elixir
+# migration
+create table(:my_table) do
+  add :amount, :integer
+end
+
+# model/schema
+schema "my_table" do
+  field :amount, Money.Ecto.Type
 end
 ```
 
-Now run the `mix deps.get` command.
+## INSTALLATION
 
-After you are done, run `mix deps.get` in your shell to fetch and compile Decimal. Start an interactive Elixir shell with `iex -S mix`.
+Money comes with no required dependencies.
 
-```iex
-iex> alias Money, as: M
-nil
-iex> M.usd(1000)
-%Money{amount: 1000, currency: :USD}
-iex> M.add(M.eur(500), M.eur(400))
-%Money{amount: 900, currency: :EUR}
+Add the following to your `mix.exs`:
+
+```elixir
+def deps do
+  [{:money, "~> 0.0.1-dev"}]
+end
+```
+then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
+
+## CONFIGURATION
+
+You can set a default currency and default formatting preferences as follows:
+
+```elixir
+config :money,
+  default_currency: :EUR,
+  separator: ".",
+  delimeter: ",",
+  symbol: false
 ```
 
-LICENSE
--------
+Then you don’t have to specify the currency.
+
+```elixir
+iex> amount = Money.new(1_234_50)
+%Money{amount: 1000, currency: :EUR}
+iex> to_string(amount)
+"1.234,50"
+```
+
+## LICENSE
 
 MIT License please see the [LICENSE](./LICENSE) file.
-
-ToDo
-----
-
-- options: round_up or round_down now is the simple round
-
-
-[1]: http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html

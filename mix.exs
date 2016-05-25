@@ -16,7 +16,8 @@ defmodule Money.Mixfile do
         canonical: "http://hexdocs.pm/money",
         main: "Money",
         source_url: @github_url,
-        readme: "README.md"]
+        extras: ["README.md", "CONTRIBUTING.md"]
+       ]
      end,
      description: description,
      package: package]
