@@ -227,10 +227,24 @@ defmodule Money do
   @doc ~S"""
   Converts a `Money` struct to a string representation
 
+  The following options are available
+
+    - `separator` - default `,`, sets the separator for groups of thousands.
+      "1,000"
+    - `delimeter` - default `.`, sets the decimal delimeter.
+      "1.23"
+    - `symbol` = default `true`, sets whether to display the currency symbol or not.
+
   ## Example:
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
+      iex> Money.to_string(Money.new(123456, :EUR), separator: ".", delimeter: ",")
+      "€1.234,56"
+      iex> Money.to_string(Money.new(123456, :EUR), symbol: false)
+      "1,234.56"
+      iex> Money.to_string(Money.new(123456, :EUR), symbol: false, separator: "")
+      "1234.56"
 
   It can also be interpolated (It implements the String.Chars protocol)
 
@@ -239,11 +253,14 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{} = m) do
-    symbol = Currency.symbol(m)
-    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(",")
+  def to_string(%Money{} = m, opts \\ []) do
+    separator = Keyword.get(opts, :separator, ",")
+    delimeter = Keyword.get(opts, :delimeter, ".")
+    symbol = if Keyword.get(opts, :symbol, true), do: Currency.symbol(m), else: ""
+
+    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
     sub_unit = rem(abs(m.amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
-    number = [super_unit, sub_unit] |> Enum.join(".")
+    number = [super_unit, sub_unit] |> Enum.join(delimeter)
     [symbol, number] |> Enum.join |> String.lstrip
   end
 
