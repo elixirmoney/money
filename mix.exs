@@ -28,6 +28,9 @@ defmodule Money.Mixfile do
 
   defp deps do
     [
+      # Soft dependencies
+      {:ecto, "~> 1.0 or ~> 2.0", optional: true},
+
       # Code style
       {:credo, "~> 0.4-beta", only: [:dev, :test]},
 
