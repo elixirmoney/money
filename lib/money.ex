@@ -10,6 +10,18 @@ defmodule Money do
       %Money{amount: 1050, currency: :USD}
       iex> Money.to_string(money)
       "$10.50"
+
+  ## Configuration options
+
+  You can set defaults in your Mix configuration to make working with `Money` a little easier.
+
+  ## Configuration:
+
+      config :money,
+        default_currency: :EUR,  # this allows you to do Money.new(100)
+        separator: ".",          # change the default thousands separator for Money.to_string
+        delimiter: ",",          # change the default decimal delimeter for Money.to_string
+        symbol: false            # don’t display the currency symbol in Money.to_string
   """
 
   @type t :: %__MODULE__{
@@ -223,28 +235,55 @@ defmodule Money do
     do: Money.new(div(amount, divisor), cur)
   def divide(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec to_string(t) :: String.t
+  @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
   Converts a `Money` struct to a string representation
+
+  The following options are available:
+
+    - `separator` - default `","`, sets the separator for groups of thousands.
+      "1,000"
+    - `delimeter` - default `"."`, sets the decimal delimeter.
+      "1.23"
+    - `symbol` = default `true`, sets whether to display the currency symbol or not.
 
   ## Example:
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
+      iex> Money.to_string(Money.new(123456, :EUR), separator: ".", delimeter: ",")
+      "€1.234,56"
+      iex> Money.to_string(Money.new(123456, :EUR), symbol: false)
+      "1,234.56"
+      iex> Money.to_string(Money.new(123456, :EUR), symbol: false, separator: "")
+      "1234.56"
 
   It can also be interpolated (It implements the String.Chars protocol)
+  To control the formatting, you can use the above options in your config,
+  more information is in the introduction to `Money`
 
   ## Example:
 
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{} = m) do
-    symbol = Currency.symbol(m)
-    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(",")
+  def to_string(%Money{} = m, opts \\ []) do
+    {separator, delimeter, symbol} = get_display_options(m, opts)
+
+    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
     sub_unit = rem(abs(m.amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
-    number = [super_unit, sub_unit] |> Enum.join(".")
+    number = [super_unit, sub_unit] |> Enum.join(delimeter)
     [symbol, number] |> Enum.join |> String.lstrip
+  end
+
+  defp get_display_options(m, opts) do
+    default_separator = Application.get_env(:money, :separator, ",")
+    separator = Keyword.get(opts, :separator, default_separator)
+    default_delimeter = Application.get_env(:money, :delimeter, ".")
+    delimeter = Keyword.get(opts, :delimeter, default_delimeter)
+    default_symbol = Application.get_env(:money, :symbol, true)
+    symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
+    {separator, delimeter, symbol}
   end
 
   defp fail_currencies_must_be_equal(a, b) do

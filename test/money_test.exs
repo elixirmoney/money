@@ -127,6 +127,21 @@ defmodule MoneyTest do
     assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
   end
 
+  test "to_string configuration defaults" do
+    try do
+      Application.put_env(:money, :separator, ".")
+      Application.put_env(:money, :delimeter, ",")
+      Application.put_env(:money, :symbol, false)
+
+      assert Money.to_string(zar(1234567890)) == "12.345.678,90"
+      assert Money.to_string(zar(1234567890), separator: "|", delimeter: "§", symbol: true) == "R12|345|678§90"
+    after
+      Application.delete_env(:money, :separator)
+      Application.delete_env(:money, :delimeter)
+      Application.delete_env(:money, :symbol)
+    end
+  end
+
   test "to_string protocol" do
     m = usd(500)
     assert to_string(m) == Money.to_string(m)
