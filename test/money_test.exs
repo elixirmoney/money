@@ -5,6 +5,21 @@ defmodule MoneyTest do
   require Money.Currency
   import Money.Currency
 
+  test "new/1 with default currency set" do
+    try do
+      Application.put_env(:money, :default_currency, :GBP)
+      assert Money.new(123) == Money.new(123, :GBP)
+    after
+      Application.delete_env(:money, :default_currency)
+    end
+  end
+
+  test "new/1 with no config set" do
+    assert_raise ArgumentError, fn ->
+      Money.new(123)
+    end
+  end
+
   test "new/2 requires existing currency" do
     assert_raise ArgumentError, fn ->
       Money.new(123, :ABC)
