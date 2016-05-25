@@ -270,7 +270,7 @@ defmodule Money do
     do: subtract(m, round(subtractend * 100))
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec multiply(t, t | integer | float) :: t
+  @spec multiply(t, integer | float) :: t
   @doc ~S"""
   Multiplies a `Money` by an amount
 
@@ -285,7 +285,7 @@ defmodule Money do
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
 
-  @spec divide(t, t | integer) :: t
+  @spec divide(t, integer) :: t
   @doc ~S"""
   Divides a `Money` by an amount
 
