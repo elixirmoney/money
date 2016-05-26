@@ -36,8 +36,8 @@ defmodule Money.Mixfile do
       {:credo, "~> 0.4-beta", only: [:dev, :test]},
 
       # Docs
-      {:ex_doc, "~> 0.11", only: :docs},
-      {:earmark, "~> 0.2", only: :docs},
+      {:ex_doc, "~> 0.11", only: [:dev, :docs]},
+      {:earmark, "~> 0.2", only: [:dev, :docs]},
     ]
   end
 
