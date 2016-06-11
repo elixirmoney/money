@@ -1,4 +1,4 @@
-# Money 
+# Money
 [![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
 
 Elixir library for working with Money safer, easier, and fun,
@@ -76,7 +76,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 1.0.0-beta"}]
+  [{:money, "~> 1.0.0"}]
 end
 ```
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
