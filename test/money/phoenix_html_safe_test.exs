@@ -1,6 +1,6 @@
 if Code.ensure_compiled?(Phoenix.HTML.Safe) do
   defmodule PhoenixHTMLSafeTeset do
-    use ExUnit.Case, async: true
+    use ExUnit.Case, async: false
 
     setup do
       Application.put_env(:money, :default_currency, :GBP)
