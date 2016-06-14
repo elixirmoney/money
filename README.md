@@ -68,6 +68,15 @@ schema "my_table" do
 end
 ```
 
+### Phoenix.HTML.Safe
+
+Bring `Money` to your Phoenix project.
+If you are using Phoenix, you can include money objects directly into your output and they will be correctly escaped.
+
+```elixir
+<b><%= Money.new(12345,67, :GBP) %></b>
+```
+
 ## INSTALLATION
 
 Money comes with no required dependencies.
