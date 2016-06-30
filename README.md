@@ -32,6 +32,20 @@ Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbo
 "1.234,56"
 ```
 
+### Money.Sigils
+
+```elixir
+# Sigils for Money
+import Money.Sigils
+
+iex> ~M[1000]USD
+%Money{amount: 1000, currency: :USD}
+
+# If you have a default currency configured (e.g. to GBP), you can do
+iex> ~M[1000]
+%Money{amount: 1000, currency: :GBP}
+```
+
 ### Money.Currency
 
 ```elixir
