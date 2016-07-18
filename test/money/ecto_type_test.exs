@@ -1,6 +1,6 @@
 if Code.ensure_compiled?(Ecto.Type) do
   defmodule Money.Ecto.TypeTest do
-    use ExUnit.Case, async: true
+    use ExUnit.Case, async: false
     doctest Money.Ecto.Type
 
     alias Money.Ecto.Type
