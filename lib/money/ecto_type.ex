@@ -34,6 +34,7 @@ if Code.ensure_compiled?(Ecto.Type) do
       Money.parse(str)
     end
     def cast(int) when is_integer(int), do: {:ok, Money.new(int)}
+    def cast(%Money{}=money), do: {:ok, money}
     def cast(_), do: :error
 
     @spec load(integer) :: {:ok, Money.t}
