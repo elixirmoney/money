@@ -162,9 +162,14 @@ defmodule MoneyTest do
       Application.put_env(:money, :separator, ".")
       Application.put_env(:money, :delimeter, ",")
       Application.put_env(:money, :symbol, false)
+      Application.put_env(:money, :symbol_on_right, false)
+      Application.put_env(:money, :symbol_space, false)
 
       assert Money.to_string(zar(1234567890)) == "12.345.678,90"
       assert Money.to_string(zar(1234567890), separator: "|", delimeter: "§", symbol: true) == "R12|345|678§90"
+      assert Money.to_string(zar(1234567890), separator: "|", delimeter: "§", symbol: true, symbol_on_right: true) == "12|345|678§90R"
+      assert Money.to_string(zar(1234567890), separator: "|", delimeter: "§", symbol: true, symbol_on_right: true, symbol_space: true) == "12|345|678§90 R"
+      assert Money.to_string(zar(1234567890), separator: "|", delimeter: "§", symbol: true, symbol_space: true) == "R 12|345|678§90"
     after
       Application.delete_env(:money, :separator)
       Application.delete_env(:money, :delimeter)

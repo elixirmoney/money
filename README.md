@@ -99,7 +99,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 1.0.0"}]
+  [{:money, "~> 1.0.1"}]
 end
 ```
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
@@ -113,17 +113,27 @@ config :money,
   default_currency: :EUR,
   separator: ".",
   delimeter: ",",
-  symbol: false
+  symbol: false,
+  symbol_on_right: false,
+  symbol_space: false
 ```
 
 Then you don’t have to specify the currency.
 
 ```elixir
 iex> amount = Money.new(1_234_50)
-%Money{amount: 1000, currency: :EUR}
+%Money{amount: 123450, currency: :EUR}
 iex> to_string(amount)
 "1.234,50"
 ```
+
+Here is another example of formatting money:
+
+```elixir
+iex> amount = Money.new(1_234_50)
+%Money{amount: 123450, currency: :EUR}
+iex> Money.to_string(amount, symbol: true, symbol_on_right: true, symbol_space: true)
+"1.234,50 €"
 
 ## LICENSE
 
