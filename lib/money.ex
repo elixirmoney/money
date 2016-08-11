@@ -349,19 +349,32 @@ defmodule Money do
       "Total: $100.00"
   """
   def to_string(%Money{} = m, opts \\ []) do
-    {separator, delimeter, symbol} = get_display_options(m, opts)
+    {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(m, opts)
 
     super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
     sub_unit = rem(abs(m.amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
     number = [super_unit, sub_unit] |> Enum.join(delimeter)
-    [symbol, number] |> Enum.join |> String.lstrip
+    space = if symbol_space, do: " ", else: ""
+
+    if symbol_on_right do
+      [number, space, symbol] |> Enum.join |> String.lstrip
+    else
+      [symbol, space, number] |> Enum.join |> String.lstrip
+    end
   end
 
   defp get_display_options(m, opts) do
     {separator, delimeter} = get_parse_options(opts)
+
     default_symbol = Application.get_env(:money, :symbol, true)
+    default_symbol_on_right = Application.get_env(:money, :symbol_on_right, false)
+    default_symbol_space = Application.get_env(:money, :symbol_space, false)
+
     symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
-    {separator, delimeter, symbol}
+    symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
+    symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
+
+    {separator, delimeter, symbol, symbol_on_right, symbol_space}
   end
 
   defp get_parse_options(opts) do
