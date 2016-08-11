@@ -90,6 +90,8 @@ defmodule Money do
       :error
       iex> Money.parse(1_234.56, :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
+      iex> Money.parse(-1_234.56, :USD)
+      {:ok, %Money{amount: -123456, currency: :USD}}
   """
   def parse(value, currency \\ nil, opts \\ [])
   def parse(value, nil, opts) do
@@ -103,10 +105,10 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     try do
       {separator, delimeter} = get_parse_options(opts)
-      regex = Regex.compile!(".*?([\\d]+(?:[#{delimeter}]\\d+)?)")
+      regex = Regex.compile!(".*?(-)?\s*?([\\d]+(?:[#{delimeter}]\\d+)?)")
       value = str
       |> String.replace(separator, "")
-      |> String.replace(regex, "\\1")
+      |> String.replace(regex, "\\1\\2")
       |> String.replace(delimeter, ".")
       case Float.parse(value) do
         {float, _} -> {:ok, new(round(float * 100), currency)}
