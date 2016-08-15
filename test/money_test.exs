@@ -157,9 +157,16 @@ defmodule MoneyTest do
 
   test "test to_string" do
     assert Money.to_string(usd(500)) == "$5.00"
-    assert Money.to_string(eur(123)) == "€1.23"
-    assert Money.to_string(nad(203)) == "2.03"
+    assert Money.to_string(eur(1234)) == "€12.34"
+    assert Money.to_string(nad(20305)) == "203.05"
     assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
+  end
+
+  test "to_string with negative values" do
+    assert Money.to_string(usd(-500)) == "$-5.00"
+    assert Money.to_string(eur(-1234)) == "€-12.34"
+    assert Money.to_string(nad(-20305)) == "-203.05"
+    assert Money.to_string(zar(-1234567890)) == "R-12,345,678.90"
   end
 
   test "to_string configuration defaults" do

@@ -348,20 +348,24 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{} = m, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(m, opts)
+  def to_string(%Money{amount: amount}=money, opts \\ []) do
+    {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(money, opts)
 
-    super_unit = div(m.amount, 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(abs(m.amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
+    super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
+    sub_unit = rem(abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
     number = [super_unit, sub_unit] |> Enum.join(delimeter)
     space = if symbol_space, do: " ", else: ""
+    sign = if is_negative(money), do: "-", else: ""
 
     if symbol_on_right do
-      [number, space, symbol] |> Enum.join |> String.lstrip
+      [sign, number, space, symbol] |> Enum.join |> String.lstrip
     else
-      [symbol, space, number] |> Enum.join |> String.lstrip
+      [symbol, space, sign, number] |> Enum.join |> String.lstrip
     end
   end
+
+  defp is_negative(%Money{amount: amount}) when amount < 0, do: true
+  defp is_negative(%Money{}), do: false
 
   defp get_display_options(m, opts) do
     {separator, delimeter} = get_parse_options(opts)
