@@ -34,11 +34,11 @@ defmodule Money.Mixfile do
       {:phoenix_html, "~> 2.0", optional: true},
 
       # Code style
-      {:credo, "~> 0.4-beta", only: [:dev, :test]},
+      {:credo, "~> 0.4.8", only: [:dev, :test]},
 
       # Docs
-      {:ex_doc, "~> 0.11", only: [:dev, :docs]},
-      {:earmark, "~> 0.2", only: [:dev, :docs]},
+      {:ex_doc, "~> 0.13.0", only: [:dev, :docs]},
+      {:earmark, "~> 1.0.0", only: [:dev, :docs]},
     ]
   end
 
