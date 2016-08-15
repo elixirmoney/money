@@ -354,7 +354,7 @@ defmodule Money do
     {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(money, opts)
 
     number = format_number(money, separator, delimeter)
-    sign = if is_negative(money), do: "-"
+    sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
     parts = if symbol_on_right do
@@ -364,9 +364,6 @@ defmodule Money do
             end
     parts |> Enum.join |> String.lstrip
   end
-
-  defp is_negative(%Money{amount: amount}) when amount < 0, do: true
-  defp is_negative(%Money{}), do: false
 
   defp format_number(%Money{amount: amount}, separator, delimeter) do
     super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
