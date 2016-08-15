@@ -327,6 +327,8 @@ defmodule Money do
     - `delimeter` - default `"."`, sets the decimal delimeter.
       "1.23"
     - `symbol` = default `true`, sets whether to display the currency symbol or not.
+    - `symbol_on_right`, display the currency symbol on the right of the number, eg: 123.45€
+    - `symbol_space`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
 
   ## Example:
 
@@ -348,24 +350,29 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{amount: amount}=money, opts \\ []) do
+  def to_string(%Money{}=money, opts \\ []) do
     {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(money, opts)
 
-    super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
-    number = [super_unit, sub_unit] |> Enum.join(delimeter)
-    space = if symbol_space, do: " ", else: ""
-    sign = if is_negative(money), do: "-", else: ""
+    number = format_number(money, separator, delimeter)
+    sign = if is_negative(money), do: "-"
+    space = if symbol_space, do: " "
 
-    if symbol_on_right do
-      [sign, number, space, symbol] |> Enum.join |> String.lstrip
-    else
-      [symbol, space, sign, number] |> Enum.join |> String.lstrip
-    end
+    parts = if symbol_on_right do
+              [sign, number, space, symbol]
+            else
+              [symbol, space, sign, number]
+            end
+    parts |> Enum.join |> String.lstrip
   end
 
   defp is_negative(%Money{amount: amount}) when amount < 0, do: true
   defp is_negative(%Money{}), do: false
+
+  defp format_number(%Money{amount: amount}, separator, delimeter) do
+    super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
+    sub_unit = rem(abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
+    [super_unit, sub_unit] |> Enum.join(delimeter)
+  end
 
   defp get_display_options(m, opts) do
     {separator, delimeter} = get_parse_options(opts)
