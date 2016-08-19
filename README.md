@@ -134,6 +134,7 @@ iex> amount = Money.new(1_234_50)
 %Money{amount: 123450, currency: :EUR}
 iex> Money.to_string(amount, symbol: true, symbol_on_right: true, symbol_space: true)
 "1.234,50 €"
+```
 
 ## LICENSE
 
