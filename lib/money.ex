@@ -104,13 +104,10 @@ defmodule Money do
   end
   def parse(str, currency, opts) when is_binary(str) do
     try do
-      {separator, delimeter} = get_parse_options(opts)
-      regex = Regex.compile!(".*?(-)?\s*?(\\d+(?:#{delimeter}\\d+)?)")
+      {_separator, delimeter} = get_parse_options(opts)
       value = str
-      |> add_missing_leading_digit(delimeter)
-      |> String.replace(separator, "")
-      |> String.replace(regex, "\\1\\2")
-      |> String.replace(delimeter, ".")
+      |> prepare_parse_string(delimeter)
+      |> add_missing_leading_digit
       case Float.parse(value) do
         {float, _} -> {:ok, new(round(float * 100), currency)}
         :error -> :error
@@ -123,9 +120,44 @@ defmodule Money do
     {:ok, new(round(float * 100), currency)}
   end
 
-  defp add_missing_leading_digit(<< delimeter::bytes-size(1) >> <> tail, delimeter),
-    do: "0" <> delimeter <> tail
-  defp add_missing_leading_digit(str, _delimeter), do: str
+  defp prepare_parse_string(characters, delimeter, acc \\ [])
+  defp prepare_parse_string([], _delimeter, acc),
+    do: Enum.reverse(acc) |> Enum.join
+  defp prepare_parse_string(["-" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["-" | acc])
+  defp prepare_parse_string(["0" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["0" | acc])
+  defp prepare_parse_string(["1" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["1" | acc])
+  defp prepare_parse_string(["2" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["2" | acc])
+  defp prepare_parse_string(["3" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["3" | acc])
+  defp prepare_parse_string(["4" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["4" | acc])
+  defp prepare_parse_string(["5" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["5" | acc])
+  defp prepare_parse_string(["6" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["6" | acc])
+  defp prepare_parse_string(["7" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["7" | acc])
+  defp prepare_parse_string(["8" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["8" | acc])
+  defp prepare_parse_string(["9" | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["9" | acc])
+  defp prepare_parse_string([delimeter | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, ["." | acc])
+  defp prepare_parse_string([_head | tail], delimeter, acc),
+    do: prepare_parse_string(tail, delimeter, acc)
+
+  defp prepare_parse_string(string, delimeter, _acc),
+    do: prepare_parse_string(String.codepoints(string), delimeter)
+
+  defp add_missing_leading_digit(<< "-." >> <> tail),
+    do: "-0." <> tail
+  defp add_missing_leading_digit(<< "." >> <> tail),
+    do: "0." <> tail
+  defp add_missing_leading_digit(str), do: str
 
   @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
   @doc ~S"""
