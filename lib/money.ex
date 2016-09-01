@@ -107,6 +107,7 @@ defmodule Money do
       {separator, delimeter} = get_parse_options(opts)
       regex = Regex.compile!(".*?(-)?\s*?([\\d]+(?:[#{delimeter}]\\d+)?)")
       value = str
+      |> add_missing_leading_digit(delimeter)
       |> String.replace(separator, "")
       |> String.replace(regex, "\\1\\2")
       |> String.replace(delimeter, ".")
@@ -122,6 +123,9 @@ defmodule Money do
     {:ok, new(round(float * 100), currency)}
   end
 
+  defp add_missing_leading_digit(<< delimeter::bytes-size(1) >> <> tail, delimeter),
+    do: "0" <> delimeter <> tail
+  defp add_missing_leading_digit(str, _delimeter), do: str
 
   @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
   @doc ~S"""

@@ -38,6 +38,9 @@ defmodule MoneyTest do
     assert Money.parse("$- 1,000.00", :USD) == {:ok, usd(-100000)}
     assert Money.parse("-1000.0", :USD) == {:ok, usd(-100000)}
 
+    assert Money.parse(".25", :USD) == {:ok, usd(25)}
+    assert Money.parse(",25", :EUR, separator: ".", delimeter: ",") == {:ok, eur(25)}
+
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
