@@ -105,7 +105,7 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     try do
       {separator, delimeter} = get_parse_options(opts)
-      regex = Regex.compile!(".*?(-)?\s*?([\\d]+(?:[#{delimeter}]\\d+)?)")
+      regex = Regex.compile!(".*?(-)?\s*?(\\d+(?:#{delimeter}\\d+)?)")
       value = str
       |> add_missing_leading_digit(delimeter)
       |> String.replace(separator, "")
