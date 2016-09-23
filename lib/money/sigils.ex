@@ -14,7 +14,13 @@ defmodule Money.Sigils do
       #> %Money{amount: 1000, currency: :USD}
   """
   def sigil_M(amount, []),
-    do: Money.new(String.to_integer(amount))
+    do: Money.new(to_integer(amount))
   def sigil_M(amount, [_,_,_]=currency),
-    do: Money.new(String.to_integer(amount), List.to_existing_atom(currency))
+    do: Money.new(to_integer(amount), List.to_existing_atom(currency))
+
+  defp to_integer(string) do
+    string
+    |> String.replace("_", "")
+    |> String.to_integer
+  end
 end
