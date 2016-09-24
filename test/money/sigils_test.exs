@@ -16,6 +16,11 @@ defmodule Money.SigilsTest do
     assert ~M[1000] == Money.new(1000, :GBP)
   end
 
+  test "it can handle underscores like normal integers" do
+    assert ~M[1_000] == Money.new(1000, :GBP)
+    assert ~M[1_000_00] == Money.new(100000, :GBP)
+  end
+
   test "it can create a money object from a sigil with a currency" do
     assert ~M[1000]USD == Money.new(1000, :USD)
     assert ~M[1000]GBP == Money.new(1000, :GBP)
