@@ -362,9 +362,9 @@ defmodule Money do
       "1,000"
     - `delimeter` - default `"."`, sets the decimal delimeter.
       "1.23"
-    - `symbol` = default `true`, sets whether to display the currency symbol or not.
-    - `symbol_on_right`, display the currency symbol on the right of the number, eg: 123.45€
-    - `symbol_space`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
+    - `symbol` - default `true`, sets whether to display the currency symbol or not.
+    - `symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
+    - `symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
 
   ## Example:
 
