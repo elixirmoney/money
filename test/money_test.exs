@@ -173,6 +173,13 @@ defmodule MoneyTest do
     assert Money.to_string(zar(-1234567890)) == "R-12,345,678.90"
   end
 
+  test "to_string with fractional_unit false" do
+    assert Money.to_string(usd(500), fractional_unit: false) == "$5"
+    assert Money.to_string(eur(1234), fractional_unit: false) == "€12"
+    assert Money.to_string(nad(20305), fractional_unit: false) == "203"
+    assert Money.to_string(zar(1234567890), fractional_unit: false) == "R12,345,678"
+  end
+
   test "to_string configuration defaults" do
     try do
       Application.put_env(:money, :separator, ".")

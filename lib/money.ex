@@ -24,6 +24,7 @@ defmodule Money do
         symbol: false            # don’t display the currency symbol in Money.to_string
         symbol_on_right: false,  # position the symbol
         symbol_space: false      # add a space between symbol and number
+        fractional_unit: false   # don’t display the remainder or the delimeter
   """
 
   @type t :: %__MODULE__{
@@ -271,7 +272,6 @@ defmodule Money do
   @doc ~S"""
   Adds two `Money` together or an integer (cents) amount to a `Money`
 
-
   ## Example:
 
       iex> Money.add(Money.new(100, :USD), Money.new(50, :USD))
@@ -367,6 +367,7 @@ defmodule Money do
     - `symbol` - default `true`, sets whether to display the currency symbol or not.
     - `symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
     - `symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
+    - `fractional_unit` - default `true`, show the remaining units after the delimeter
 
   ## Example:
 
@@ -378,6 +379,8 @@ defmodule Money do
       "1,234.56"
       iex> Money.to_string(Money.new(123456, :EUR), symbol: false, separator: "")
       "1234.56"
+      iex> Money.to_string(Money.new(123456, :EUR), fractional_unit: false)
+      "€1,234"
 
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
@@ -389,9 +392,9 @@ defmodule Money do
       "Total: $100.00"
   """
   def to_string(%Money{}=money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space} = get_display_options(money, opts)
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
 
-    number = format_number(money, separator, delimeter)
+    number = format_number(money, separator, delimeter, fractional_unit)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
@@ -403,10 +406,14 @@ defmodule Money do
     parts |> Enum.join |> String.lstrip
   end
 
-  defp format_number(%Money{amount: amount}, separator, delimeter) do
+  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit) do
     super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
     sub_unit = rem(abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
-    [super_unit, sub_unit] |> Enum.join(delimeter)
+    if fractional_unit do
+      [super_unit, sub_unit] |> Enum.join(delimeter)
+    else
+      super_unit
+    end
   end
 
   defp get_display_options(m, opts) do
@@ -415,12 +422,14 @@ defmodule Money do
     default_symbol = Application.get_env(:money, :symbol, true)
     default_symbol_on_right = Application.get_env(:money, :symbol_on_right, false)
     default_symbol_space = Application.get_env(:money, :symbol_space, false)
+    default_fractional_unit = Application.get_env(:money, :fractional_unit, true)
 
     symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
     symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
     symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
+    fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
 
-    {separator, delimeter, symbol, symbol_on_right, symbol_space}
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit}
   end
 
   defp get_parse_options(opts) do

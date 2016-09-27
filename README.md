@@ -30,6 +30,7 @@ Money.Currency.name(Money.new(500, :AFN))     # Afghani
 Money.to_string(Money.new(500, :CNY))         # ¥ 5.00
 Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbol: false)
 "1.234,56"
+Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
 ```
 
 ### Money.Sigils
