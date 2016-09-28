@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+- Add formatting option to hide fractional units ([#47])
+- Allow underscores in sigil ([#48])
+
 ### 1.1.3
 
 - Fix parsing amounts without a leading digit [#46]
