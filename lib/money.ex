@@ -112,7 +112,7 @@ defmodule Money do
       |> prepare_parse_string(delimeter)
       |> add_missing_leading_digit
       case Float.parse(value) do
-        {float, _} -> {:ok, new(round(float * 100), currency)}
+        {float, _} -> parse(float, currency, [])
         :error -> :error
       end
     rescue
