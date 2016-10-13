@@ -1,4 +1,6 @@
 defmodule Money do
+  import Kernel, except: [abs: 1]
+
   @moduledoc """
   Defines a `Money` struct along with convenience methods for working with currencies.
 
@@ -268,6 +270,34 @@ defmodule Money do
   def equals?(%Money{currency: cur}, %Money{currency: cur}), do: false
   def equals?(a, b), do: fail_currencies_must_be_equal(a, b)
 
+  @spec neg(t) :: t
+  @doc ~S"""
+  Returns a `Money` with the amount negated.
+
+  ## Examples:
+
+      iex> Money.new(100, :USD) |> Money.neg
+      %Money{amount: -100, currency: :USD}
+      iex> Money.new(-100, :USD) |> Money.neg
+      %Money{amount: 100, currency: :USD}
+  """
+  def neg(%Money{amount: amount, currency: cur}),
+    do: %Money{amount: -amount, currency: cur}
+
+  @spec abs(t) :: t
+  @doc ~S"""
+  Returns a `Money` with the arithmetical absolute of the amount.
+
+  ## Examples:
+
+      iex> Money.new(-100, :USD) |> Money.abs
+      %Money{amount: 100, currency: :USD}
+      iex> Money.new(100, :USD) |> Money.abs
+      %Money{amount: 100, currency: :USD}
+  """
+  def abs(%Money{amount: amount, currency: cur}),
+    do: %Money{amount: Kernel.abs(amount), currency: cur}
+
   @spec add(t, t | integer | float) :: t
   @doc ~S"""
   Adds two `Money` together or an integer (cents) amount to a `Money`
@@ -407,8 +437,8 @@ defmodule Money do
   end
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit) do
-    super_unit = div(abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
+    super_unit = div(Kernel.abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
+    sub_unit = rem(Kernel.abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
     if fractional_unit do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
@@ -445,7 +475,7 @@ defmodule Money do
   end
 
   defp reverse_group(str, count) when is_binary(str) do
-    reverse_group(str, abs(count), [])
+    reverse_group(str, Kernel.abs(count), [])
   end
   defp reverse_group("", _count, list) do
     list
