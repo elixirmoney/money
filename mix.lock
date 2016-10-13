@@ -1,9 +1,9 @@
 %{"bunt": {:hex, :bunt, "0.1.6", "5d95a6882f73f3b9969fdfd1953798046664e6f77ec4e486e6fafc7caad97c6f", [:mix], []},
-  "credo": {:hex, :credo, "0.4.8", "1e71a4c21a4bead4911498d3e0f72a90f500075cf132c3ad8976b5a474b4c594", [:mix], [{:bunt, "~> 0.1.6", [hex: :bunt, optional: false]}]},
+  "credo": {:hex, :credo, "0.4.12", "f5e1973405ea25c6e64959fb0b6bf92950147a0278cc2a002a491b45f78f7b87", [:mix], [{:bunt, "~> 0.1.6", [hex: :bunt, optional: false]}]},
   "decimal": {:hex, :decimal, "1.1.2", "79a769d4657b2d537b51ef3c02d29ab7141d2b486b516c109642d453ee08e00c", [:mix], []},
-  "earmark": {:hex, :earmark, "1.0.1", "2c2cd903bfdc3de3f189bd9a8d4569a075b88a8981ded9a0d95672f6e2b63141", [:mix], []},
+  "earmark": {:hex, :earmark, "1.0.2", "a0b0904d74ecc14da8bd2e6e0248e1a409a2bc91aade75fcf428125603de3853", [:mix], []},
   "ecto": {:hex, :ecto, "1.1.7", "c37127248756e725eb8254b371764b40c05a90c104b2065d1d4f7e32573fdbec", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, optional: false]}, {:mariaex, "~> 0.5.0 or ~> 0.6.0", [hex: :mariaex, optional: true]}, {:poison, "~> 1.0 or ~> 2.0", [hex: :poison, optional: true]}, {:poolboy, "~> 1.4", [hex: :poolboy, optional: false]}, {:postgrex, "~> 0.11.0", [hex: :postgrex, optional: true]}, {:sbroker, "~> 0.7", [hex: :sbroker, optional: true]}]},
-  "ex_doc": {:hex, :ex_doc, "0.13.0", "aa2f8fe4c6136a2f7cfc0a7e06805f82530e91df00e2bff4b4362002b43ada65", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
+  "ex_doc": {:hex, :ex_doc, "0.14.3", "e61cec6cf9731d7d23d254266ab06ac1decbb7651c3d1568402ec535d387b6f7", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
   "phoenix_html": {:hex, :phoenix_html, "2.5.1", "631053f9e345fecb5c87d9e0ccd807f7266d27e2ee4269817067af425fd81ba8", [:mix], [{:plug, "~> 0.13 or ~> 1.0", [hex: :plug, optional: false]}]},
   "plug": {:hex, :plug, "1.1.5", "de5645c18170415a72b18cc3d215c05321ddecac27a15acb923742156e98278b", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, optional: true]}]},
   "poolboy": {:hex, :poolboy, "1.5.1", "6b46163901cfd0a1b43d692657ed9d7e599853b3b21b95ae5ae0a777cf9b6ca8", [:rebar], []}}
