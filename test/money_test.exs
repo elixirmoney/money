@@ -106,6 +106,22 @@ defmodule MoneyTest do
     refute Money.negative?(Money.new(123, :USD))
   end
 
+  test "neg/1" do
+    result = Money.neg(Money.new(-123, :USD))
+    assert Money.equals?(result, Money.new(123, :USD))
+
+    result = Money.neg(Money.new(123, :USD))
+    assert Money.equals?(result, Money.new(-123, :USD))
+  end
+
+  test "abs/1" do
+    result = Money.abs(Money.new(-123, :USD))
+    assert Money.equals?(result, Money.new(123, :USD))
+
+    result = Money.abs(Money.new(123, :USD))
+    assert Money.equals?(result, Money.new(123, :USD))
+  end
+
   test "test add" do
     assert Money.add(Money.new(100, :USD), Money.new(200, :USD)) == Money.new(300, :USD)
     assert Money.add(Money.new(100, :USD), 200) == Money.new(300, :USD)
