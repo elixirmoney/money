@@ -343,16 +343,21 @@ defmodule Money do
 
   defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse
   defp do_divide(currency, value, 0, count, acc) do
-    count = count - 1
+    count = decrement_abs(count)
     acc   = [new(value, currency) | acc]
     do_divide(currency, value, 0, count, acc)
   end
   defp do_divide(currency, value, rem, count, acc) do
-    rem   = rem - 1
-    count = count - 1
-    acc   = [new(value + 1, currency) | acc]
+    rem   = decrement_abs(rem)
+    count = decrement_abs(count)
+    acc   = [new(increment_abs(value), currency) | acc]
     do_divide(currency, value, rem, count, acc)
   end
+
+  defp increment_abs(n) when n >= 0, do: n + 1
+  defp increment_abs(n) when n < 0, do: n - 1
+  defp decrement_abs(n) when n >= 0, do: n - 1
+  defp decrement_abs(n) when n < 0, do: n + 1
 
   @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
