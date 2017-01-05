@@ -1,9 +1,17 @@
 # Changelog
 
+## 1.2.1
+
+- Add Money.abs/1
+- Add Money.neg/1
+- Fix issues with Money.divide/2 and negative values [#57]
+- Changes for clean compile on Elixir 1.4.1
+- Changed sigil functions to macros for compile time expansion [#59]
+
 ## 1.2.0
 
-- Add formatting option to hide fractional units ([#47])
-- Allow underscores in sigil ([#48])
+- Add formatting option to hide fractional units [#47]
+- Allow underscores in sigil [#48]
 
 ### 1.1.3
 
