@@ -9,7 +9,7 @@ defmodule Money.Mixfile do
      name: "Money",
      version: @version,
      elixir: "~> 1.0",
-     deps: deps,
+     deps: deps(),
      source_url: "https://github.com/liuggio/money",
      docs: fn ->
        [source_ref: "v#{@version}",
@@ -19,8 +19,8 @@ defmodule Money.Mixfile do
         extras: ["README.md", "CONTRIBUTING.md"]
        ]
      end,
-     description: description,
-     package: package]
+     description: description(),
+     package: package()]
   end
 
   def application do
@@ -34,11 +34,10 @@ defmodule Money.Mixfile do
       {:phoenix_html, "~> 2.0", optional: true},
 
       # Code style
-      {:credo, "~> 0.4.8", only: [:dev, :test]},
+      {:credo, "~> 0.5", only: [:dev, :test]},
 
       # Docs
-      {:ex_doc, "~> 0.14.0", only: [:dev, :docs]},
-      {:earmark, "~> 1.0.0", only: [:dev, :docs]},
+      {:ex_doc, "~> 0.14", only: [:dev, :docs]},
     ]
   end
 
