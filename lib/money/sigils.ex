@@ -13,10 +13,10 @@ defmodule Money.Sigils do
       ~M[1000]USD
       #> %Money{amount: 1000, currency: :USD}
   """
-  def sigil_M(amount, []),
-    do: Money.new(to_integer(amount))
-  def sigil_M(amount, [_,_,_]=currency),
-    do: Money.new(to_integer(amount), List.to_existing_atom(currency))
+  defmacro sigil_M({:<<>>, _meta, [amount]}, []),
+    do: Macro.escape(Money.new(to_integer(amount)))
+  defmacro sigil_M({:<<>>, _meta, [amount]}, [_ | _]=currency),
+    do: Macro.escape(Money.new(to_integer(amount), List.to_atom(currency)))
 
   defp to_integer(string) do
     string
