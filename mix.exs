@@ -9,7 +9,7 @@ defmodule Money.Mixfile do
      name: "Money",
      version: @version,
      elixir: "~> 1.0",
-     deps: deps,
+     deps: deps(),
      source_url: "https://github.com/liuggio/money",
      docs: fn ->
        [source_ref: "v#{@version}",
@@ -19,8 +19,8 @@ defmodule Money.Mixfile do
         extras: ["README.md", "CONTRIBUTING.md"]
        ]
      end,
-     description: description,
-     package: package]
+     description: description(),
+     package: package()]
   end
 
   def application do
