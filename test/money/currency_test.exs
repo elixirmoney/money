@@ -11,14 +11,14 @@ defmodule Money.CurrencyTest do
   end
 
   test "get/1" do
-    assert Currency.get(:USD) == %{name: "US Dollar", symbol: "$"}
-    assert Currency.get(Currency.usd(100)) == %{name: "US Dollar", symbol: "$"}
+    assert Currency.get(:USD) == %{name: "US Dollar", symbol: "$", exponent: 2}
+    assert Currency.get(Currency.usd(100)) == %{name: "US Dollar", symbol: "$", exponent: 2}
     assert Currency.get(:ABC) == nil
   end
 
   test "get!/1" do
-    assert Currency.get!(:USD) == %{name: "US Dollar", symbol: "$"}
-    assert Currency.get!(Currency.usd(100)) == %{name: "US Dollar", symbol: "$"}
+    assert Currency.get!(:USD) == %{name: "US Dollar", symbol: "$", exponent: 2}
+    assert Currency.get!(Currency.usd(100)) == %{name: "US Dollar", symbol: "$", exponent: 2}
     assert_raise ArgumentError, fn -> Currency.get!(:ABC) end
   end
 
@@ -44,6 +44,27 @@ defmodule Money.CurrencyTest do
     assert Currency.symbol!(:USD) == "$"
     assert Currency.symbol!(Currency.usd(100)) == "$"
     assert_raise ArgumentError, fn -> Currency.symbol!(:ABC) end
+  end
+
+  test "exponent/1" do
+    assert Currency.exponent(:USD) == 2
+    assert Currency.exponent(:JPY) == 0
+    assert Currency.exponent(:CLF) == 4
+    assert Currency.exponent(:ABC) == nil
+  end
+
+  test "exponent!/1" do
+    assert Currency.exponent(:USD) == 2
+    assert Currency.exponent(:JPY) == 0
+    assert Currency.exponent(:CLF) == 4
+    assert_raise ArgumentError, fn -> Currency.exponent!(:ABC) end
+  end
+
+  test "sub_units_count!/1" do
+    assert Currency.sub_units_count!(:USD) == 100
+    assert Currency.sub_units_count!(:JPY) == 1
+    assert Currency.sub_units_count!(:CLF) == 10_000
+    assert_raise ArgumentError, fn -> Currency.sub_units_count!(:ABC) end
   end
 
   test "to_atom/1" do

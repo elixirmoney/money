@@ -62,6 +62,12 @@ defmodule MoneyTest do
     end
   end
 
+  test "parse/2 with different exponents" do
+    assert Money.parse(1_000.00, :EUR) == {:ok, eur(100000)}
+    assert Money.parse(1_000.00, :JPY) == {:ok, jpy(1000)}
+    assert Money.parse(1_000.00, :OMR) == {:ok, omr(1_000_000)}
+  end
+
   test "test factory USD" do
     assert Money.new(123, :USD) == usd(123)
   end
@@ -210,6 +216,14 @@ defmodule MoneyTest do
     assert Money.to_string(eur(1234), fractional_unit: false) == "€12"
     assert Money.to_string(nad(20305), fractional_unit: false) == "203"
     assert Money.to_string(zar(1234567890), fractional_unit: false) == "R12,345,678"
+  end
+
+  test "to_string with different exponents" do
+    assert Money.to_string(jpy(1_234)) == "¥1,234"
+    assert Money.to_string(eur(1_234)) == "€12.34"
+    assert Money.to_string(usd(10)) == "$0.10"
+    assert Money.to_string(clf(20)) == "$0.0020"
+    assert Money.to_string(clf(1_234_567)) == "$123.4567"
   end
 
   test "to_string configuration defaults" do
