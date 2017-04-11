@@ -236,4 +236,10 @@ defmodule MoneyTest do
     m = usd(500)
     assert to_string(m) == Money.to_string(m)
   end
+
+  test "change precision to 10_000" do
+    Application.put_env(:money, :precision, 10_000)
+    assert Money.parse("10", :USD) == {:ok, Money.new(100_000, :USD)}
+    Application.delete_env(:money, :precision)
+  end
 end
