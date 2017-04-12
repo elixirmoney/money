@@ -116,7 +116,8 @@ config :money,
   delimeter: ",",
   symbol: false,
   symbol_on_right: false,
-  symbol_space: false
+  symbol_space: false,
+  precision: 10_000
 ```
 
 Then you don’t have to specify the currency.
