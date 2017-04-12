@@ -29,8 +29,6 @@ defmodule Money do
         fractional_unit: false   # don’t display the remainder or the delimeter
   """
 
-  require Logger
-
   @type t :: %__MODULE__{
     amount: integer,
     currency: atom
