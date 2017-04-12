@@ -443,8 +443,9 @@ defmodule Money do
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit) do
     precision = Application.get_env(:money, :precision, 100)
+    scale = Application.get_env(:money, :precision, 2)
     super_unit = div(Kernel.abs(amount), precision) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(Kernel.abs(amount), precision) |> Integer.to_string |> String.rjust(2, ?0)
+    sub_unit = rem(Kernel.abs(amount), precision) |> Integer.to_string |> String.rjust(scale, ?0)
 
     if fractional_unit do
       [super_unit, sub_unit] |> Enum.join(delimeter)

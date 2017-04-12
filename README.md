@@ -117,7 +117,8 @@ config :money,
   symbol: false,
   symbol_on_right: false,
   symbol_space: false,
-  precision: 10_000
+  precision: 10_000,
+  scale: 4
 ```
 
 Then you don’t have to specify the currency.
