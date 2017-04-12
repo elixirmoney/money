@@ -242,4 +242,12 @@ defmodule MoneyTest do
     assert Money.parse("10", :USD) == {:ok, Money.new(100_000, :USD)}
     Application.delete_env(:money, :precision)
   end
+
+  test "money function with string" do
+    assert Money.money("10", :USD) == Money.new(1000, :USD)
+  end
+
+  test "money function with float" do
+    assert Money.money("15.10", :USD) == Money.new(1510, :USD)
+  end
 end

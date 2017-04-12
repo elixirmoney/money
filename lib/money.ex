@@ -38,6 +38,48 @@ defmodule Money do
 
   alias Money.Currency
 
+  @spec money(integer | float | String.t) :: t
+  @doc ~S"""
+  Create a new `Money` struct using a default currency.
+  The default currency can be set in the system Mix config.
+
+  This function can receiv a float, integer or string as an amount
+
+  ## Example Config:
+
+      config :money,
+        default_currency: :USD
+
+  ## Example:
+
+      Money.new(123)
+      %Money{amount: 123, currency: :USD}
+
+  """
+  def money(amount) do
+    amount
+    |> parse
+    |> elem(1)
+  end
+
+  @spec money(integer | float | String.t, atom | String.t) :: t
+  @doc ~S"""
+  Create a new `Money` struct.
+
+  This function can receiv a float, integer or string as an amount
+
+  ## Example:
+
+      Money.new(123, :USD)
+      %Money{amount: 123, currency: :USD}
+
+  """
+  def money(amount, currency) do
+    amount
+    |> parse(currency)
+    |> elem(1)
+  end
+
   @spec new(integer) :: t
   @doc ~S"""
   Create a new `Money` struct using a default currency.
