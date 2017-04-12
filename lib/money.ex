@@ -38,6 +38,48 @@ defmodule Money do
 
   alias Money.Currency
 
+  @spec money(integer | float | String.t) :: t
+  @doc ~S"""
+  Create a new `Money` struct using a default currency.
+  The default currency can be set in the system Mix config.
+
+  This function can receiv a float, integer or string as an amount
+
+  ## Example Config:
+
+      config :money,
+        default_currency: :USD
+
+  ## Example:
+
+      Money.new(123)
+      %Money{amount: 123, currency: :USD}
+
+  """
+  def money(amount) do
+    amount
+    |> parse
+    |> elem(1)
+  end
+
+  @spec money(integer | float | String.t, atom | String.t) :: t
+  @doc ~S"""
+  Create a new `Money` struct.
+
+  This function can receiv a float, integer or string as an amount
+
+  ## Example:
+
+      Money.new(123, :USD)
+      %Money{amount: 123, currency: :USD}
+
+  """
+  def money(amount, currency) do
+    amount
+    |> parse(currency)
+    |> elem(1)
+  end
+
   @spec new(integer) :: t
   @doc ~S"""
   Create a new `Money` struct using a default currency.
@@ -122,7 +164,7 @@ defmodule Money do
     end
   end
   def parse(float, currency, _opts) when is_float(float) do
-    {:ok, new(round(float * 100), currency)}
+    {:ok, new(round(float * Application.get_env(:money, :precision, 100)), currency)}
   end
 
   defp prepare_parse_string(characters, delimeter, acc \\ [])
@@ -316,7 +358,7 @@ defmodule Money do
   def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
     do: Money.new(amount + addend, cur)
   def add(%Money{} = m, addend) when is_float(addend),
-    do: add(m, round(addend * 100))
+    do: add(m, round(addend * Application.get_env(:money, :precision, 100)))
   def add(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec subtract(t, t | integer | float) :: t
@@ -337,7 +379,7 @@ defmodule Money do
   def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
     do: Money.new(a - subtractend, cur)
   def subtract(%Money{} = m, subtractend) when is_float(subtractend),
-    do: subtract(m, round(subtractend * 100))
+    do: subtract(m, round(subtractend * Application.get_env(:money, :precision, 100)))
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec multiply(t, integer | float) :: t
@@ -442,8 +484,11 @@ defmodule Money do
   end
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit) do
-    super_unit = div(Kernel.abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(Kernel.abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
+    precision = Application.get_env(:money, :precision, 100)
+    scale = Application.get_env(:money, :precision, 2)
+    super_unit = div(Kernel.abs(amount), precision) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
+    sub_unit = rem(Kernel.abs(amount), precision) |> Integer.to_string |> String.rjust(scale, ?0)
+
     if fractional_unit do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
