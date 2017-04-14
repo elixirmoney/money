@@ -122,7 +122,7 @@ defmodule Money do
     end
   end
   def parse(float, currency, _opts) when is_float(float) do
-    {:ok, new(round(float * 100), currency)}
+    {:ok, new(round(float * Currency.sub_units_count!(currency)), currency)}
   end
 
   defp prepare_parse_string(characters, delimeter, acc \\ [])
@@ -428,8 +428,7 @@ defmodule Money do
   """
   def to_string(%Money{}=money, opts \\ []) do
     {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
-
-    number = format_number(money, separator, delimeter, fractional_unit)
+    number = format_number(money, separator, delimeter, fractional_unit, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
@@ -441,10 +440,12 @@ defmodule Money do
     parts |> Enum.join |> String.lstrip
   end
 
-  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit) do
-    super_unit = div(Kernel.abs(amount), 100) |> Integer.to_string |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = rem(Kernel.abs(amount), 100) |> Integer.to_string |> String.rjust(2, ?0)
-    if fractional_unit do
+  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
+    exponent = Currency.exponent(money)
+    sub_units_count = Currency.sub_units_count!(money)
+    [super_unit | sub_unit] = Kernel.abs(amount/sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
+    super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
+    if fractional_unit && sub_unit != [] do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
       super_unit
