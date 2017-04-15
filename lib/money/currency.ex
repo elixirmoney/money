@@ -222,7 +222,7 @@ defmodule Money.Currency do
   ## Example:
 
       iex> Money.Currency.all |> Map.fetch!(:GBP)
-      %{name: "Pound Sterling", symbol: "£"}
+      %{name: "Pound Sterling", symbol: "£", exponent: 2}
 
   """
   def all, do: @currencies
