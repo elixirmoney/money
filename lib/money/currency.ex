@@ -11,6 +11,7 @@ defmodule Money.Currency do
   - `name!/1`
   - `symbol/1`
   - `symbol!/1`
+  - `all/0`
 
   A helper function exists for each currency using the lowercase three-character currency code
 
@@ -213,6 +214,18 @@ defmodule Money.Currency do
       Money.new(amount, unquote(cur))
     end
   end)
+
+  @spec all() :: map
+  @doc ~S"""
+  Returns all the currencies
+
+  ## Example:
+
+      iex> Money.Currency.all |> Map.fetch!(:GBP)
+      %{name: "Pound Sterling", symbol: "£"}
+
+  """
+  def all, do: @currencies
 
   @spec exists?(Money.t | String.t | atom) :: boolean
   @doc ~S"""
