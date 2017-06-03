@@ -37,6 +37,11 @@ if Code.ensure_compiled?(Ecto.Type) do
       assert Type.cast(Money.new(1000)) == {:ok, Money.new(1000, :GBP)}
     end
 
+    test "cast/1 Map" do
+      assert Type.cast(%{"amount"=>1000,"currency"=>"EUR"}) == {:ok, Money.new(1000, :EUR)}
+      assert Type.cast(%{"amount"=>1000}) == {:ok, Money.new(1000, :GBP)}
+    end
+
     test "cast/1 other" do
       assert Type.cast([]) == :error
     end
