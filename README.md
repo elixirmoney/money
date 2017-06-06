@@ -1,5 +1,6 @@
 # Money
 [![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
+[![Deps Status](https://beta.hexfaktor.org/badge/all/github/liuggio/money.svg)](https://beta.hexfaktor.org/github/liuggio/money)
 
 Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
