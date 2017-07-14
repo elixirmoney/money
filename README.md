@@ -4,6 +4,8 @@
 Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
 
+Documentation can be found at [https://hexdocs.pm/money/Money.html](https://hexdocs.pm/money/Money.html) on [HexDocs](https://hexdocs.pm)
+
 > "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have $999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
 
 In short: You shouldn't represent monetary values by a float. Wherever
