@@ -9,6 +9,8 @@ is an interpretation of the Fowler's Money pattern in fun.prog.
 In short: You shouldn't represent monetary values by a float. Wherever
 you need to represent money, use `Money`.
 
+Documentation can be found at [https://hexdocs.pm/money/Money.html](https://hexdocs.pm/money/Money.html) on [HexDocs](https://hexdocs.pm)
+
 ## USAGE
 
 ```elixir
