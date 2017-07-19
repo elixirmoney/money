@@ -30,7 +30,7 @@ Money.Currency.symbol(Money.new(500, :AFN))   # ؋
 Money.Currency.name(Money.new(500, :AFN))     # Afghani
 
 Money.to_string(Money.new(500, :CNY))         # ¥ 5.00
-Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbol: false)
+Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimiter: ",", symbol: false)
 "1.234,56"
 Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
 ```
@@ -115,7 +115,7 @@ You can set a default currency and default formatting preferences as follows:
 config :money,
   default_currency: :EUR,
   separator: ".",
-  delimeter: ",",
+  delimiter: ",",
   symbol: false,
   symbol_on_right: false,
   symbol_space: false
