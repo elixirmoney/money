@@ -200,21 +200,21 @@ defmodule MoneyTest do
   test "test to_string" do
     assert Money.to_string(usd(500)) == "$5.00"
     assert Money.to_string(eur(1234)) == "€12.34"
-    assert Money.to_string(nad(20305)) == "203.05"
+    assert Money.to_string(xau(20305)) == "203.05"
     assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
   end
 
   test "to_string with negative values" do
     assert Money.to_string(usd(-500)) == "$-5.00"
     assert Money.to_string(eur(-1234)) == "€-12.34"
-    assert Money.to_string(nad(-20305)) == "-203.05"
+    assert Money.to_string(xau(-20305)) == "-203.05"
     assert Money.to_string(zar(-1234567890)) == "R-12,345,678.90"
   end
 
   test "to_string with fractional_unit false" do
     assert Money.to_string(usd(500), fractional_unit: false) == "$5"
     assert Money.to_string(eur(1234), fractional_unit: false) == "€12"
-    assert Money.to_string(nad(20305), fractional_unit: false) == "203"
+    assert Money.to_string(xau(20305), fractional_unit: false) == "203"
     assert Money.to_string(zar(1234567890), fractional_unit: false) == "R12,345,678"
   end
 
