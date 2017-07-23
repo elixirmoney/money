@@ -127,7 +127,7 @@ defmodule Money.Currency do
     MXV: %{name: "Mexican Peso Mexican Unidad de Inversion (UDI)",         symbol: "UDI",  exponent: 2},
     MYR: %{name: "Malaysian Ringgit",                                      symbol: "RM",   exponent: 2},
     MZN: %{name: "Metical",                                                symbol: "MT",   exponent: 2},
-    NAD: %{name: "Rand Namibia Dollar",                                    symbol: "$",    exponent: 2},
+    NAD: %{name: "Rand Namibia Dollar",                                    symbol: " ",    exponent: 2},
     NGN: %{name: "Naira",                                                  symbol: "₦",    exponent: 2},
     NIO: %{name: "Cordoba Oro",                                            symbol: "C$",   exponent: 2},
     NOK: %{name: "Norwegian Krone",                                        symbol: "kr",   exponent: 2},
