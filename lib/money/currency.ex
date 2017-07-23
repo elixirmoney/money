@@ -144,7 +144,7 @@ defmodule Money.Currency do
     QAR: %{name: "Qatari Rial",                                            symbol: "﷼",    exponent: 2},
     RON: %{name: "New Leu",                                                symbol: "lei",  exponent: 2},
     RSD: %{name: "Serbian Dinar",                                          symbol: "Дин.", exponent: 2},
-    RUB: %{name: "Russian Ruble",                                          symbol: "руб",  exponent: 2},
+    RUB: %{name: "Russian Ruble",                                          symbol: "₽",    exponent: 2},
     RWF: %{name: "Rwanda Franc",                                           symbol: " ",    exponent: 0},
     SAR: %{name: "Saudi Riyal",                                            symbol: "﷼",    exponent: 2},
     SBD: %{name: "Solomon Islands Dollar",                                 symbol: "$",    exponent: 2},
