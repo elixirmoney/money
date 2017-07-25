@@ -437,7 +437,7 @@ defmodule Money do
             else
               [symbol, space, sign, number]
             end
-    parts |> Enum.join |> String.lstrip
+    parts |> Enum.join |> String.trim_leading
   end
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
