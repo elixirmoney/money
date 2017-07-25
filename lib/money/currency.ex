@@ -87,7 +87,6 @@ defmodule Money.Currency do
     HUF: %{name: "Forint",                                                 symbol: "Ft",   exponent: 2},
     IDR: %{name: "Rupiah",                                                 symbol: "Rp",   exponent: 2},
     ILS: %{name: "New Israeli Sheqel",                                     symbol: "₪",    exponent: 2},
-    INR: %{name: "Indian Rupee Ngultrum",                                  symbol: "Nu",    exponent: 2},
     INR: %{name: "Indian Rupee",                                           symbol: "₹",    exponent: 2},
     IQD: %{name: "Iraqi Dinar",                                            symbol: "‎ع.د",    exponent: 3},
     IRR: %{name: "Iranian Rial",                                           symbol: "﷼",    exponent: 2},
