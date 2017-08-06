@@ -26,7 +26,7 @@ defmodule Money do
         symbol: false                     # don’t display the currency symbol in Money.to_string
         symbol_on_right: false,           # position the symbol
         symbol_space: false               # add a space between symbol and number
-        fractional_unit: false            # don’t display the remainder or the delimeter
+        fractional_unit: true             # display units after the delimeter
         strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
   """
 
