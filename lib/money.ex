@@ -20,13 +20,14 @@ defmodule Money do
   ## Configuration:
 
       config :money,
-        default_currency: :EUR,  # this allows you to do Money.new(100)
-        separator: ".",          # change the default thousands separator for Money.to_string
-        delimiter: ",",          # change the default decimal delimeter for Money.to_string
-        symbol: false            # don’t display the currency symbol in Money.to_string
-        symbol_on_right: false,  # position the symbol
-        symbol_space: false      # add a space between symbol and number
-        fractional_unit: false   # don’t display the remainder or the delimeter
+        default_currency: :EUR,           # this allows you to do Money.new(100)
+        separator: ".",                   # change the default thousands separator for Money.to_string
+        delimiter: ",",                   # change the default decimal delimeter for Money.to_string
+        symbol: false                     # don’t display the currency symbol in Money.to_string
+        symbol_on_right: false,           # position the symbol
+        symbol_space: false               # add a space between symbol and number
+        fractional_unit: false            # don’t display the remainder or the delimeter
+        strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
   """
 
   @type t :: %__MODULE__{
@@ -403,6 +404,7 @@ defmodule Money do
     - `symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
     - `symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
     - `fractional_unit` - default `true`, show the remaining units after the delimeter
+    - `strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
 
   ## Example:
 
@@ -416,6 +418,8 @@ defmodule Money do
       "1234.56"
       iex> Money.to_string(Money.new(123456, :EUR), fractional_unit: false)
       "€1,234"
+      iex> Money.to_string(Money.new(123450, :EUR), strip_insignificant_zeros: true)
+      "€1,234.5"
 
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
