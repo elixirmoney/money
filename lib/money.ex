@@ -427,8 +427,8 @@ defmodule Money do
       "Total: $100.00"
   """
   def to_string(%Money{}=money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
-    number = format_number(money, separator, delimeter, fractional_unit, money)
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros} = get_display_options(money, opts)
+    number = format_number(money, separator, delimeter, fractional_unit, strip_insignificant_zeros, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
@@ -440,12 +440,12 @@ defmodule Money do
     parts |> Enum.join |> String.lstrip
   end
 
-  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
+  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, strip_insignificant_zeros, money) do
     exponent = Currency.exponent(money)
     sub_units_count = Currency.sub_units_count!(money)
     [super_unit | sub_unit] = Kernel.abs(amount/sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: false})
+    sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: strip_insignificant_zeros})
     if fractional_unit && sub_unit do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
@@ -465,13 +465,15 @@ defmodule Money do
     default_symbol_on_right = Application.get_env(:money, :symbol_on_right, false)
     default_symbol_space = Application.get_env(:money, :symbol_space, false)
     default_fractional_unit = Application.get_env(:money, :fractional_unit, true)
+    default_strip_insignificant_zeros = Application.get_env(:money, :strip_insignificant_zeros, false)
 
     symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
     symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
     symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
     fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
+    strip_insignificant_zeros = Keyword.get(opts, :strip_insignificant_zeros, default_strip_insignificant_zeros)
 
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit}
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros}
   end
 
   defp get_parse_options(opts) do
