@@ -445,12 +445,18 @@ defmodule Money do
     sub_units_count = Currency.sub_units_count!(money)
     [super_unit | sub_unit] = Kernel.abs(amount/sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
-    if fractional_unit && sub_unit != [] do
+    sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: false})
+    if fractional_unit && sub_unit do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
       super_unit
     end
   end
+
+  defp prepare_sub_unit([value], options), do: prepare_sub_unit(value, options)
+  defp prepare_sub_unit([], _), do: nil
+  defp prepare_sub_unit(value, %{strip_insignificant_zeros: false}), do: value
+  defp prepare_sub_unit(value,  %{strip_insignificant_zeros: true}), do: value
 
   defp get_display_options(m, opts) do
     {separator, delimeter} = get_parse_options(opts)
