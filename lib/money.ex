@@ -456,7 +456,13 @@ defmodule Money do
   defp prepare_sub_unit([value], options), do: prepare_sub_unit(value, options)
   defp prepare_sub_unit([], _), do: nil
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: false}), do: value
-  defp prepare_sub_unit(value,  %{strip_insignificant_zeros: true}), do: value
+  defp prepare_sub_unit(value,  %{strip_insignificant_zeros: true}) do
+    {int, ""} = value |> String.reverse |> Integer.parse
+    case int |> Integer.to_string |> String.reverse do
+      "0" -> nil
+      val -> val
+    end
+  end
 
   defp get_display_options(m, opts) do
     {separator, delimeter} = get_parse_options(opts)
