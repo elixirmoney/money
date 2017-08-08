@@ -221,7 +221,7 @@ defmodule MoneyTest do
   test "to_string with strip_insignificant_zeros true" do
     assert Money.to_string(usd(500), strip_insignificant_zeros: true) == "$5"
     assert Money.to_string(eur(1234), strip_insignificant_zeros: true) == "€12.34"
-    assert Money.to_string(nad(20305), strip_insignificant_zeros: true) == "203.05"
+    assert Money.to_string(xau(20305), strip_insignificant_zeros: true) == "203.05"
     assert Money.to_string(zar(1234567890), strip_insignificant_zeros: true) == "R12,345,678.9"
   end
 
