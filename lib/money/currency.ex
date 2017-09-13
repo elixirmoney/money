@@ -200,7 +200,7 @@ defmodule Money.Currency do
   }
 
   @currencies |> Enum.each(fn ({cur, detail}) ->
-    currency = to_string(cur) |> String.downcase
+    currency = cur |> to_string |> String.downcase
     @doc """
     Convenience method to create a `Money` object for the #{detail.name} (#{cur}) currency.
 
@@ -408,11 +408,9 @@ defmodule Money.Currency do
   end
 
   defp convert_currency(currency) when is_binary(currency) do
-    try do
-      currency |> String.upcase |> String.to_existing_atom |> convert_currency
-    rescue
-      _ -> nil
-    end
+    currency |> String.upcase |> String.to_existing_atom |> convert_currency
+  rescue
+    _ -> nil
   end
   defp convert_currency(currency), do: currency
 
