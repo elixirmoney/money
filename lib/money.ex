@@ -38,7 +38,6 @@ defmodule Money do
 
   alias Money.Currency
 
-  @spec new(integer) :: t
   @doc ~S"""
   Create a new `Money` struct using a default currency.
   The default currency can be set in the system Mix config.
@@ -53,6 +52,7 @@ defmodule Money do
       Money.new(123)
       %Money{amount: 123, currency: :USD}
   """
+  @spec new(integer) :: t
   def new(amount) do
     currency = Application.get_env(:money, :default_currency)
     if currency do
@@ -62,7 +62,6 @@ defmodule Money do
     end
   end
 
-  @spec new(integer, atom | String.t) :: t
   @doc """
   Create a new `Money` struct from currency sub-units (cents)
 
@@ -71,10 +70,10 @@ defmodule Money do
       iex> Money.new(1_000_00, :USD)
       %Money{amount: 1_000_00, currency: :USD}
   """
+  @spec new(integer, atom | String.t) :: t
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
-  @spec parse(String.t | float, atom | String.t, Keyword.t) :: {:ok, t}
   @doc ~S"""
   Parse a value into a `Money` type.
 
@@ -98,6 +97,7 @@ defmodule Money do
       iex> Money.parse(-1_234.56, :USD)
       {:ok, %Money{amount: -123456, currency: :USD}}
   """
+  @spec parse(String.t | float, atom | String.t, Keyword.t) :: {:ok, t}
   def parse(value, currency \\ nil, opts \\ [])
   def parse(value, nil, opts) do
     currency = Application.get_env(:money, :default_currency)
@@ -164,7 +164,6 @@ defmodule Money do
     do: "0." <> tail
   defp add_missing_leading_digit(str), do: str
 
-  @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
   @doc ~S"""
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
@@ -176,6 +175,7 @@ defmodule Money do
       iex> Money.parse!("wrong", :USD)
       ** (ArgumentError) unable to parse "wrong"
   """
+  @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
   def parse!(value, currency \\ nil, opts \\ []) do
     case parse(value, currency, opts) do
       {:ok, money} -> money
@@ -183,7 +183,6 @@ defmodule Money do
     end
   end
 
-  @spec compare(t, t) :: t
   @doc ~S"""
   Compares two `Money` structs with each other.
   They must each be of the same currency and then their amounts are compared
@@ -197,6 +196,7 @@ defmodule Money do
       iex> Money.compare(Money.new(101, :USD), Money.new(100, :USD))
       1
   """
+  @spec compare(t, t) :: t
   def compare(%Money{currency: cur} = a, %Money{currency: cur} = b) do
     case a.amount - b.amount do
                     x when x >  0 -> 1
@@ -206,7 +206,6 @@ defmodule Money do
   end
   def compare(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec zero?(t) :: boolean
   @doc ~S"""
   Returns true if the amount of a `Money` struct is zero
 
@@ -217,11 +216,11 @@ defmodule Money do
       iex> Money.zero?(Money.new(1, :USD))
       false
   """
+  @spec zero?(t) :: boolean
   def zero?(%Money{amount: amount}) do
     amount == 0
   end
 
-  @spec positive?(t) :: boolean
   @doc ~S"""
   Returns true if the amount of a `Money` is greater than zero
 
@@ -234,11 +233,11 @@ defmodule Money do
       iex> Money.positive?(Money.new(-1, :USD))
       false
   """
+  @spec positive?(t) :: boolean
   def positive?(%Money{amount: amount}) do
     amount > 0
   end
 
-  @spec negative?(t) :: boolean
   @doc ~S"""
   Returns true if the amount of a `Money` is less than zero
 
@@ -251,11 +250,11 @@ defmodule Money do
       iex> Money.negative?(Money.new(-1, :USD))
       true
   """
+  @spec negative?(t) :: boolean
   def negative?(%Money{amount: amount}) do
     amount < 0
   end
 
-  @spec equals?(t, t) :: boolean
   @doc ~S"""
   Returns true if two `Money` of the same currency have the same amount
 
@@ -266,11 +265,11 @@ defmodule Money do
       iex> Money.equals?(Money.new(101, :USD), Money.new(100, :USD))
       false
   """
+  @spec equals?(t, t) :: boolean
   def equals?(%Money{amount: amount, currency: cur}, %Money{amount: amount, currency: cur}), do: true
   def equals?(%Money{currency: cur}, %Money{currency: cur}), do: false
   def equals?(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec neg(t) :: t
   @doc ~S"""
   Returns a `Money` with the amount negated.
 
@@ -281,10 +280,10 @@ defmodule Money do
       iex> Money.new(-100, :USD) |> Money.neg
       %Money{amount: 100, currency: :USD}
   """
+  @spec neg(t) :: t
   def neg(%Money{amount: amount, currency: cur}),
     do: %Money{amount: -amount, currency: cur}
 
-  @spec abs(t) :: t
   @doc ~S"""
   Returns a `Money` with the arithmetical absolute of the amount.
 
@@ -295,10 +294,10 @@ defmodule Money do
       iex> Money.new(100, :USD) |> Money.abs
       %Money{amount: 100, currency: :USD}
   """
+  @spec abs(t) :: t
   def abs(%Money{amount: amount, currency: cur}),
     do: %Money{amount: Kernel.abs(amount), currency: cur}
 
-  @spec add(t, t | integer | float) :: t
   @doc ~S"""
   Adds two `Money` together or an integer (cents) amount to a `Money`
 
@@ -311,6 +310,7 @@ defmodule Money do
       iex> Money.add(Money.new(100, :USD), 5.55)
       %Money{amount: 655, currency: :USD}
   """
+  @spec add(t, t | integer | float) :: t
   def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a + b, cur)
   def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
@@ -319,7 +319,6 @@ defmodule Money do
     do: add(m, round(addend * 100))
   def add(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec subtract(t, t | integer | float) :: t
   @doc ~S"""
   Subtracts one `Money` from another or an integer (cents) from a `Money`
 
@@ -332,6 +331,7 @@ defmodule Money do
       iex> Money.subtract(Money.new(150, :USD), 1.25)
       %Money{amount: 25, currency: :USD}
   """
+  @spec subtract(t, t | integer | float) :: t
   def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a - b, cur)
   def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
@@ -340,7 +340,6 @@ defmodule Money do
     do: subtract(m, round(subtractend * 100))
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec multiply(t, integer | float) :: t
   @doc ~S"""
   Multiplies a `Money` by an amount
 
@@ -350,12 +349,12 @@ defmodule Money do
       iex> Money.multiply(Money.new(100, :USD), 1.5)
       %Money{amount: 150, currency: :USD}
   """
+  @spec multiply(t, integer | float) :: t
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
 
-  @spec divide(t, integer) :: [t]
   @doc ~S"""
   Divides up `Money` by an amount
 
@@ -365,6 +364,7 @@ defmodule Money do
       iex> Money.divide(Money.new(101, :USD), 2)
       [%Money{amount: 51, currency: :USD}, %Money{amount: 50, currency: :USD}]
   """
+  @spec divide(t, integer) :: [t]
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
     value = div(amount, denominator)
     rem   = rem(amount, denominator)
@@ -389,7 +389,6 @@ defmodule Money do
   defp decrement_abs(n) when n >= 0, do: n - 1
   defp decrement_abs(n) when n < 0, do: n + 1
 
-  @spec to_string(t, Keyword.t) :: String.t
   @doc ~S"""
   Converts a `Money` struct to a string representation
 
@@ -426,6 +425,7 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
+  @spec to_string(t, Keyword.t) :: String.t
   def to_string(%Money{}=money, opts \\ []) do
     {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
     number = format_number(money, separator, delimeter, fractional_unit, money)

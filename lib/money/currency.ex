@@ -214,7 +214,6 @@ defmodule Money.Currency do
     end
   end)
 
-  @spec all() :: map
   @doc ~S"""
   Returns all the currencies
 
@@ -224,9 +223,9 @@ defmodule Money.Currency do
       %{name: "Pound Sterling", symbol: "£", exponent: 2}
 
   """
+  @spec all() :: map
   def all, do: @currencies
 
-  @spec exists?(Money.t | String.t | atom) :: boolean
   @doc ~S"""
   Returns true if a currency is defined
 
@@ -239,12 +238,12 @@ defmodule Money.Currency do
       iex> Money.Currency.exists?(:WRONG)
       false
   """
+  @spec exists?(Money.t | String.t | atom) :: boolean
   def exists?(%Money{currency: currency}),
     do: exists?(currency)
   def exists?(currency),
     do: Map.has_key?(@currencies, convert_currency(currency))
 
-  @spec get(Money.t | String.t | atom) :: map | nil
   @doc ~S"""
   Returns a map with the name and symbol of the currency or nil if it doesn’t exist.
 
@@ -255,12 +254,12 @@ defmodule Money.Currency do
       iex> Money.Currency.get(:WRONG)
       nil
   """
+  @spec get(Money.t | String.t | atom) :: map | nil
   def get(%Money{currency: currency}),
     do: get(currency)
   def get(currency),
     do: @currencies[convert_currency(currency)]
 
-  @spec get!(Money.t | String.t | atom) :: map
   @doc ~S"""
   Returns a map with the name and symbol of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -272,10 +271,10 @@ defmodule Money.Currency do
       iex> Money.Currency.get!(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec get!(Money.t | String.t | atom) :: map
   def get!(currency),
     do: get(currency) || currency_doesnt_exist_error(currency)
 
-  @spec to_atom(Money.t | String.t | atom) :: atom
   @doc ~S"""
   Returns the atom representation of the currency key
   An ArgumentError is raised if the currency doesn’t exist.
@@ -287,6 +286,7 @@ defmodule Money.Currency do
       iex> Money.Currency.to_atom(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec to_atom(Money.t | String.t | atom) :: atom
   def to_atom(%Money{currency: currency}),
     do: to_atom(currency)
   def to_atom(currency) do
@@ -295,7 +295,6 @@ defmodule Money.Currency do
     currency
   end
 
-  @spec name(Money.t | String.t | atom) :: String.t
   @doc ~S"""
   Returns the name of the currency or nil if it doesn’t exist.
 
@@ -306,12 +305,12 @@ defmodule Money.Currency do
       iex> Money.Currency.name(:WRONG)
       nil
   """
+  @spec name(Money.t | String.t | atom) :: String.t
   def name(%Money{currency: currency}),
     do: name(currency)
   def name(currency),
     do: get(currency)[:name]
 
-  @spec name!(Money.t | String.t | atom) :: String.t
   @doc ~S"""
   Returns the name of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -323,10 +322,10 @@ defmodule Money.Currency do
       iex> Money.Currency.name!(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec name!(Money.t | String.t | atom) :: String.t
   def name!(currency),
     do: name(currency) || currency_doesnt_exist_error(currency)
 
-  @spec symbol(Money.t | String.t | atom) :: String.t
   @doc ~S"""
   Returns the symbol of the currency or nil if it doesn’t exist.
 
@@ -337,12 +336,12 @@ defmodule Money.Currency do
       iex> Money.Currency.symbol(:WRONG)
       nil
   """
+  @spec symbol(Money.t | String.t | atom) :: String.t
   def symbol(%Money{currency: currency}),
     do: symbol(currency)
   def symbol(currency),
     do: get(currency)[:symbol]
 
-  @spec symbol!(Money.t | String.t | atom) :: String.t
   @doc ~S"""
   Returns the symbol of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -354,10 +353,10 @@ defmodule Money.Currency do
       iex> Money.Currency.symbol!(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec symbol!(Money.t | String.t | atom) :: String.t
   def symbol!(currency),
     do: symbol(currency) || currency_doesnt_exist_error(currency)
 
-  @spec exponent(Money.t | String.t | atom) :: integer
   @doc ~S"""
   Returns the exponent of the currency or nil if it doesn’t exist.
 
@@ -368,12 +367,12 @@ defmodule Money.Currency do
       iex> Money.Currency.exponent(:WRONG)
       nil
   """
+  @spec exponent(Money.t | String.t | atom) :: integer
   def exponent(%Money{currency: currency}),
     do: exponent(currency)
   def exponent(currency),
     do: get(currency)[:exponent]
 
-  @spec exponent!(Money.t | String.t | atom) :: integer
   @doc ~S"""
   Returns the exponent of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -385,10 +384,10 @@ defmodule Money.Currency do
       iex> Money.Currency.exponent!(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec exponent!(Money.t | String.t | atom) :: integer
   def exponent!(currency),
     do: exponent(currency) || currency_doesnt_exist_error(currency)
 
-  @spec sub_units_count!(Money.t | String.t | atom) :: integer
   @doc ~S"""
   Returns the sub_units_count of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -402,6 +401,7 @@ defmodule Money.Currency do
       iex> Money.Currency.sub_units_count!(:WRONG)
       ** (ArgumentError) currency WRONG doesn’t exist
   """
+  @spec sub_units_count!(Money.t | String.t | atom) :: integer
   def sub_units_count!(currency) do
     exponent = exponent!(currency)
     round(:math.pow(10, exponent))
