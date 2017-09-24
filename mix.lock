@@ -4,6 +4,8 @@
   "earmark": {:hex, :earmark, "1.0.3", "89bdbaf2aca8bbb5c97d8b3b55c5dd0cff517ecc78d417e87f1d0982e514557b", [:mix], []},
   "ecto": {:hex, :ecto, "1.1.7", "c37127248756e725eb8254b371764b40c05a90c104b2065d1d4f7e32573fdbec", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, optional: false]}, {:mariaex, "~> 0.5.0 or ~> 0.6.0", [hex: :mariaex, optional: true]}, {:poison, "~> 1.0 or ~> 2.0", [hex: :poison, optional: true]}, {:poolboy, "~> 1.4", [hex: :poolboy, optional: false]}, {:postgrex, "~> 0.11.0", [hex: :postgrex, optional: true]}, {:sbroker, "~> 0.7", [hex: :sbroker, optional: true]}]},
   "ex_doc": {:hex, :ex_doc, "0.14.5", "c0433c8117e948404d93ca69411dd575ec6be39b47802e81ca8d91017a0cf83c", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
+  "exjsx": {:hex, :exjsx, "4.0.0", "60548841e0212df401e38e63c0078ec57b33e7ea49b032c796ccad8cde794b5c", [], [{:jsx, "~> 2.8.0", [hex: :jsx, repo: "hexpm", optional: false]}], "hexpm"},
+  "jsx": {:hex, :jsx, "2.8.2", "7acc7d785b5abe8a6e9adbde926a24e481f29956dd8b4df49e3e4e7bcc92a018", [], [], "hexpm"},
   "phoenix_html": {:hex, :phoenix_html, "2.5.1", "631053f9e345fecb5c87d9e0ccd807f7266d27e2ee4269817067af425fd81ba8", [:mix], [{:plug, "~> 0.13 or ~> 1.0", [hex: :plug, optional: false]}]},
   "plug": {:hex, :plug, "1.1.5", "de5645c18170415a72b18cc3d215c05321ddecac27a15acb923742156e98278b", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, optional: true]}]},
   "poolboy": {:hex, :poolboy, "1.5.1", "6b46163901cfd0a1b43d692657ed9d7e599853b3b21b95ae5ae0a777cf9b6ca8", [:rebar], []}}

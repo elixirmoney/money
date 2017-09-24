@@ -24,7 +24,9 @@ defmodule Money.Mixfile do
   end
 
   def application do
-    []
+    [
+      extra_applications: [:logger]
+    ]
   end
 
   defp deps do
@@ -38,6 +40,7 @@ defmodule Money.Mixfile do
 
       # Docs
       {:ex_doc, "~> 0.14", only: [:dev, :docs]},
+      {:exjsx, "~> 4.0"}
     ]
   end
 
