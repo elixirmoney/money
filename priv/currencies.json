@@ -59,6 +59,11 @@
     "symbol": "$",
     "exponent": 2
   },
+  "BCH": {
+    "name": "Bitcoin Cash",
+    "symbol": "BCH",
+    "exponent": 100000000
+  },
   "BDT": {
     "name": "Taka",
     "symbol": "৳",
@@ -108,6 +113,11 @@
     "name": "Bahamian Dollar",
     "symbol": "$",
     "exponent": 2
+  },
+  "BTC": {
+    "name": "Bitcoin",
+    "symbol": "BTC",
+    "exponent": 100000000
   },
   "BTN": {
     "name": "Indian Rupee Ngultrum",
@@ -233,6 +243,11 @@
     "name": "Ethiopian Birr",
     "symbol": "Br",
     "exponent": 2
+  },
+  "ETH": {
+    "name": "Ethereum",
+    "symbol": "ETH",
+    "exponent": 100000000
   },
   "EUR": {
     "name": "Euro",
@@ -428,6 +443,11 @@
     "name": "Rand Loti",
     "symbol": " ",
     "exponent": 2
+  },
+  "LTC": {
+    "name": "Litecoin",
+    "symbol": "LTC",
+    "exponent": 100000000
   },
   "LTL": {
     "name": "Lithuanian Litas",
@@ -843,6 +863,11 @@
     "name": "CFP Franc",
     "symbol": " ",
     "exponent": 0
+  },
+  "XRP": {
+    "name": "Ripple",
+    "symbol": "XRP",
+    "exponent": 100000000
   },
   "XPT": {
     "name": "Platinum",
