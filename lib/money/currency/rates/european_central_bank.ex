@@ -1,6 +1,19 @@
-defmodule Money.Currency.Rates.EuropeanCentrobank do
+defmodule Money.Currency.Rates.EuropeanCentralBank do
+  @moduledoc """
+  Provides an functions for fetching currency rates from a european central bank.
+  """
+
   import SweetXml
 
+  @doc ~S"""
+  Returns the list of values associated with currency code, rate and rates currency.
+
+  ## Example:
+
+      iex> Money.Currency.Rates.EuropeanCentralBank.fetch_rates_data
+      [%{currency_code: :USD, rate: 0.81, rate_currency: :EUR}]
+  """
+  @spec fetch_rates_data() :: list(map() | nil)
   def fetch_rates_data do
     "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
     |> HTTPoison.get!()

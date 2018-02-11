@@ -1,8 +1,23 @@
-defmodule Money.Currency.Rates.RussianCentrobank do
+defmodule Money.Currency.Rates.RussianCentralBank do
+  @moduledoc """
+  Provides an functions for fetching currency rates from a russian central bank.
+  """
+
+  @doc ~S"""
+  Returns the list of values associated with currency code, rate and rates currency.
+
+  ## Example:
+
+      iex> Money.Currency.Rates.RussianCentralBank.fetch_rates_data
+      [%{currency_code: :USD, rate: "60.1300", rate_currency: :RUB}]
+  """
+  @spec fetch_rates_data() :: list(map() | nil)
   def fetch_rates_data do
     "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?WSDL"
     |> Soap.init_model(:url)
     |> make_request()
+    |> handle_response()
+    |> transform_result_data()
   end
 
   defp make_request({:ok, wsdl}) do
@@ -10,9 +25,7 @@ defmodule Money.Currency.Rates.RussianCentrobank do
     date = Date.utc_today()
     params = %{On_date: to_string(date)}
 
-    wsdl
-    |> Soap.call(operation, params)
-    |> handle_response()
+    Soap.call(wsdl, operation, params)
   end
 
   defp make_request({_status, _wsdl}), do: :error
@@ -21,7 +34,6 @@ defmodule Money.Currency.Rates.RussianCentrobank do
     body
     |> Soap.Response.parse(code)
     |> get_in([:GetCursOnDateResponse, :GetCursOnDateResult, :"diffgr:diffgram", :ValuteData])
-    |> transform_result_data()
   end
 
   defp transform_result_data(nil), do: []

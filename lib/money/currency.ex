@@ -38,6 +38,8 @@ defmodule Money.Currency do
     end
   end)
 
+  alias Money.Currency.Rates
+
   @doc ~S"""
   Returns all the currencies
 
@@ -230,6 +232,12 @@ defmodule Money.Currency do
     exponent = exponent!(currency)
     round(:math.pow(10, exponent))
   end
+
+  @spec persist_rates(atom() | nil) :: list(boolean())
+  def persist_rates(rates_resource \\ nil), do: Rates.persist_rates(rates_resource)
+
+  @spec get_rate(atom()) :: Money.t
+  def get_rate(currency), do: Rates.get_rate(currency)
 
   defp convert_currency(currency) when is_binary(currency) do
     currency |> String.upcase |> String.to_existing_atom |> convert_currency

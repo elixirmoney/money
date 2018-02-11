@@ -1,9 +1,31 @@
 defmodule Money.Stash do
+  @moduledoc """
+  Provides an functions for fetch and persist data from ETS stash.
+  """
+
+  @doc ~S"""
+  Persists a rate to ETS.
+
+  ## Example:
+
+      iex> Money.Stash.persist_rate({:RUB, %Money{amount: 100, currency: :RUB}})
+      [true]
+  """
+  @spec persist_rate(tuple()) :: list()
   def persist_rate({code, rate}) do
     find_or_create_table()
     |> :ets.insert({code, rate})
   end
 
+  @doc ~S"""
+  Fething a rate from ETS by currency code.
+
+  ## Example:
+
+      iex> Money.fetch_rate(:EUR)
+      %Money{amount: 7139, currency: :RUB}
+  """
+  @spec fetch_rate(atom()) :: Money.t()
   def fetch_rate(currency_code) do
     find_or_create_table()
     |> :ets.lookup(currency_code)

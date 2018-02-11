@@ -37,7 +37,6 @@ defmodule Money do
   defstruct amount: 0, currency: :USD
 
   alias Money.Currency
-  alias Money.Currency.Rates
 
   @doc ~S"""
   Create a new `Money` struct using a default currency.
@@ -489,9 +488,6 @@ defmodule Money do
     {first, last} = String.split_at(str, -count)
     reverse_group(first, count, [last | list])
   end
-
-  def persist_currency_rates(rates_resource \\ nil), do: Rates.persist_rates(rates_resource)
-  def get_currency_rate(currency), do: Rates.get_rate(currency)
 
   defimpl String.Chars do
     def to_string(%Money{} = m) do
