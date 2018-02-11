@@ -40,7 +40,10 @@ defmodule Money.Mixfile do
 
       # Docs
       {:ex_doc, "~> 0.14", only: [:dev, :docs]},
-      {:exjsx, "~> 4.0"}
+      {:exjsx, "~> 4.0"},
+
+      # HTTP Requests
+      {:soap, "~> 0.1", git: "https://github.com/potok-digital/soap"}
     ]
   end
 
