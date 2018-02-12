@@ -119,7 +119,8 @@ config :money,
   symbol: false,
   symbol_on_right: false,
   symbol_space: false,
-  default_rates_resource: :european_cb
+  default_rates_resource: :currency_layer,
+  currency_layer_api_key: "KEYHERE"
 ```
 
 Then you don’t have to specify the currency.

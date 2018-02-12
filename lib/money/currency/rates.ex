@@ -4,7 +4,7 @@ defmodule Money.Currency.Rates do
   persisting rates from it and add custom rates.
   """
 
-  alias Money.Currency.Rates.{RussianCentrobank, EuropeanCentrobank}
+  alias Money.Currency.Rates.{RussianCentralBank, CurrencyLayer}
   alias Money.{Currency, Stash}
 
   @doc ~S"""
@@ -15,7 +15,7 @@ defmodule Money.Currency.Rates do
 
       iex> Money.Currency.Rates.fetch_rates
       [{:RUB, %Money{amount: 100, currency: :RUB}}]
-      iex> Money.Currency.Rates.fetch_rates(:european_central_bank)
+      iex> Money.Currency.Rates.fetch_rates(:currency_layer)
       [{:RUB, %Money{amount: 1, currency: :EUR}}]
   """
   @spec fetch_rates(atom() | nil) :: list()
@@ -23,7 +23,7 @@ defmodule Money.Currency.Rates do
     rates_resource
     |> validate_rates_resource()
     |> fetch_data_from_resource()
-    |> Enum.map(&monefy_rate/1)
+    |> process_fetch_result()
   end
 
   @doc ~S"""
@@ -35,7 +35,7 @@ defmodule Money.Currency.Rates do
 
       iex> Money.Currency.Rates.persist_rates
       [true, true, true]
-      iex> Money.Currency.Rates.persist_rates(:european_central_bank)
+      iex> Money.Currency.Rates.persist_rates(:currency_layer)
       [true, true, true]
   """
   @spec persist_rates(atom() | nil) :: list(boolean())
@@ -66,6 +66,10 @@ defmodule Money.Currency.Rates do
     |> Stash.persist_rate()
   end
 
+  @spec all() :: list()
+  def all do
+  end
+
   @doc ~S"""
   Fetching persisted rate from an ETS stash.
 
@@ -78,14 +82,15 @@ defmodule Money.Currency.Rates do
   def get_rate(currency), do: Stash.fetch_rate(currency)
 
   defp fetch_data_from_resource(:russian_cb), do: RussianCentralBank.fetch_rates_data
-  defp fetch_data_from_resource(:european_cb), do: EuropeanCentralBank.fetch_rates_data
+  defp fetch_data_from_resource(:currency_layer), do: CurrencyLayer.fetch_rates_data
 
   defp validate_rates_resource(nil), do: Application.fetch_env!(:money, :default_rates_resource)
   defp validate_rates_resource(resource), do: resource
 
-  defp persist_rates_data([]), do: nil
+  defp persist_rates_data({:ok, []}), do: nil
+  defp persist_rates_data({:error, error_message}), do: {:error, error_message}
 
-  defp persist_rates_data(data) do
+  defp persist_rates_data({:ok, data}) do
     for rate_data <- data, do: Stash.persist_rate(rate_data)
   end
 
@@ -101,7 +106,10 @@ defmodule Money.Currency.Rates do
     if Enum.member?(Currency.all, currency_code) do
       currency_code
     else
-      raise ArgumentError, message: "You cant persist a rate to unsupported currency."
+      raise ArgumentError, message: "You cant persist rate for an unsupported currency."
     end
   end
+
+  defp process_fetch_result({:ok, data}), do: {:ok, Enum.map(data, &monefy_rate/1)}
+  defp process_fetch_result({:error, error_message}), do: {:error, error_message}
 end
