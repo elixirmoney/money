@@ -233,12 +233,40 @@ defmodule Money.Currency do
     round(:math.pow(10, exponent))
   end
 
+  @doc ~S"""
+  Alias to Money.Currency.Rates.update_rates/1
+
+  ## Example:
+
+      iex> Money.Currency.update_rates
+      [true, true, true]
+      iex> Money.Currency.update_rates(:currency_layer)
+      [true, true, true]
+  """
   @spec update_rates(atom() | nil) :: list(boolean())
   def update_rates(rates_resource \\ nil), do: Rates.update_rates(rates_resource)
 
+  @doc ~S"""
+  Alias to Money.Currency.Rates.get_rate/1
+
+  ## Example:
+
+      iex> Money.Currency.get_rate(:EUR)
+      %{amount: 123, currency: :USD}
+  """
   @spec get_rate(atom()) :: Money.t
   def get_rate(currency), do: Rates.get_rate(currency)
 
+  @doc ~S"""
+  Exchange money amount to another currency. Work with only identical rates currency.
+
+  ## Example:
+
+      iex> Money.Currency.exchange(:EUR, 1, :USD)
+      %Money{amount: 123, currency: :USD}
+      iex> Money.Currency.exchange(%Money{currency: :EUR, amount: 100}, :USD)
+      %Money{amount: 123, currency: :USD}
+  """
   @spec exchange(atom(), integer() | float(), atom()) :: Money.t()
   def exchange(from_currency, from_amount, to_currency) do
     %{amount: from_rate_amount, currency: from_rate_currency} = get_rate(from_currency)

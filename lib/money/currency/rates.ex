@@ -33,9 +33,9 @@ defmodule Money.Currency.Rates do
 
   ## Example:
 
-      iex> Money.Currency.Rates.persist_rates
+      iex> Money.Currency.Rates.update_rates
       [true, true, true]
-      iex> Money.Currency.Rates.persist_rates(:currency_layer)
+      iex> Money.Currency.Rates.update_rates(:currency_layer)
       [true, true, true]
   """
   @spec update_rates(atom() | nil) :: list(boolean())
@@ -72,11 +72,19 @@ defmodule Money.Currency.Rates do
   ## Example:
 
       iex> Money.Currency.Rates.get_rate(:EUR)
-      %Money{amount: 123, currency: :USD}
+      %{amount: 123, currency: :USD}
   """
   @spec get_rate(atom()) :: Money.t()
   def get_rate(currency), do: Stash.fetch_rate(currency)
 
+  @doc ~S"""
+  Validates last rates update date.
+
+  ## Example:
+
+      iex> Money.Currency.Rates.expired?
+      false
+  """
   @spec expired?() :: boolean()
   def expired?, do: Stash.fetch_updated_at_date != Date.utc_today
 
