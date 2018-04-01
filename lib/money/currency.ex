@@ -243,19 +243,13 @@ defmodule Money.Currency do
     from_currency_amount = get_rate(from_currency).amount
     to_currency_amount = get_rate(to_currency).amount
 
-    exchanged_amount = from_amount * to_currency_rate_amount / from_currency_amount
+    exchanged_amount = from_amount * to_currency_amount / from_currency_amount
 
     %Money{amount: exchanged_amount, currency: to_currency}
   end
 
-  def exchange(%Money{amount: amount, currency: from_currency}, to_currency) do
-    from_currency_amount = get_rate(from_currency).amount
-    to_currency_amount = get_rate(to_currency).amount
-
-    exchanged_amount = amount * to_currency_rate_amount / from_currency_amount
-
-    %Money{amount: exchanged_amount, currency: to_currency}
-  end
+  def exchange(%Money{amount: amount, currency: from_currency}, to_currency),
+    do: exchange(from_currency, amount, to_currency)
 
   defp convert_currency(currency) when is_binary(currency) do
     currency |> String.upcase |> String.to_existing_atom |> convert_currency
