@@ -44,6 +44,13 @@ defmodule Money.Stash do
     |> extract_rate
   end
 
+  def drop_table do
+    find_or_create_table()
+    |> :ets.delete()
+  rescue
+    _ -> false
+  end
+
   defp find_or_create_table do
     :currency_rates
     |> :ets.info()

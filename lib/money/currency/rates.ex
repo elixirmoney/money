@@ -38,8 +38,8 @@ defmodule Money.Currency.Rates do
       iex> Money.Currency.Rates.persist_rates(:currency_layer)
       [true, true, true]
   """
-  @spec persist_rates(atom() | nil) :: list(boolean())
-  def persist_rates(rates_resource \\ nil) do
+  @spec update_rates(atom() | nil) :: list(boolean())
+  def update_rates(rates_resource \\ nil) do
     rates_resource
     |> fetch_rates()
     |> persist_rates_data()
@@ -62,7 +62,7 @@ defmodule Money.Currency.Rates do
   def add_rate(currency_code, rate, rate_currency) do
     currency_code
     |> validate_code()
-    |> monefy_rate(rate, rate_currency)
+    |> build_rate_map(rate, rate_currency)
     |> Stash.persist_rate()
   end
 
@@ -89,18 +89,22 @@ defmodule Money.Currency.Rates do
   defp persist_rates_data({:error, error_message}), do: {:error, error_message}
 
   defp persist_rates_data({:ok, data}) do
+    Stash.drop_table()
+
     for rate_data <- data, do: Stash.persist_rate(rate_data)
 
-    Stash.persist_updated_at_date
+    Stash.persist_updated_at_date()
   end
 
-  defp monefy_rate(currency_code, rate, rate_currency) do
-    {currency_code, Money.parse!(rate, rate_currency)}
+  defp build_rate_map(currency_code, rate, rate_currency) do
+    {currency_code, %{amount: round_rate(rate), currency: rate_currency}}
+  end
+  defp build_rate_map(%{currency_code: currency_code, rate: rate, rate_currency: rate_currency}) do
+    build_rate_map(currency_code, rate, rate_currency)
   end
 
-  defp monefy_rate(%{currency_code: code, rate: rate, rate_currency: rate_currency}) do
-    {code, Money.parse!(rate, rate_currency)}
-  end
+  defp round_rate(rate) when is_float(rate), do: Float.round(rate, 6)
+  defp round_rate(rate), do: rate
 
   defp validate_code(currency_code) do
     if Enum.member?(Currency.all, currency_code) do
@@ -110,6 +114,6 @@ defmodule Money.Currency.Rates do
     end
   end
 
-  defp process_fetch_result({:ok, data}), do: {:ok, Enum.map(data, &monefy_rate/1)}
+  defp process_fetch_result({:ok, data}), do: {:ok, Enum.map(data, &build_rate_map/1)}
   defp process_fetch_result({:error, error_message}), do: {:error, error_message}
 end

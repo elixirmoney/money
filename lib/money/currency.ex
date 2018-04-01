@@ -233,19 +233,22 @@ defmodule Money.Currency do
     round(:math.pow(10, exponent))
   end
 
-  @spec persist_rates(atom() | nil) :: list(boolean())
-  def persist_rates(rates_resource \\ nil), do: Rates.persist_rates(rates_resource)
+  @spec update_rates(atom() | nil) :: list(boolean())
+  def update_rates(rates_resource \\ nil), do: Rates.update_rates(rates_resource)
 
   @spec get_rate(atom()) :: Money.t
   def get_rate(currency), do: Rates.get_rate(currency)
 
   def exchange(from_currency, from_amount, to_currency) do
-    from_currency_amount = get_rate(from_currency).amount
-    to_currency_amount = get_rate(to_currency).amount
+    %{amount: from_rate_amount, currency: from_rate_currency} = get_rate(from_currency)
+    %{amount: to_rate_amount, currency: to_rate_currency} = get_rate(to_currency)
 
-    exchanged_amount = from_amount * to_currency_amount / from_currency_amount
+    if from_rate_currency != to_rate_currency do
+      raise ArgumentError, message: "Currencies not matched: #{from_rate_currency} <-> #{to_rate_currency}"
+    end
 
-    %Money{amount: exchanged_amount, currency: to_currency}
+    exchanged_amount = from_amount * from_rate_amount / to_rate_amount
+    Money.parse!(exchanged_amount, to_currency)
   end
 
   def exchange(%Money{amount: amount, currency: from_currency}, to_currency),
