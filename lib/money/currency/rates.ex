@@ -77,6 +77,7 @@ defmodule Money.Currency.Rates do
   @spec get_rate(atom()) :: Money.t()
   def get_rate(currency), do: Stash.fetch_rate(currency)
 
+  @spec expired?() :: boolean()
   def expired?, do: Stash.fetch_updated_at_date != Date.utc_today
 
   defp fetch_data_from_resource(:russian_cb), do: RussianCentralBank.fetch_rates_data

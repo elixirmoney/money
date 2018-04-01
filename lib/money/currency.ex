@@ -239,6 +239,7 @@ defmodule Money.Currency do
   @spec get_rate(atom()) :: Money.t
   def get_rate(currency), do: Rates.get_rate(currency)
 
+  @spec exchange(atom(), integer() | float(), atom()) :: Money.t()
   def exchange(from_currency, from_amount, to_currency) do
     %{amount: from_rate_amount, currency: from_rate_currency} = get_rate(from_currency)
     %{amount: to_rate_amount, currency: to_rate_currency} = get_rate(to_currency)
@@ -251,6 +252,7 @@ defmodule Money.Currency do
     Money.parse!(exchanged_amount, to_currency)
   end
 
+  @spec exchange(Money.t(), atom()) :: Money.t()
   def exchange(%Money{amount: amount, currency: from_currency}, to_currency),
     do: exchange(from_currency, amount, to_currency)
 

@@ -11,6 +11,7 @@ defmodule Money.Currency.Rates.CurrencyLayer do
       iex> Money.Currency.Rates.CurrencyLayer.fetch_rates_data
       [%{currency_code: :USD, rate: "", rate_currency: :RUB}]
   """
+  @spec fetch_rates_data() :: tuple()
   def fetch_rates_data do
     build_url()
     |> HTTPoison.get!()
@@ -45,7 +46,7 @@ defmodule Money.Currency.Rates.CurrencyLayer do
     [currency_code, to_currency] =
       currency
       |> String.split_at(3)
-      |> Tuple.to_list
+      |> Tuple.to_list()
       |> Enum.map(&String.to_atom/1)
 
     %{currency_code: to_currency, rate: transform_rate(rate), rate_currency: currency_code}

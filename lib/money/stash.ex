@@ -17,11 +17,13 @@ defmodule Money.Stash do
     |> :ets.insert({code, rate})
   end
 
+  @spec persist_updated_at_date() :: boolean()
   def persist_updated_at_date do
     find_or_create_table()
     |> :ets.insert({:updated_at, Date.utc_today})
   end
 
+  @spec fetch_updated_at_date() :: date()
   def fetch_updated_at_date do
     find_or_create_table()
     |> :ets.lookup(:updated_at)
@@ -44,6 +46,7 @@ defmodule Money.Stash do
     |> extract_rate
   end
 
+  @spec drop_table() :: boolean()
   def drop_table do
     find_or_create_table()
     |> :ets.delete()
