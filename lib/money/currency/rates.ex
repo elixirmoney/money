@@ -66,10 +66,6 @@ defmodule Money.Currency.Rates do
     |> Stash.persist_rate()
   end
 
-  @spec all() :: list()
-  def all do
-  end
-
   @doc ~S"""
   Fetching persisted rate from an ETS stash.
 
@@ -80,6 +76,8 @@ defmodule Money.Currency.Rates do
   """
   @spec get_rate(atom()) :: Money.t()
   def get_rate(currency), do: Stash.fetch_rate(currency)
+
+  def expired?, do: Stash.fetch_updated_at_date != Date.utc_today
 
   defp fetch_data_from_resource(:russian_cb), do: RussianCentralBank.fetch_rates_data
   defp fetch_data_from_resource(:currency_layer), do: CurrencyLayer.fetch_rates_data
@@ -92,6 +90,8 @@ defmodule Money.Currency.Rates do
 
   defp persist_rates_data({:ok, data}) do
     for rate_data <- data, do: Stash.persist_rate(rate_data)
+
+    Stash.persist_updated_at_date
   end
 
   defp monefy_rate(currency_code, rate, rate_currency) do

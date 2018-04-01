@@ -19,13 +19,16 @@ defmodule Money.Currency.Rates.CurrencyLayer do
   end
 
   defp build_url do
-    "http://www.apilayer.net/api/live?access_key=#{fetch_api_key()}"
+    "http://www.apilayer.net/api/live?access_key=#{fetch_api_key()}&source=#{fetch_source_currency()}"
   end
 
   defp fetch_api_key, do: Application.fetch_env!(:money, :currency_layer_api_key)
 
-  defp extract_body(%HTTPoison.Response{body: body, headers: _, request_url: _, status_code: 200}),
-    do: JSX.decode!(body)
+  defp fetch_source_currency, do: Application.fetch_env!(:money, :source_currency)
+
+  defp extract_body(
+         %HTTPoison.Response{body: body, headers: _, request_url: _, status_code: 200}
+       ), do: JSX.decode!(body)
 
   defp process_currency_data(body) do
     case body["success"] do
@@ -33,14 +36,20 @@ defmodule Money.Currency.Rates.CurrencyLayer do
         data = Enum.map(body["quotes"], &transform_currency_data/1)
         {:ok, data}
       false ->
-        error_message = body |> JSX.decode!() |> get_in(["error", "info"])
+        error_message = get_in(body, ~w(error info))
         {:error, error_message}
     end
   end
 
   defp transform_currency_data({currency, rate}) do
-    to_currency = currency |> String.replace("USD", "") |> String.to_atom()
+    [currency_code, to_currency] =
+      currency
+      |> String.split_at(3)
+      |> Tuple.to_list
+      |> Enum.map(&String.to_atom/1)
 
-    %{currency_code: String.to_atom(currency), rate: to_string(rate), rate_currency: to_currency}
+    %{currency_code: to_currency, rate: transform_rate(rate), rate_currency: currency_code}
   end
+
+  defp transform_rate(rate), do: 1.0 / rate
 end

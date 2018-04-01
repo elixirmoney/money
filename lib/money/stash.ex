@@ -17,6 +17,18 @@ defmodule Money.Stash do
     |> :ets.insert({code, rate})
   end
 
+  def persist_updated_at_date do
+    find_or_create_table()
+    |> :ets.insert({:updated_at, Date.utc_today})
+  end
+
+  def fetch_updated_at_date do
+    find_or_create_table()
+    |> :ets.lookup(:updated_at)
+    |> List.first
+    |> elem(1)
+  end
+
   @doc ~S"""
   Fething a rate from ETS by currency code.
 
@@ -44,6 +56,6 @@ defmodule Money.Stash do
 
   defp process_ets_info_result(_info), do: :currency_rates
 
-  defp extract_rate([]), do: {nil, nil}
-  defp extract_rate([{code, rate}]), do: {code, rate}
+  defp extract_rate([]), do: nil
+  defp extract_rate([{_, rate}]), do: rate
 end

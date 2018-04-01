@@ -62,7 +62,7 @@
   "BCH": {
     "name": "Bitcoin Cash",
     "symbol": "BCH",
-    "exponent": 100000000
+    "exponent": 10
   },
   "BDT": {
     "name": "Taka",
@@ -117,7 +117,7 @@
   "BTC": {
     "name": "Bitcoin",
     "symbol": "BTC",
-    "exponent": 100000000
+    "exponent": 10
   },
   "BTN": {
     "name": "Indian Rupee Ngultrum",
@@ -247,7 +247,7 @@
   "ETH": {
     "name": "Ethereum",
     "symbol": "ETH",
-    "exponent": 100000000
+    "exponent": 10
   },
   "EUR": {
     "name": "Euro",
@@ -447,7 +447,7 @@
   "LTC": {
     "name": "Litecoin",
     "symbol": "LTC",
-    "exponent": 100000000
+    "exponent": 10
   },
   "LTL": {
     "name": "Lithuanian Litas",
@@ -867,7 +867,7 @@
   "XRP": {
     "name": "Ripple",
     "symbol": "XRP",
-    "exponent": 100000000
+    "exponent": 10
   },
   "XPT": {
     "name": "Platinum",
@@ -897,5 +897,31 @@
   "ZWL": {
     "name": "Zimbabwe Dollar",
     "symbol": "$",
-    "exponent": 2}
+    "exponent": 2
+  },
+  "IMP": {
+    "name": "Isle of Man Pound",
+    "symbol": "£",
+    "exponent": 2
+  },
+  "GGP": {
+    "name": "Guernsey Pound",
+    "symbol": "£",
+    "exponent": 2
+  },
+  "ZMW": {
+    "name": "Zambian Kwacha",
+    "symbol": "ZK",
+    "exponent": 2
+  },
+  "JEP": {
+    "name": "Jersey Pound",
+    "symbol": "£",
+    "exponent": 2
+  },
+  "BYN": {
+    "name": "Belarusian Ruble",
+    "symbol": "Br",
+    "exponent": 2
+  }
 }
