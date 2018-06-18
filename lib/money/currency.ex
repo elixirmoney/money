@@ -54,7 +54,7 @@ defmodule Money.Currency do
     CLF: %{name: "Chilean Peso Unidades de fomento",                       symbol: "$",    exponent: 4},
     CLP: %{name: "Chilean Peso Unidades de fomento",                       symbol: "$",    exponent: 0},
     CNY: %{name: "Yuan Renminbi",                                          symbol: "¥",    exponent: 2},
-    COP: %{name: "Colombian Peso",                                         symbol: "$",    exponent: 2},
+    COP: %{name: "Colombian Peso",                                         symbol: "$",    exponent: 0},
     COU: %{name: "Colombian Peso Unidad de Valor Real",                    symbol: "$",    exponent: 2},
     CRC: %{name: "Costa Rican Colon",                                      symbol: "₡",    exponent: 2},
     CUC: %{name: "Cuban Peso Peso Convertible",                            symbol: "₱",    exponent: 2},
