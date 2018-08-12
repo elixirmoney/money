@@ -74,6 +74,7 @@ defmodule Money do
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
+
   @spec parse(String.t | float, atom | String.t, Keyword.t) :: {:ok, t}
   @doc ~S"""
   Parse a value into a `Money` type.
@@ -205,6 +206,21 @@ defmodule Money do
     end
   end
   def compare(a, b), do: fail_currencies_must_be_equal(a, b)
+
+  @doc ~S"""
+  Offer discount based on percentage
+
+  ## Example:
+
+      iex> Money.add_discount(Money.new(100, :USD), 20)
+      %Money{amount: 80, currency: :USD}
+  """
+  def add_discount(%Money{amount: amount, currency: cur} = money, percentage) do
+    div(amount, 100)
+    |>new(cur)
+    |>multiply(percentage)
+    |>(&subtract(money, &1)).()
+  end
 
   @spec zero?(t) :: boolean
   @doc ~S"""

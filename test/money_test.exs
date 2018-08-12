@@ -155,6 +155,13 @@ defmodule MoneyTest do
     end
   end
 
+  test "offer discount" do
+    assert Money.add_discount(Money.new(200, :USD), 10) == Money.new(180, :USD)
+    assert Money.add_discount(Money.new(200, :USD), 15) == Money.new(170, :USD)
+    assert Money.add_discount(Money.new(200, :USD), 50) == Money.new(100, :USD)
+    assert Money.add_discount(Money.new(200, :USD), 12) == Money.new(176, :USD)
+  end
+
   test "test multiply" do
     assert Money.multiply(Money.new(200, :USD), 100) == Money.new(20000, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.5) == Money.new(300, :USD)
