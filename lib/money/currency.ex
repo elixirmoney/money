@@ -62,7 +62,7 @@ defmodule Money.Currency do
     CVE: %{name: "Cape Verde Escudo",                                      symbol: "$",    exponent: 0},
     CZK: %{name: "Czech Koruna",                                           symbol: "Kč",   exponent: 2},
     DJF: %{name: "Djibouti Franc",                                         symbol: "Fdj",    exponent: 0},
-    DKK: %{name: "Danish Krone",                                           symbol: "kr",   exponent: 2},
+    DKK: %{name: "Danish Krone",                                           symbol: "kr.",  exponent: 2},
     DOP: %{name: "Dominican Peso",                                         symbol: "RD$",  exponent: 2},
     DZD: %{name: "Algerian Dinar",                                         symbol: "دج",    exponent: 2},
     EEK: %{name: "Kroon",                                                  symbol: "KR",    exponent: 2},
