@@ -37,6 +37,10 @@ if Code.ensure_compiled?(Ecto.Type) do
       end
     end
 
+    def cast(atom) when is_atom(atom) do
+      if Currency.exists?(atom), do: {:ok, atom}, else: :error
+    end
+
     def cast(_), do: :error
 
     @spec load(String.t()) :: {:ok, atom()}
