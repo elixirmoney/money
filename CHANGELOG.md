@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.0
+
+- Support elixir 1.6 and 1.7 versions [#90]
+- Correct symbol for DKK [#86]
+- Update supported elixir versions to 1.3 [#75]
+- Fix deprecation warning for elixir 1.5 [#74]
+- Add some more symbols for currencies [#71]
+- Add some more symbols for currencies [#71]
+- Fix official RUB symbol [#70]
+- Adding a HexDoc link to the readme for faster linking to the docs [#68]
+- Allow casting a Map of ecto's embeds_many [#66]
+
+## 1.2.2
+
+- Fixing Mexican and Colombian pesos names [#63]
+- Add support currency exponents [#60]
+- Add ability to retrieve all currencies
+
 ## 1.2.1
 
 - Add Money.abs/1
