@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- Support ecto 3.0 [#91]
+
 ## 1.3.0
 
 - Support elixir 1.6 and 1.7 versions [#90]
