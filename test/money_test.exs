@@ -3,7 +3,7 @@ defmodule MoneyTest do
   doctest Money
 
   require Money.Currency
-  import Money.Currency
+  import Money.Currency, only: [usd: 1, eur: 1, clf: 1, jpy: 1, omr: 1, xau: 1, zar: 1]
 
   test "new/1 with default currency set" do
     try do
