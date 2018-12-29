@@ -140,7 +140,7 @@ defmodule Money.Currency do
     PHP: %{name: "Philippine Peso",                                        symbol: "Php",  exponent: 2},
     PKR: %{name: "Pakistan Rupee",                                         symbol: "₨",    exponent: 2},
     PLN: %{name: "Zloty",                                                  symbol: "zł",   exponent: 2},
-    PYG: %{name: "Guarani",                                                symbol: "Gs",   exponent: 0},
+    PYG: %{name: "Guarani",                                                symbol: "₲",   exponent: 0},
     QAR: %{name: "Qatari Rial",                                            symbol: "﷼",    exponent: 2},
     RON: %{name: "New Leu",                                                symbol: "lei",  exponent: 2},
     RSD: %{name: "Serbian Dinar",                                          symbol: "Дин.", exponent: 2},
