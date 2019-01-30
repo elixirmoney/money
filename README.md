@@ -102,7 +102,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 1.3.1"}]
+  [{:money, "~> 1.3"}]
 end
 ```
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).

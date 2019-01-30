@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.2
+
+- Add Guaraní sign for PYG [#94]
+- Add new Belarusian ruble [#92]
+
 ## 1.3.1
 
 - Support ecto 3.0 [#91]
