@@ -373,16 +373,20 @@ defmodule Money do
 
   defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse
   defp do_divide(currency, value, 0, count, acc) do
+    acc   = [new(next_amount(value, 0, count), currency) | acc]
     count = decrement_abs(count)
-    acc   = [new(value, currency) | acc]
     do_divide(currency, value, 0, count, acc)
   end
   defp do_divide(currency, value, rem, count, acc) do
+    acc   = [new(next_amount(value, rem, count), currency) | acc]
     rem   = decrement_abs(rem)
     count = decrement_abs(count)
-    acc   = [new(increment_abs(value), currency) | acc]
     do_divide(currency, value, rem, count, acc)
   end
+
+  defp next_amount(0, -1, count) when count > 0, do: -1
+  defp next_amount(value, 0, _count), do: value
+  defp next_amount(value, _rem, _count), do: increment_abs(value)
 
   defp increment_abs(n) when n >= 0, do: n + 1
   defp increment_abs(n) when n < 0, do: n - 1
