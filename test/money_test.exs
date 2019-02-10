@@ -195,6 +195,15 @@ defmodule MoneyTest do
       usd(3)
     ]
 
+    assert Money.divide(Money.new(-1, :USD), 2) == [
+      usd(-1),
+      usd(0)
+    ]
+
+    assert Money.divide(Money.new(-1, :USD), -2) == [
+      usd(1),
+      usd(0)
+    ]
   end
 
   test "test to_string" do
