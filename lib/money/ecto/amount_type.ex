@@ -22,7 +22,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     @spec type :: :integer
     def type, do: :integer
 
-    @spec cast(String.t | integer) :: {:ok, Money.t}
+    @spec cast(String.t | integer()) :: {:ok, Money.t}
     def cast(val)
     def cast(str) when is_binary(str) do
       Money.parse(str)
@@ -34,10 +34,10 @@ if Code.ensure_compiled?(Ecto.Type) do
     def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
     def cast(_), do: :error
 
-    @spec load(integer) :: {:ok, Money.t}
+    @spec load(integer()) :: {:ok, Money.t}
     def load(int) when is_integer(int), do: {:ok, Money.new(int)}
 
-    @spec dump(integer | Money.t) :: {:ok, :integer}
+    @spec dump(integer() | Money.t) :: {:ok, integer()}
     def dump(int) when is_integer(int), do: {:ok, int}
     def dump(%Money{} = m), do: {:ok, m.amount}
     def dump(_), do: :error

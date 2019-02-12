@@ -20,15 +20,19 @@ if Code.ensure_compiled?(Ecto.Type) do
 
     @behaviour Ecto.Type
 
+    @spec type() :: :money_with_currency
     def type, do: :money_with_currency
 
+    @spec load({integer(), atom() | String.t}) :: {:ok, Money.t()}
     def load({amount, currency}) do
       {:ok, Money.new(amount, currency)}
     end
 
+    @spec dump(any()) :: :error | {:ok, {integer(), String.t}}
     def dump(%Money{} = money), do: {:ok, {money.amount, to_string(money.currency)}}
     def dump(_), do: :error
 
+    @spec cast(Money.t | {integer(), String.t} | map() | any()) :: :error | {:ok, Money.t()}
     def cast(%Money{} = money) do
       {:ok, money}
     end
