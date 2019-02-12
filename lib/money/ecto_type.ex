@@ -8,7 +8,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     The currency must be defined in your configuration.
 
     config :money,
-    default_currency: :GBP
+      default_currency: :GBP
 
     ## Migration Example
 
