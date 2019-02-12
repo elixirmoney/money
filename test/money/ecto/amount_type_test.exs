@@ -1,8 +1,9 @@
-defmodule Money.Ecto.TypeTest do
+defmodule Money.Ecto.Amount.TypeTest do
   use ExUnit.Case, async: false
-  doctest Money.Ecto.Type
 
-  alias Money.Ecto.Type
+  alias Money.Ecto.Amount.Type
+
+  doctest Type
 
   setup do
     Application.put_env(:money, :default_currency, :GBP)
