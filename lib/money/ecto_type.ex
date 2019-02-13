@@ -1,6 +1,7 @@
 if Code.ensure_compiled?(Ecto.Type) do
   defmodule Money.Ecto.Type do
     @moduledoc """
+    WARNING: this module is deprecated. Use Money.Ecto.Amount.Type module instead.
     Provides a type for Ecto usage.
     The underlying data type should be an integer.
 
@@ -22,8 +23,6 @@ if Code.ensure_compiled?(Ecto.Type) do
       field :amount, Money.Ecto.Type
     end
     """
-
-    @moduledoc deprecated: "Use Money.Ecto.Amount.Type module instead."
 
     @behaviour Ecto.Type
 
