@@ -23,6 +23,8 @@ if Code.ensure_compiled?(Ecto.Type) do
     end
     """
 
+    @moduledoc deprecated: "Use Money.Ecto.Amount.Type module instead."
+
     @behaviour Ecto.Type
 
     @spec type :: :integer
