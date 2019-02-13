@@ -7,7 +7,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     ## Migration Example
 
         create table(:my_table) do
-          add :currency, :string
+          add :currency, :varchar, size: 3
         end
 
     ## Schema Example
