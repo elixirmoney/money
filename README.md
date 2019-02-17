@@ -35,6 +35,125 @@ Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbo
 Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
 ```
 
+
+### Serialization to database with single currency
+Bring `Money` to your Ecto project.
+The underlying database type is `integer`
+
+1. Set a default currency in `config.ex`:
+```elixir
+config :money,
+  default_currency: :USD
+```
+
+
+2. Create migration with integer type:
+```elixir
+create table(:jobs) do
+  add :amount, :integer
+end
+```
+
+3. Create schema using the `Money.Ecto.Amount.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :amount, Money.Ecto.Amount.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{amount: Money.new(100, :USD)}
+[debug] QUERY OK db=90.7ms queue=0.1ms
+INSERT INTO "jobs" ("amount","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [100, {{2019, 2, 12}, {7, 29, 8, 589489}}, {{2019, 2, 12}, {7, 29, 8, 593185}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   amount: %Money{amount: 100, currency: :USD},
+   id: 1,
+   inserted_at: ~N[2019-02-12 07:29:08.589489],
+   updated_at: ~N[2019-02-12 07:29:08.593185]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(2)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=1.8ms
+SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  amount: %Money{amount: 100, currency: :USD},
+  id: 1,
+  inserted_at: ~N[2019-02-12 07:29:08.589489],
+  updated_at: ~N[2019-02-12 07:29:08.593185]
+}
+```
+
+### Serialization to database with multiple currency
+`Money.Ecto.Composite.Type` Ecto type represents serialization of `Money.t` to [PostgreSQL Composite Types](https://www.postgresql.org/docs/11/rowtypes.html) with saving currency.
+
+1. Create migration with custom type:
+```elixir
+  def up do
+    execute """
+    CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
+    """
+  end
+
+  def down do
+    execute """
+    DROP TYPE public.money_with_currency
+    """
+  end
+```
+
+2. Then use created custom type(`money_with_currency`) for money field:
+```elixir
+  def change do
+    alter table(:jobs) do
+      add :price, :money_with_currency
+    end
+  end`
+```
+
+3. Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :price, Money.Ecto.Composite.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+[debug] QUERY OK db=7.7ms
+INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [{100, "JPY"}, {{2019, 2, 12}, {8, 7, 44, 729114}}, {{2019, 2, 12}, {8, 7, 44, 729124}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   id: 6,
+   inserted_at: ~N[2019-02-12 08:07:44.729114],
+   price: %Money{amount: 100, currency: :JPY},
+   updated_at: ~N[2019-02-12 08:07:44.729124]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(2)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=1.4ms
+SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  id: 6,
+  inserted_at: ~N[2019-02-12 08:07:44.729114],
+  price: %Money{amount: 100, currency: :JPY},
+  updated_at: ~N[2019-02-12 08:07:44.729124]
+}
+```
+
+
 ### Money.Sigils
 
 ```elixir
@@ -66,23 +185,6 @@ Money.Currency.symbol(:USD)     # $
 Money.Currency.symbol(afn(500)) # ؋
 Money.Currency.name(afn(500))   # Afghani
 Money.Currency.get(:AFN)        # %{name: "Afghani", symbol: "؋"}
-```
-
-### Money.Ecto.Type
-
-Bring `Money` to your Ecto project.
-The underlying database type is `integer`
-
-```elixir
-# migration
-create table(:my_table) do
-  add :amount, :integer
-end
-
-# model/schema
-schema "my_table" do
-  field :amount, Money.Ecto.Type
-end
 ```
 
 ### Phoenix.HTML.Safe
