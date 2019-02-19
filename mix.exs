@@ -2,7 +2,7 @@ defmodule Money.Mixfile do
   use Mix.Project
 
   @version "1.3.2"
-  @github_url "https://github.com/liuggio/money"
+  @github_url "https://github.com/elixirmoney/money"
 
   def project do
     [
@@ -11,7 +11,7 @@ defmodule Money.Mixfile do
       version: @version,
       elixir: "~> 1.0",
       deps: deps(),
-      source_url: "https://github.com/liuggio/money",
+      source_url: "https://github.com/elixirmoney/money",
       docs: fn ->
         [
           source_ref: "v#{@version}",
