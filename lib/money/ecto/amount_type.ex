@@ -28,9 +28,18 @@ if Code.ensure_compiled?(Ecto.Type) do
       Money.parse(str)
     end
     def cast(int) when is_integer(int), do: {:ok, Money.new(int)}
-    def cast(%Money{} = money), do: {:ok, money}
-    def cast(%{"amount" => amount, "currency" => currency}),
-      do: {:ok, Money.new(amount, currency)}
+    def cast(%Money{currency: currency} = money) do
+      case same_as_default_currency?(currency) do
+        true -> {:ok, money}
+        _ -> :error
+      end
+    end
+    def cast(%{"amount" => amount, "currency" => currency}) do
+      case same_as_default_currency?(currency) do
+        true -> {:ok, Money.new(amount, currency)}
+        _ -> :error
+      end
+    end
     def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
     def cast(_), do: :error
 
@@ -41,5 +50,11 @@ if Code.ensure_compiled?(Ecto.Type) do
     def dump(int) when is_integer(int), do: {:ok, int}
     def dump(%Money{} = m), do: {:ok, m.amount}
     def dump(_), do: :error
+
+    defp same_as_default_currency?(currency) do
+      default_currency_string = Application.get_env(:money, :default_currency) |> to_string |> String.downcase
+      currency_string = currency |> to_string |> String.downcase
+      default_currency_string == currency_string
+    end
   end
 end
