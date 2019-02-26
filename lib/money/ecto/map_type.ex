@@ -14,7 +14,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     ## Schema Example
 
         schema "my_table" do
-          field :price, Money.Ectso.map.Type
+          field :price, Money.Ectso.Map.Type
         end
     """
 

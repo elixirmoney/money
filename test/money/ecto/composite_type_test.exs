@@ -6,7 +6,7 @@ defmodule Money.Ecto.Composite.TypeTest do
   doctest Type
 
   test "type/0" do
-    assert Type.type == :money_with_currency
+    assert Type.type() == :money_with_currency
   end
 
   test "cast/1 Money" do
