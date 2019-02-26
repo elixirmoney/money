@@ -30,9 +30,9 @@ defmodule Money do
   """
 
   @type t :: %__MODULE__{
-    amount: integer,
-    currency: atom
-  }
+          amount: integer,
+          currency: atom
+        }
 
   defstruct amount: 0, currency: :USD
 
@@ -55,6 +55,7 @@ defmodule Money do
   """
   def new(amount) do
     currency = Application.get_env(:money, :default_currency)
+
     if currency do
       new(amount, currency)
     else
@@ -62,7 +63,7 @@ defmodule Money do
     end
   end
 
-  @spec new(integer, atom | String.t) :: t
+  @spec new(integer, atom | String.t()) :: t
   @doc """
   Create a new `Money` struct from currency sub-units (cents)
 
@@ -74,7 +75,7 @@ defmodule Money do
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
-  @spec parse(String.t | float, atom | String.t, Keyword.t) :: {:ok, t}
+  @spec parse(String.t() | float, atom | String.t(), Keyword.t()) :: {:ok, t}
   @doc ~S"""
   Parse a value into a `Money` type.
 
@@ -99,20 +100,26 @@ defmodule Money do
       {:ok, %Money{amount: -123456, currency: :USD}}
   """
   def parse(value, currency \\ nil, opts \\ [])
+
   def parse(value, nil, opts) do
     currency = Application.get_env(:money, :default_currency)
+
     if currency do
       parse(value, currency, opts)
     else
       raise ArgumentError, "to use Money.new/1 you must set a default currency in your application config."
     end
   end
+
   def parse(str, currency, opts) when is_binary(str) do
     try do
       {_separator, delimeter} = get_parse_options(opts)
-      value = str
-      |> prepare_parse_string(delimeter)
-      |> add_missing_leading_digit
+
+      value =
+        str
+        |> prepare_parse_string(delimeter)
+        |> add_missing_leading_digit
+
       case Float.parse(value) do
         {float, _} -> parse(float, currency, [])
         :error -> :error
@@ -121,50 +128,67 @@ defmodule Money do
       _ -> :error
     end
   end
+
   def parse(float, currency, _opts) when is_float(float) do
     {:ok, new(round(float * Currency.sub_units_count!(currency)), currency)}
   end
 
   defp prepare_parse_string(characters, delimeter, acc \\ [])
+
   defp prepare_parse_string([], _delimeter, acc),
-    do: Enum.reverse(acc) |> Enum.join
+    do: Enum.reverse(acc) |> Enum.join()
+
   defp prepare_parse_string(["-" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["-" | acc])
+
   defp prepare_parse_string(["0" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["0" | acc])
+
   defp prepare_parse_string(["1" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["1" | acc])
+
   defp prepare_parse_string(["2" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["2" | acc])
+
   defp prepare_parse_string(["3" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["3" | acc])
+
   defp prepare_parse_string(["4" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["4" | acc])
+
   defp prepare_parse_string(["5" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["5" | acc])
+
   defp prepare_parse_string(["6" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["6" | acc])
+
   defp prepare_parse_string(["7" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["7" | acc])
+
   defp prepare_parse_string(["8" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["8" | acc])
+
   defp prepare_parse_string(["9" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["9" | acc])
+
   defp prepare_parse_string([delimeter | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["." | acc])
+
   defp prepare_parse_string([_head | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, acc)
 
   defp prepare_parse_string(string, delimeter, _acc),
     do: prepare_parse_string(String.codepoints(string), delimeter)
 
-  defp add_missing_leading_digit(<< "-." >> <> tail),
+  defp add_missing_leading_digit(<<"-.">> <> tail),
     do: "-0." <> tail
-  defp add_missing_leading_digit(<< "." >> <> tail),
+
+  defp add_missing_leading_digit(<<".">> <> tail),
     do: "0." <> tail
+
   defp add_missing_leading_digit(str), do: str
 
-  @spec parse(String.t | float, atom | String.t, Keyword.t) :: t
+  @spec parse(String.t() | float, atom | String.t(), Keyword.t()) :: t
   @doc ~S"""
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
@@ -199,11 +223,12 @@ defmodule Money do
   """
   def compare(%Money{currency: cur} = a, %Money{currency: cur} = b) do
     case a.amount - b.amount do
-                    x when x >  0 -> 1
-                    x when x <  0 -> -1
-                    x when x == 0 -> 0
+      x when x > 0 -> 1
+      x when x < 0 -> -1
+      x when x == 0 -> 0
     end
   end
+
   def compare(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec zero?(t) :: boolean
@@ -313,10 +338,13 @@ defmodule Money do
   """
   def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a + b, cur)
+
   def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
     do: Money.new(amount + addend, cur)
+
   def add(%Money{} = m, addend) when is_float(addend),
     do: add(m, round(addend * 100))
+
   def add(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec subtract(t, t | integer | float) :: t
@@ -334,10 +362,13 @@ defmodule Money do
   """
   def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a - b, cur)
+
   def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
     do: Money.new(a - subtractend, cur)
+
   def subtract(%Money{} = m, subtractend) when is_float(subtractend),
     do: subtract(m, round(subtractend * 100))
+
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
   @spec multiply(t, integer | float) :: t
@@ -352,6 +383,7 @@ defmodule Money do
   """
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
+
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
 
@@ -367,19 +399,21 @@ defmodule Money do
   """
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
     value = div(amount, denominator)
-    rem   = rem(amount, denominator)
+    rem = rem(amount, denominator)
     do_divide(cur, value, rem, denominator, [])
   end
 
-  defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse
+  defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse()
+
   defp do_divide(currency, value, 0, count, acc) do
-    acc   = [new(next_amount(value, 0, count), currency) | acc]
+    acc = [new(next_amount(value, 0, count), currency) | acc]
     count = decrement_abs(count)
     do_divide(currency, value, 0, count, acc)
   end
+
   defp do_divide(currency, value, rem, count, acc) do
-    acc   = [new(next_amount(value, rem, count), currency) | acc]
-    rem   = decrement_abs(rem)
+    acc = [new(next_amount(value, rem, count), currency) | acc]
+    rem = decrement_abs(rem)
     count = decrement_abs(count)
     do_divide(currency, value, rem, count, acc)
   end
@@ -393,7 +427,7 @@ defmodule Money do
   defp decrement_abs(n) when n >= 0, do: n - 1
   defp decrement_abs(n) when n < 0, do: n + 1
 
-  @spec to_string(t, Keyword.t) :: String.t
+  @spec to_string(t, Keyword.t()) :: String.t()
   @doc ~S"""
   Converts a `Money` struct to a string representation
 
@@ -430,25 +464,31 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{}=money, opts \\ []) do
+  def to_string(%Money{} = money, opts \\ []) do
     {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
     number = format_number(money, separator, delimeter, fractional_unit, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
-    parts = if symbol_on_right do
-              [sign, number, space, symbol]
-            else
-              [symbol, space, sign, number]
-            end
-    parts |> Enum.join |> String.trim_leading
+    parts =
+      if symbol_on_right do
+        [sign, number, space, symbol]
+      else
+        [symbol, space, sign, number]
+      end
+
+    parts |> Enum.join() |> String.trim_leading()
   end
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
     exponent = Currency.exponent(money)
     sub_units_count = Currency.sub_units_count!(money)
-    [super_unit | sub_unit] = Kernel.abs(amount/sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
+
+    [super_unit | sub_unit] =
+      Kernel.abs(amount / sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
+
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
+
     if fractional_unit && sub_unit != [] do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
@@ -487,9 +527,11 @@ defmodule Money do
   defp reverse_group(str, count) when is_binary(str) do
     reverse_group(str, Kernel.abs(count), [])
   end
+
   defp reverse_group("", _count, list) do
     list
   end
+
   defp reverse_group(str, count, list) do
     {first, last} = String.split_at(str, -count)
     reverse_group(first, count, [last | list])
