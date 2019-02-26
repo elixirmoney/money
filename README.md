@@ -90,7 +90,7 @@ SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0
 }
 ```
 
-### Serialization to database with multiple currency
+### Serialization to PostgreSQL with multiple currency
 `Money.Ecto.Composite.Type` Ecto type represents serialization of `Money.t` to [PostgreSQL Composite Types](https://www.postgresql.org/docs/11/rowtypes.html) with saving currency.
 
 1. Create migration with custom type:
@@ -150,6 +150,54 @@ SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 
   inserted_at: ~N[2019-02-12 08:07:44.729114],
   price: %Money{amount: 100, currency: :JPY},
   updated_at: ~N[2019-02-12 08:07:44.729124]
+}
+```
+
+### Serialization to database (JSON) with multiple currency
+`Money.Ecto.Map.Type` Ecto type represents serialization of `Money.t` to map(JSON) with saving currency.
+
+1. Create migration with map type:
+```elixir
+  def change do
+    alter table(:jobs) do
+      add :price, :map
+    end
+  end
+```
+
+2. Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :price, Money.Ecto.map.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+[debug] QUERY OK db=4.6ms
+INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [%{"amount" => 100, "currency" => "JPY"}, {{2019, 2, 26}, {9, 40, 14, 381721}}, {{2019, 2, 26}, {9, 40, 14, 381730}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   id: 9,
+   inserted_at: ~N[2019-02-26 09:40:14.381721],
+   price: %Money{amount: 100, currency: :JPY},
+   updated_at: ~N[2019-02-26 09:40:14.381730]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(8)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=2.0ms
+SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  id: 10,
+  inserted_at: ~N[2019-02-26 09:40:45.205076],
+  price: %Money{amount: 100, currency: :JPY},
+  updated_at: ~N[2019-02-26 09:40:45.205084]
 }
 ```
 
