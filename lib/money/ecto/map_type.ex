@@ -23,7 +23,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     defdelegate cast(money), to: Money.Ecto.Composite.Type
 
     @spec type() :: :map
-    def type(), do: :map
+    def type, do: :map
 
     @spec dump(any()) :: :error | {:ok, {integer(), String.t()}}
     def dump(%Money{} = money) do

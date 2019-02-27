@@ -1,4 +1,6 @@
 defmodule Money.Sigils do
+  @moduledoc false
+
   @doc ~S"""
   Handles the sigil `~M` for Money
 
