@@ -112,21 +112,19 @@ defmodule Money do
   end
 
   def parse(str, currency, opts) when is_binary(str) do
-    try do
-      {_separator, delimeter} = get_parse_options(opts)
+    {_separator, delimeter} = get_parse_options(opts)
 
-      value =
-        str
-        |> prepare_parse_string(delimeter)
-        |> add_missing_leading_digit
+    value =
+      str
+      |> prepare_parse_string(delimeter)
+      |> add_missing_leading_digit
 
-      case Float.parse(value) do
-        {float, _} -> parse(float, currency, [])
-        :error -> :error
-      end
-    rescue
-      _ -> :error
+    case Float.parse(value) do
+      {float, _} -> parse(float, currency, [])
+      :error -> :error
     end
+  rescue
+    _ -> :error
   end
 
   def parse(float, currency, _opts) when is_float(float) do
@@ -136,7 +134,7 @@ defmodule Money do
   defp prepare_parse_string(characters, delimeter, acc \\ [])
 
   defp prepare_parse_string([], _delimeter, acc),
-    do: Enum.reverse(acc) |> Enum.join()
+    do: acc |> Enum.reverse() |> Enum.join()
 
   defp prepare_parse_string(["-" | tail], delimeter, acc),
     do: prepare_parse_string(tail, delimeter, ["-" | acc])
@@ -483,9 +481,13 @@ defmodule Money do
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
     exponent = Currency.exponent(money)
     sub_units_count = Currency.sub_units_count!(money)
+    amount_float = amount / sub_units_count
 
     [super_unit | sub_unit] =
-      Kernel.abs(amount / sub_units_count) |> :erlang.float_to_binary(decimals: exponent) |> String.split(".")
+      amount_float
+      |> Kernel.abs()
+      |> :erlang.float_to_binary(decimals: exponent)
+      |> String.split(".")
 
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
 

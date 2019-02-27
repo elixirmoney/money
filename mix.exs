@@ -37,7 +37,7 @@ defmodule Money.Mixfile do
       {:phoenix_html, "~> 2.0", optional: true},
 
       # Code style
-      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
 
       # Docs
       {:ex_doc, "~> 0.14", only: [:dev, :docs]}

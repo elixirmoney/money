@@ -30,11 +30,9 @@ if Code.ensure_compiled?(Ecto.Type) do
     def cast(%Money{currency: currency}), do: {:ok, currency}
 
     def cast(str) when is_binary(str) do
-      try do
-        {:ok, Currency.to_atom(str)}
-      rescue
-        _ -> :error
-      end
+      {:ok, Currency.to_atom(str)}
+    rescue
+      _ -> :error
     end
 
     def cast(atom) when is_atom(atom) do
