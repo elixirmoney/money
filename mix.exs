@@ -1,7 +1,7 @@
 defmodule Money.Mixfile do
   use Mix.Project
 
-  @version "1.3.2"
+  @version "1.4.0"
   @github_url "https://github.com/elixirmoney/money"
 
   def project do
@@ -52,8 +52,8 @@ defmodule Money.Mixfile do
 
   defp package do
     [
-      maintainers: ["Giulio De Donato", "Andrew Timberlake"],
-      contributors: ["Giulio De Donato", "Andrew Timberlake"],
+      maintainers: ["Petr Stepchenko", "Giulio De Donato", "Andrew Timberlake"],
+      contributors: ["Petr Stepchenko", "Giulio De Donato", "Andrew Timberlake"],
       licenses: ["MIT"],
       links: %{"GitHub" => @github_url}
     ]

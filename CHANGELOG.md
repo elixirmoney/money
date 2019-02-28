@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.4.0
+Now hex is supported by an open organization and we are happy for new contributors and maintainers.
+
+### 🚀Features
+- Add support multiple currencies with map(JSON) type [#101]
+- Add support multiple currencies with PostgreSQL composite type [#96]
+- Add new Ecto Type for Currency [#87]
+
+### ⛔️Deprecations
+- Deprecate `Money.Ecto.Type`, use `Money.Ecto.Amount.Type` module instead
+
+### 🐛Bug Fixes
+- Fix dividing negative one [#95]
+- Fix cast in `Money.Ecto.Amount.Type` from money with currency other than a default [#100]
+
+### 🧰 Maintenance
+- Add credo and fix styles [#103]
+- Formatting codebase [#102]
+- Move repo to OSS organization and fix repo links after transfer [#99]
+- Add Elixir 1.8.1 to CI [#97]
+
 ## 1.3.2
 
 - Add Guaraní sign for PYG [#94]
