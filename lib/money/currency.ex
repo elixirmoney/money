@@ -137,7 +137,7 @@ defmodule Money.Currency do
     PAB: %{name: "Balboa US Dollar", symbol: "B/.", exponent: 2},
     PEN: %{name: "Nuevo Sol", symbol: "S/.", exponent: 2},
     PGK: %{name: "Kina", symbol: "K", exponent: 2},
-    PHP: %{name: "Philippine Peso", symbol: "Php", exponent: 2},
+    PHP: %{name: "Philippine Peso", symbol: "₱", exponent: 2},
     PKR: %{name: "Pakistan Rupee", symbol: "₨", exponent: 2},
     PLN: %{name: "Zloty", symbol: "zł", exponent: 2},
     PYG: %{name: "Guarani", symbol: "₲", exponent: 0},
