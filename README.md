@@ -168,7 +168,7 @@ SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 
 2. Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
 ```elixir
 schema "jobs" do
-  field :price, Money.Ecto.map.Type
+  field :price, Money.Ecto.Map.Type
 end
 ```
 
