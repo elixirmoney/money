@@ -22,11 +22,11 @@ defmodule Money do
       config :money,
         default_currency: :EUR,  # this allows you to do Money.new(100)
         separator: ".",          # change the default thousands separator for Money.to_string
-        delimiter: ",",          # change the default decimal delimeter for Money.to_string
+        delimiter: ",",          # change the default decimal delimiter for Money.to_string
         symbol: false            # don’t display the currency symbol in Money.to_string
         symbol_on_right: false,  # position the symbol
         symbol_space: false      # add a space between symbol and number
-        fractional_unit: false   # don’t display the remainder or the delimeter
+        fractional_unit: false   # don’t display the remainder or the delimiter
   """
 
   @type t :: %__MODULE__{
@@ -83,14 +83,14 @@ defmodule Money do
 
     - `separator` - default `","`, sets the separator for groups of thousands.
       "1,000"
-    - `delimeter` - default `"."`, sets the decimal delimeter.
+    - `delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
 
   ## Examples:
 
       iex> Money.parse("$1,234.56", :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
-      iex> Money.parse("1.234,56", :EUR, separator: ".", delimeter: ",")
+      iex> Money.parse("1.234,56", :EUR, separator: ".", delimiter: ",")
       {:ok, %Money{amount: 123456, currency: :EUR}}
       iex> Money.parse("1.234,56", :WRONG)
       :error
@@ -112,11 +112,11 @@ defmodule Money do
   end
 
   def parse(str, currency, opts) when is_binary(str) do
-    {_separator, delimeter} = get_parse_options(opts)
+    {_separator, delimiter} = get_parse_options(opts)
 
     value =
       str
-      |> prepare_parse_string(delimeter)
+      |> prepare_parse_string(delimiter)
       |> add_missing_leading_digit
 
     case Float.parse(value) do
@@ -131,52 +131,52 @@ defmodule Money do
     {:ok, new(round(float * Currency.sub_units_count!(currency)), currency)}
   end
 
-  defp prepare_parse_string(characters, delimeter, acc \\ [])
+  defp prepare_parse_string(characters, delimiter, acc \\ [])
 
-  defp prepare_parse_string([], _delimeter, acc),
+  defp prepare_parse_string([], _delimiter, acc),
     do: acc |> Enum.reverse() |> Enum.join()
 
-  defp prepare_parse_string(["-" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["-" | acc])
+  defp prepare_parse_string(["-" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["-" | acc])
 
-  defp prepare_parse_string(["0" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["0" | acc])
+  defp prepare_parse_string(["0" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["0" | acc])
 
-  defp prepare_parse_string(["1" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["1" | acc])
+  defp prepare_parse_string(["1" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["1" | acc])
 
-  defp prepare_parse_string(["2" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["2" | acc])
+  defp prepare_parse_string(["2" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["2" | acc])
 
-  defp prepare_parse_string(["3" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["3" | acc])
+  defp prepare_parse_string(["3" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["3" | acc])
 
-  defp prepare_parse_string(["4" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["4" | acc])
+  defp prepare_parse_string(["4" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["4" | acc])
 
-  defp prepare_parse_string(["5" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["5" | acc])
+  defp prepare_parse_string(["5" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["5" | acc])
 
-  defp prepare_parse_string(["6" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["6" | acc])
+  defp prepare_parse_string(["6" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["6" | acc])
 
-  defp prepare_parse_string(["7" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["7" | acc])
+  defp prepare_parse_string(["7" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["7" | acc])
 
-  defp prepare_parse_string(["8" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["8" | acc])
+  defp prepare_parse_string(["8" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["8" | acc])
 
-  defp prepare_parse_string(["9" | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["9" | acc])
+  defp prepare_parse_string(["9" | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["9" | acc])
 
-  defp prepare_parse_string([delimeter | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, ["." | acc])
+  defp prepare_parse_string([delimiter | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, ["." | acc])
 
-  defp prepare_parse_string([_head | tail], delimeter, acc),
-    do: prepare_parse_string(tail, delimeter, acc)
+  defp prepare_parse_string([_head | tail], delimiter, acc),
+    do: prepare_parse_string(tail, delimiter, acc)
 
-  defp prepare_parse_string(string, delimeter, _acc),
-    do: prepare_parse_string(String.codepoints(string), delimeter)
+  defp prepare_parse_string(string, delimiter, _acc),
+    do: prepare_parse_string(String.codepoints(string), delimiter)
 
   defp add_missing_leading_digit(<<"-.">> <> tail),
     do: "-0." <> tail
@@ -433,18 +433,18 @@ defmodule Money do
 
     - `separator` - default `","`, sets the separator for groups of thousands.
       "1,000"
-    - `delimeter` - default `"."`, sets the decimal delimeter.
+    - `delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
     - `symbol` - default `true`, sets whether to display the currency symbol or not.
     - `symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
     - `symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
-    - `fractional_unit` - default `true`, show the remaining units after the delimeter
+    - `fractional_unit` - default `true`, show the remaining units after the delimiter
 
   ## Example:
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
-      iex> Money.to_string(Money.new(123456, :EUR), separator: ".", delimeter: ",")
+      iex> Money.to_string(Money.new(123456, :EUR), separator: ".", delimiter: ",")
       "€1.234,56"
       iex> Money.to_string(Money.new(123456, :EUR), symbol: false)
       "1,234.56"
@@ -463,8 +463,8 @@ defmodule Money do
       "Total: $100.00"
   """
   def to_string(%Money{} = money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
-    number = format_number(money, separator, delimeter, fractional_unit, money)
+    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit} = get_display_options(money, opts)
+    number = format_number(money, separator, delimiter, fractional_unit, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
 
@@ -478,7 +478,7 @@ defmodule Money do
     parts |> Enum.join() |> String.trim_leading()
   end
 
-  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, money) do
+  defp format_number(%Money{amount: amount}, separator, delimiter, fractional_unit, money) do
     exponent = Currency.exponent(money)
     sub_units_count = Currency.sub_units_count!(money)
     amount_float = amount / sub_units_count
@@ -492,14 +492,14 @@ defmodule Money do
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
 
     if fractional_unit && sub_unit != [] do
-      [super_unit, sub_unit] |> Enum.join(delimeter)
+      [super_unit, sub_unit] |> Enum.join(delimiter)
     else
       super_unit
     end
   end
 
   defp get_display_options(m, opts) do
-    {separator, delimeter} = get_parse_options(opts)
+    {separator, delimiter} = get_parse_options(opts)
 
     default_symbol = Application.get_env(:money, :symbol, true)
     default_symbol_on_right = Application.get_env(:money, :symbol_on_right, false)
@@ -511,15 +511,15 @@ defmodule Money do
     symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
     fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
 
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit}
+    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit}
   end
 
   defp get_parse_options(opts) do
     default_separator = Application.get_env(:money, :separator, ",")
     separator = Keyword.get(opts, :separator, default_separator)
-    default_delimeter = Application.get_env(:money, :delimeter, ".")
-    delimeter = Keyword.get(opts, :delimeter, default_delimeter)
-    {separator, delimeter}
+    default_delimiter = Application.get_env(:money, :delimiter, ".")
+    delimiter = Keyword.get(opts, :delimiter, default_delimiter)
+    {separator, delimiter}
   end
 
   defp fail_currencies_must_be_equal(a, b) do
