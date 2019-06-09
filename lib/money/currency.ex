@@ -21,6 +21,8 @@ defmodule Money.Currency do
       %Money{amount: 100, currency: :USD}
   """
 
+  @custom_currencies Enum.into(Application.get_env(:money, :custom_currencies, []), %{})
+
   @currencies %{
     AED: %{name: "UAE Dirham", symbol: "د.إ", exponent: 2},
     AFN: %{name: "Afghani", symbol: "؋", exponent: 2},
@@ -199,6 +201,7 @@ defmodule Money.Currency do
     ZMK: %{name: "Zambian Kwacha", symbol: "ZK", exponent: 2},
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2}
   }
+  |> Map.merge(@custom_currencies)
 
   @currencies
   |> Enum.each(fn {cur, detail} ->
