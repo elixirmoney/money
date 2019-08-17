@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### 🚀Features
+- Add support to cast from atom-keyed maps
+
 ## 1.4.0
 Now hex is supported by an open organization and we are happy for new contributors and maintainers.
 

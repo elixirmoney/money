@@ -46,6 +46,16 @@ if Code.ensure_compiled?(Ecto.Type) do
     end
 
     def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
+
+    def cast(%{amount: amount, currency: currency}) do
+      case same_as_default_currency?(currency) do
+        true -> {:ok, Money.new(amount, currency)}
+        _ -> :error
+      end
+    end
+
+    def cast(%{amount: amount}), do: {:ok, Money.new(amount)}
+
     def cast(_), do: :error
 
     @spec load(integer()) :: {:ok, Money.t()}

@@ -22,6 +22,8 @@ defmodule Money.Ecto.Map.TypeTest do
   test "cast/1 Map" do
     assert Type.cast(%{"amount" => 1, "currency" => "USD"}) == {:ok, Money.new(1, :USD)}
     assert Type.cast(%{"amount" => 100, "currency" => "JPY"}) == {:ok, Money.new(100, :JPY)}
+    assert Type.cast(%{amount: 1, currency: "USD"}) == {:ok, Money.new(1, :USD)}
+    assert Type.cast(%{amount: 100, currency: "JPY"}) == {:ok, Money.new(100, :JPY)}
   end
 
   test "cast/1 other" do
