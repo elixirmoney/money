@@ -6,6 +6,9 @@
 - Configure custom_currencies at runtime rather than compile time [#111]
 - Add support to cast from atom-keyed maps [#110]
 
+### 🧰Maintenance
+- Fix readme typos in usage subtract and divide typos [#109]
+
 ## 1.4.0
 Now hex is supported by an open organization and we are happy for new contributors and maintainers.
 
@@ -21,7 +24,7 @@ Now hex is supported by an open organization and we are happy for new contributo
 - Fix dividing negative one [#95]
 - Fix cast in `Money.Ecto.Amount.Type` from money with currency other than a default [#100]
 
-### 🧰 Maintenance
+### 🧰Maintenance
 - Add credo and fix styles [#103]
 - Formatting codebase [#102]
 - Move repo to OSS organization and fix repo links after transfer [#99]

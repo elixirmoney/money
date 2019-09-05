@@ -17,9 +17,8 @@ Documentation can be found at [https://hexdocs.pm/money/Money.html](https://hexd
 five_eur         = Money.new(500, :EUR)             # %Money{amount: 500, currency: :EUR}
 ten_eur          = Money.add(five_eur, five_eur)    # %Money{amount: 10_00, currency: :EUR}
 hundred_eur      = Money.multiply(ten_eur, 10)      # %Money{amount: 100_00, currency: :EUR}
-ninety_nine_eur  = Money.subtract(hundred_eur, 1)   # %Money{amount: 99_00, currency: :EUR}
-shares           = Money.divide(ninety_nine_eur, 2)
-[%Money{amount: 50, currency: :EUR}, %Money{amount: 49, currency: :EUR}]
+ninety_nine_eur  = Money.subtract(hundred_eur, 100) # %Money{amount: 99_00, currency: :EUR}
+shares           = Money.divide(ninety_nine_eur, 2) # [%Money{amount: 4950, currency: :EUR}, %Money{amount: 4950, currency: :EUR}]
 
 Money.equals?(five_eur, Money.new(500, :EUR)) # true
 Money.zero?(five_eur);                        # false
