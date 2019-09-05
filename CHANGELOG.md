@@ -3,7 +3,8 @@
 ## Unreleased
 
 ### 🚀Features
-- Add support to cast from atom-keyed maps
+- Configure custom_currencies at runtime rather than compile time [#111]
+- Add support to cast from atom-keyed maps [#110]
 
 ## 1.4.0
 Now hex is supported by an open organization and we are happy for new contributors and maintainers.
