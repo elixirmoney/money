@@ -205,12 +205,10 @@ defmodule Money.Currency do
   }
 
   defp all_currencies do
-    @currencies
-    |> Map.merge(custom_currencies)
+    Map.merge(@currencies, custom_currencies())
   end
 
-  @currencies
-  |> Enum.each(fn {cur, detail} ->
+  Enum.each(@currencies, fn {cur, detail} ->
     currency = cur |> to_string() |> String.downcase()
 
     @doc """
@@ -236,7 +234,7 @@ defmodule Money.Currency do
       %{name: "Pound Sterling", symbol: "£", exponent: 2}
 
   """
-  def all, do: all_currencies
+  def all, do: all_currencies()
 
   @spec exists?(Money.t() | String.t() | atom) :: boolean
   @doc ~S"""
@@ -255,7 +253,7 @@ defmodule Money.Currency do
     do: exists?(currency)
 
   def exists?(currency),
-    do: Map.has_key?(all_currencies, convert_currency(currency))
+    do: Map.has_key?(all_currencies(), convert_currency(currency))
 
   @spec get(Money.t() | String.t() | atom) :: map | nil
   @doc ~S"""
@@ -272,7 +270,7 @@ defmodule Money.Currency do
     do: get(currency)
 
   def get(currency),
-    do: all_currencies[convert_currency(currency)]
+    do: all_currencies()[convert_currency(currency)]
 
   @spec get!(Money.t() | String.t() | atom) :: map
   @doc ~S"""
