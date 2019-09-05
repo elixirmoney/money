@@ -7,6 +7,7 @@ defmodule Money.Mixfile do
   def project do
     [
       app: :money,
+      aliases: aliases(),
       name: "Money",
       version: @version,
       elixir: "~> 1.0",
@@ -22,7 +23,9 @@ defmodule Money.Mixfile do
         ]
       end,
       description: description(),
-      package: package()
+      package: package(),
+      preferred_cli_env: [check: :test],
+      dialyzer: [plt_add_apps: [:ecto, :phoenix_html]]
     ]
   end
 
@@ -36,8 +39,9 @@ defmodule Money.Mixfile do
       {:ecto, "~> 1.0 or ~> 2.0 or ~> 2.1 or ~> 3.0", optional: true},
       {:phoenix_html, "~> 2.0", optional: true},
 
-      # Code style
-      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      # Code style and analyzers
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false, optional: true},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
       {:ex_doc, "~> 0.14", only: [:dev, :docs]}
@@ -56,6 +60,12 @@ defmodule Money.Mixfile do
       contributors: ["Petr Stepchenko", "Giulio De Donato", "Andrew Timberlake"],
       licenses: ["MIT"],
       links: %{"GitHub" => @github_url}
+    ]
+  end
+
+  defp aliases do
+    [
+      check: ["format --check-formatted", "credo --strict", "test", "dialyzer"]
     ]
   end
 end

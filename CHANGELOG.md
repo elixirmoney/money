@@ -8,6 +8,7 @@
 
 ### 🧰Maintenance
 - Fix readme typos in usage subtract and divide typos [#109]
+- Add dializer and fix warnings
 
 ## 1.4.0
 Now hex is supported by an open organization and we are happy for new contributors and maintainers.

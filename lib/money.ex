@@ -75,7 +75,7 @@ defmodule Money do
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
-  @spec parse(String.t() | float, atom | String.t(), Keyword.t()) :: {:ok, t}
+  @spec parse(String.t() | float, atom | String.t(), Keyword.t()) :: {:ok, t} | :error
   @doc ~S"""
   Parse a value into a `Money` type.
 
@@ -186,7 +186,7 @@ defmodule Money do
 
   defp add_missing_leading_digit(str), do: str
 
-  @spec parse(String.t() | float, atom | String.t(), Keyword.t()) :: t
+  @spec parse!(String.t() | float, atom | String.t(), Keyword.t()) :: t
   @doc ~S"""
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
@@ -205,7 +205,7 @@ defmodule Money do
     end
   end
 
-  @spec compare(t, t) :: t
+  @spec compare(t, t) :: -1 | 0 | 1
   @doc ~S"""
   Compares two `Money` structs with each other.
   They must each be of the same currency and then their amounts are compared

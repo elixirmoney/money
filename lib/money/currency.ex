@@ -308,7 +308,7 @@ defmodule Money.Currency do
     currency
   end
 
-  @spec name(Money.t() | String.t() | atom) :: String.t()
+  @spec name(Money.t() | String.t() | atom) :: String.t() | nil
   @doc ~S"""
   Returns the name of the currency or nil if it doesn’t exist.
 
@@ -340,7 +340,7 @@ defmodule Money.Currency do
   def name!(currency),
     do: name(currency) || currency_doesnt_exist_error(currency)
 
-  @spec symbol(Money.t() | String.t() | atom) :: String.t()
+  @spec symbol(Money.t() | String.t() | atom) :: String.t() | nil
   @doc ~S"""
   Returns the symbol of the currency or nil if it doesn’t exist.
 
@@ -372,7 +372,7 @@ defmodule Money.Currency do
   def symbol!(currency),
     do: symbol(currency) || currency_doesnt_exist_error(currency)
 
-  @spec exponent(Money.t() | String.t() | atom) :: integer
+  @spec exponent(Money.t() | String.t() | atom) :: integer | nil
   @doc ~S"""
   Returns the exponent of the currency or nil if it doesn’t exist.
 
