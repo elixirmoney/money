@@ -77,4 +77,26 @@ defmodule Money.CurrencyTest do
     assert_raise ArgumentError, fn -> Currency.to_atom("abc") end
     assert_raise ArgumentError, fn -> Currency.to_atom("abc" <> "khgyujnk") end
   end
+
+  test "custom_currency" do
+    on_exit(fn ->
+      Application.put_env(:money, :custom_currencies, [])
+    end)
+
+    Application.put_env(:money, :custom_currencies, BTC: %{name: "Bitcoin", symbol: "₿", exponent: 2})
+
+    assert Currency.exists?(:BTC)
+    assert Currency.get(:BTC) == %{name: "Bitcoin", symbol: "₿", exponent: 2}
+    assert Currency.get!(:BTC) == %{name: "Bitcoin", symbol: "₿", exponent: 2}
+    assert Currency.name(:BTC) == "Bitcoin"
+    assert Currency.name!(:BTC) == "Bitcoin"
+    assert Currency.symbol(:BTC) == "₿"
+    assert Currency.symbol!(:BTC) == "₿"
+    assert Currency.exponent(:BTC) == 2
+    assert Currency.exponent!(:BTC) == 2
+    assert Currency.sub_units_count!(:BTC) == 100
+    assert Currency.to_atom(:BTC) == :BTC
+    assert %Money{amount: 1001, currency: :BTC} == Money.new(1001, :BTC)
+    assert "₿10.01" == Money.to_string(Money.new(1001, :BTC))
+  end
 end
