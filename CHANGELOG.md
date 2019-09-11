@@ -1,10 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.5.0
 
 ### 🚀Features
+- Allow adding custom currencies [#108]
 - Configure custom_currencies at runtime rather than compile time [#111]
+- Add Philippine Piso sign [#104]
 - Add support to cast from atom-keyed maps [#110]
+
+### 🐛Bug Fixes
+- Fix typos with Money.Ecto.Map.Type docs [#105]
 
 ### 🧰Maintenance
 - Fix readme typos in usage subtract and divide typos [#109]
