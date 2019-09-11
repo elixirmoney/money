@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1
+
+### 🐛Bug Fixes
+- Fix Money.Ecto.Type casting
+
 ## 1.5.0
 
 ### 🚀Features
