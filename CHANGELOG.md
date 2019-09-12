@@ -4,6 +4,7 @@
 
 ### 🚀Enhancements
 - Check for the new using block for Ecto.Type in Ecto 3.2 [#112]
+- Fix delimeter typo [#113]
 
 ## 1.5.1
 
