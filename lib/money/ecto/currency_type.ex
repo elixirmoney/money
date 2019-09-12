@@ -19,7 +19,11 @@ if Code.ensure_compiled?(Ecto.Type) do
 
     alias Money.Currency
 
-    @behaviour Ecto.Type
+    if macro_exported?(Ecto.Type, :__using__, 1) do
+      use Ecto.Type
+    else
+      @behaviour Ecto.Type
+    end
 
     @spec type :: :string
     def type, do: :string
