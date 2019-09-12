@@ -18,7 +18,11 @@ if Code.ensure_compiled?(Ecto.Type) do
         end
     """
 
-    @behaviour Ecto.Type
+    if macro_exported?(Ecto.Type, :__using__, 1) do
+      use Ecto.Type
+    else
+      @behaviour Ecto.Type
+    end
 
     @spec type() :: :money_with_currency
     def type, do: :money_with_currency
