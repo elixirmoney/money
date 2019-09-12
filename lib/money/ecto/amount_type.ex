@@ -30,35 +30,38 @@ if Code.ensure_compiled?(Ecto.Type) do
     def cast(val)
 
     def cast(str) when is_binary(str) do
-      Money.parse(str)
+      case Money.parse(str)do
+        {:ok, money} -> {:ok, money.amount}
+        _ -> :error
+      end
     end
 
-    def cast(int) when is_integer(int), do: {:ok, Money.new(int)}
+    def cast(int) when is_integer(int), do: {:ok, Money.new(int).amount}
 
-    def cast(%Money{currency: currency} = money) do
+    def cast(%Money{currency: currency, amount: amount}) do
       case same_as_default_currency?(currency) do
-        true -> {:ok, money}
+        true -> {:ok, amount}
         _ -> :error
       end
     end
 
     def cast(%{"amount" => amount, "currency" => currency}) do
       case same_as_default_currency?(currency) do
-        true -> {:ok, Money.new(amount, currency)}
+        true -> {:ok, amount}
         _ -> :error
       end
     end
 
-    def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
+    def cast(%{"amount" => amount}), do: {:ok, amount}
 
     def cast(%{amount: amount, currency: currency}) do
       case same_as_default_currency?(currency) do
-        true -> {:ok, Money.new(amount, currency)}
+        true -> {:ok, amount}
         _ -> :error
       end
     end
 
-    def cast(%{amount: amount}), do: {:ok, Money.new(amount)}
+    def cast(%{amount: amount}), do: {:ok, amount}
 
     def cast(_), do: :error
 
