@@ -1,5 +1,5 @@
 defmodule MoneyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Money
 
   require Money.Currency
@@ -39,18 +39,18 @@ defmodule MoneyTest do
     assert Money.parse("-1000.0", :USD) == {:ok, usd(-100_000)}
 
     assert Money.parse(".25", :USD) == {:ok, usd(25)}
-    assert Money.parse(",25", :EUR, separator: ".", delimeter: ",") == {:ok, eur(25)}
-    assert Money.parse("-,25", :EUR, separator: ".", delimeter: ",") == {:ok, eur(-25)}
+    assert Money.parse(",25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(25)}
+    assert Money.parse("-,25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(-25)}
 
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
   test "parse/3 with options" do
-    assert Money.parse("€1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100_000)}
-    assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100_000)}
-    assert Money.parse("$ 1.000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100_000)}
-    assert Money.parse("€ 1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100_000)}
-    assert Money.parse("1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("$ 1.000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("€ 1000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("1000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
   end
 
   test "parse/2 with default currency set" do
@@ -238,32 +238,52 @@ defmodule MoneyTest do
   test "to_string configuration defaults" do
     try do
       Application.put_env(:money, :separator, ".")
-      Application.put_env(:money, :delimeter, ",")
+      Application.put_env(:money, :delimiter, ",")
       Application.put_env(:money, :symbol, false)
       Application.put_env(:money, :symbol_on_right, false)
       Application.put_env(:money, :symbol_space, false)
 
       assert Money.to_string(zar(1_234_567_890)) == "12.345.678,90"
-      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true) == "R12|345|678§90"
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true) == "R12|345|678§90"
 
-      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true, symbol_on_right: true) ==
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true, symbol_on_right: true) ==
                "12|345|678§90R"
 
       assert Money.to_string(zar(1_234_567_890),
                separator: "|",
-               delimeter: "§",
+               delimiter: "§",
                symbol: true,
                symbol_on_right: true,
                symbol_space: true
              ) == "12|345|678§90 R"
 
-      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true, symbol_space: true) ==
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true, symbol_space: true) ==
                "R 12|345|678§90"
+    after
+      Application.delete_env(:money, :separator)
+      Application.delete_env(:money, :delimiter)
+      Application.delete_env(:money, :symbol)
+    end
+  end
+
+  test "to_string configuration with old delimeter" do
+    try do
+      Application.put_env(:money, :separator, ".")
+      Application.put_env(:money, :delimeter, ",")
+      Application.put_env(:money, :symbol, false)
+      Application.put_env(:money, :symbol_on_right, false)
+      Application.put_env(:money, :symbol_space, false)
+
+      assert Money.to_string(Money.new(100, "USD")) == "1,00"
     after
       Application.delete_env(:money, :separator)
       Application.delete_env(:money, :delimeter)
       Application.delete_env(:money, :symbol)
     end
+  end
+
+  test "to_string with passed old delimeter" do
+    assert Money.to_string(Money.new(100, "USD"), symbol: false, delimeter: ",") == "1,00"
   end
 
   test "to_string protocol" do
