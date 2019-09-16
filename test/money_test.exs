@@ -227,6 +227,13 @@ defmodule MoneyTest do
     assert Money.to_string(zar(1_234_567_890), fractional_unit: false) == "R12,345,678"
   end
 
+  test "to_string with strip_insignificant_zeros true" do
+    assert Money.to_string(usd(500), strip_insignificant_zeros: true) == "$5"
+    assert Money.to_string(eur(1234), strip_insignificant_zeros: true) == "€12.34"
+    assert Money.to_string(xau(20305), strip_insignificant_zeros: true) == "203.05"
+    assert Money.to_string(zar(1_234_567_890), strip_insignificant_zeros: true) == "R12,345,678.9"
+  end
+
   test "to_string with different exponents" do
     assert Money.to_string(jpy(1_234)) == "¥1,234"
     assert Money.to_string(eur(1_234)) == "€12.34"
@@ -273,8 +280,41 @@ defmodule MoneyTest do
       Application.put_env(:money, :symbol, false)
       Application.put_env(:money, :symbol_on_right, false)
       Application.put_env(:money, :symbol_space, false)
+      Application.put_env(:money, :fractional_unit, true)
+      Application.put_env(:money, :strip_insignificant_zeros, false)
 
-      assert Money.to_string(Money.new(100, "USD")) == "1,00"
+      assert Money.to_string(zar(1_234_567_890)) == "12.345.678,90"
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true) == "R12|345|678§90"
+
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true, symbol_on_right: true) ==
+               "12|345|678§90R"
+
+      assert Money.to_string(zar(1_234_567_890),
+               separator: "|",
+               delimeter: "§",
+               symbol: true,
+               symbol_on_right: true,
+               symbol_space: true
+             ) == "12|345|678§90 R"
+
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimeter: "§", symbol: true, symbol_space: true) ==
+               "R 12|345|678§90"
+
+      assert Money.to_string(zar(1_234_567_890),
+               separator: "|",
+               delimeter: "§",
+               symbol: true,
+               symbol_space: true,
+               fractional_unit: false
+             ) == "R 12|345|678"
+
+      assert Money.to_string(zar(1_234_567_890),
+               separator: "|",
+               delimeter: "§",
+               symbol: true,
+               symbol_space: true,
+               strip_insignificant_zeros: true
+             ) == "R 12|345|678§9"
     after
       Application.delete_env(:money, :separator)
       Application.delete_env(:money, :delimeter)

@@ -30,7 +30,7 @@ if Code.ensure_compiled?(Ecto.Type) do
     def cast(val)
 
     def cast(str) when is_binary(str) do
-      case Money.parse(str)do
+      case Money.parse(str) do
         {:ok, money} -> {:ok, money.amount}
         _ -> :error
       end

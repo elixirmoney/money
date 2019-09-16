@@ -32,6 +32,7 @@ Money.to_string(Money.new(500, :CNY))         # ¥ 5.00
 Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimiter: ",", symbol: false)
 "1.234,56"
 Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
+Money.to_string(Money.new(1_234_50, :USD), strip_insignificant_zeros: true)  # "$1,234.5"
 ```
 
 
@@ -267,7 +268,9 @@ config :money,
   delimiter: ",",
   symbol: false,
   symbol_on_right: false,
-  symbol_space: false
+  symbol_space: false,
+  fractional_unit: true,
+  strip_insignificant_zeros: false
 ```
 
 Then you don’t have to specify the currency.
