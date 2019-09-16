@@ -1,4 +1,6 @@
 defmodule Money.Sigils do
+  @moduledoc false
+
   @doc ~S"""
   Handles the sigil `~M` for Money
 
@@ -15,12 +17,13 @@ defmodule Money.Sigils do
   """
   defmacro sigil_M({:<<>>, _meta, [amount]}, []),
     do: Macro.escape(Money.new(to_integer(amount)))
-  defmacro sigil_M({:<<>>, _meta, [amount]}, [_ | _]=currency),
+
+  defmacro sigil_M({:<<>>, _meta, [amount]}, [_ | _] = currency),
     do: Macro.escape(Money.new(to_integer(amount), List.to_atom(currency)))
 
   defp to_integer(string) do
     string
     |> String.replace("_", "")
-    |> String.to_integer
+    |> String.to_integer()
   end
 end

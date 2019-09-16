@@ -1,5 +1,5 @@
 # Money
-[![Build Status](https://travis-ci.org/liuggio/money.svg)](https://travis-ci.org/liuggio/money)
+[![Build Status](https://travis-ci.org/elixirmoney/money.svg?branch=master)](https://travis-ci.org/elixirmoney/money)
 
 Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
@@ -17,9 +17,8 @@ Documentation can be found at [https://hexdocs.pm/money/Money.html](https://hexd
 five_eur         = Money.new(500, :EUR)             # %Money{amount: 500, currency: :EUR}
 ten_eur          = Money.add(five_eur, five_eur)    # %Money{amount: 10_00, currency: :EUR}
 hundred_eur      = Money.multiply(ten_eur, 10)      # %Money{amount: 100_00, currency: :EUR}
-ninety_nine_eur  = Money.subtract(hundred_eur, 1)   # %Money{amount: 99_00, currency: :EUR}
-shares           = Money.divide(ninety_nine_eur, 2)
-[%Money{amount: 50, currency: :EUR}, %Money{amount: 49, currency: :EUR}]
+ninety_nine_eur  = Money.subtract(hundred_eur, 100) # %Money{amount: 99_00, currency: :EUR}
+shares           = Money.divide(ninety_nine_eur, 2) # [%Money{amount: 4950, currency: :EUR}, %Money{amount: 4950, currency: :EUR}]
 
 Money.equals?(five_eur, Money.new(500, :EUR)) # true
 Money.zero?(five_eur);                        # false
@@ -30,11 +29,178 @@ Money.Currency.symbol(Money.new(500, :AFN))   # ؋
 Money.Currency.name(Money.new(500, :AFN))     # Afghani
 
 Money.to_string(Money.new(500, :CNY))         # ¥ 5.00
-Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimeter: ",", symbol: false)
+Money.to_string(Money.new(1_234_56, :EUR), separator: ".", delimiter: ",", symbol: false)
 "1.234,56"
 Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
 Money.to_string(Money.new(1_234_50, :USD), strip_insignificant_zeros: true)  # "$1,234.5"
 ```
+
+
+### Serialization to database with single currency
+Bring `Money` to your Ecto project.
+The underlying database type is `integer`
+
+1. Set a default currency in `config.ex`:
+```elixir
+config :money,
+  default_currency: :USD
+```
+
+
+2. Create migration with integer type:
+```elixir
+create table(:jobs) do
+  add :amount, :integer
+end
+```
+
+3. Create schema using the `Money.Ecto.Amount.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :amount, Money.Ecto.Amount.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{amount: Money.new(100, :USD)}
+[debug] QUERY OK db=90.7ms queue=0.1ms
+INSERT INTO "jobs" ("amount","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [100, {{2019, 2, 12}, {7, 29, 8, 589489}}, {{2019, 2, 12}, {7, 29, 8, 593185}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   amount: %Money{amount: 100, currency: :USD},
+   id: 1,
+   inserted_at: ~N[2019-02-12 07:29:08.589489],
+   updated_at: ~N[2019-02-12 07:29:08.593185]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(2)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=1.8ms
+SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  amount: %Money{amount: 100, currency: :USD},
+  id: 1,
+  inserted_at: ~N[2019-02-12 07:29:08.589489],
+  updated_at: ~N[2019-02-12 07:29:08.593185]
+}
+```
+
+### Serialization to PostgreSQL with multiple currency
+`Money.Ecto.Composite.Type` Ecto type represents serialization of `Money.t` to [PostgreSQL Composite Types](https://www.postgresql.org/docs/11/rowtypes.html) with saving currency.
+
+1. Create migration with custom type:
+```elixir
+  def up do
+    execute """
+    CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
+    """
+  end
+
+  def down do
+    execute """
+    DROP TYPE public.money_with_currency
+    """
+  end
+```
+
+2. Then use created custom type(`money_with_currency`) for money field:
+```elixir
+  def change do
+    alter table(:jobs) do
+      add :price, :money_with_currency
+    end
+  end`
+```
+
+3. Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :price, Money.Ecto.Composite.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+[debug] QUERY OK db=7.7ms
+INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [{100, "JPY"}, {{2019, 2, 12}, {8, 7, 44, 729114}}, {{2019, 2, 12}, {8, 7, 44, 729124}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   id: 6,
+   inserted_at: ~N[2019-02-12 08:07:44.729114],
+   price: %Money{amount: 100, currency: :JPY},
+   updated_at: ~N[2019-02-12 08:07:44.729124]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(2)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=1.4ms
+SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  id: 6,
+  inserted_at: ~N[2019-02-12 08:07:44.729114],
+  price: %Money{amount: 100, currency: :JPY},
+  updated_at: ~N[2019-02-12 08:07:44.729124]
+}
+```
+
+### Serialization to database (JSON) with multiple currency
+`Money.Ecto.Map.Type` Ecto type represents serialization of `Money.t` to map(JSON) with saving currency.
+
+1. Create migration with map type:
+```elixir
+  def change do
+    alter table(:jobs) do
+      add :price, :map
+    end
+  end
+```
+
+2. Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
+```elixir
+schema "jobs" do
+  field :price, Money.Ecto.Map.Type
+end
+```
+
+3. Save to the database:
+```elixir
+iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+[debug] QUERY OK db=4.6ms
+INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [%{"amount" => 100, "currency" => "JPY"}, {{2019, 2, 26}, {9, 40, 14, 381721}}, {{2019, 2, 26}, {9, 40, 14, 381730}}]
+{:ok,
+ %MoneyTest.Offers.Job{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+   id: 9,
+   inserted_at: ~N[2019-02-26 09:40:14.381721],
+   price: %Money{amount: 100, currency: :JPY},
+   updated_at: ~N[2019-02-26 09:40:14.381730]
+ }}
+```
+
+4. Get from the database:
+```elixir
+iex(8)> Repo.one(Job, limit: 1)
+[debug] QUERY OK source="jobs" db=2.0ms
+SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+%MoneyTest.Offers.Job{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+  id: 10,
+  inserted_at: ~N[2019-02-26 09:40:45.205076],
+  price: %Money{amount: 100, currency: :JPY},
+  updated_at: ~N[2019-02-26 09:40:45.205084]
+}
+```
+
 
 ### Money.Sigils
 
@@ -69,23 +235,6 @@ Money.Currency.name(afn(500))   # Afghani
 Money.Currency.get(:AFN)        # %{name: "Afghani", symbol: "؋"}
 ```
 
-### Money.Ecto.Type
-
-Bring `Money` to your Ecto project.
-The underlying database type is `integer`
-
-```elixir
-# migration
-create table(:my_table) do
-  add :amount, :integer
-end
-
-# model/schema
-schema "my_table" do
-  field :amount, Money.Ecto.Type
-end
-```
-
 ### Phoenix.HTML.Safe
 
 Bring `Money` to your Phoenix project.
@@ -103,7 +252,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 1.2.1"}]
+  [{:money, "~> 1.4"}]
 end
 ```
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
@@ -116,7 +265,7 @@ You can set a default currency and default formatting preferences as follows:
 config :money,
   default_currency: :EUR,
   separator: ".",
-  delimeter: ",",
+  delimiter: ",",
   symbol: false,
   symbol_on_right: false,
   symbol_space: false,
@@ -140,6 +289,19 @@ iex> amount = Money.new(1_234_50)
 %Money{amount: 123450, currency: :EUR}
 iex> Money.to_string(amount, symbol: true, symbol_on_right: true, symbol_space: true)
 "1.234,50 €"
+```
+
+## Adding your own currencies
+
+In some cases we can need to add not common currencies, like crypto currencies or others.
+In order to add your own currencies you have to add them in the config file following this format:
+
+```elixir
+config :money,
+  custom_currencies: [
+    BTC: %{name: "Bitcoin", symbol: "₿", exponent: 2},
+    GCS: %{name: "Galactic Credit Standard", symbol: "gcs", exponent: 0}
+  ]
 ```
 
 ## LICENSE

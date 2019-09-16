@@ -1,9 +1,9 @@
 defmodule MoneyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Money
 
   require Money.Currency
-  import Money.Currency
+  import Money.Currency, only: [usd: 1, eur: 1, clf: 1, jpy: 1, omr: 1, xau: 1, zar: 1]
 
   test "new/1 with default currency set" do
     try do
@@ -27,43 +27,43 @@ defmodule MoneyTest do
   end
 
   test "parse/3" do
-    assert Money.parse("$1,000.00", :USD) == {:ok, usd(100000)}
-    assert Money.parse("$ 1,000.00", :USD) == {:ok, usd(100000)}
-    assert Money.parse("$ 1,000.0", :USD) == {:ok, usd(100000)}
-    assert Money.parse("$ 1000.0", :USD) == {:ok, usd(100000)}
-    assert Money.parse("1000.0", :USD) == {:ok, usd(100000)}
+    assert Money.parse("$1,000.00", :USD) == {:ok, usd(100_000)}
+    assert Money.parse("$ 1,000.00", :USD) == {:ok, usd(100_000)}
+    assert Money.parse("$ 1,000.0", :USD) == {:ok, usd(100_000)}
+    assert Money.parse("$ 1000.0", :USD) == {:ok, usd(100_000)}
+    assert Money.parse("1000.0", :USD) == {:ok, usd(100_000)}
 
-    assert Money.parse("$-1,000.00", :USD) == {:ok, usd(-100000)}
-    assert Money.parse("$ -1,000.00", :USD) == {:ok, usd(-100000)}
-    assert Money.parse("$- 1,000.00", :USD) == {:ok, usd(-100000)}
-    assert Money.parse("-1000.0", :USD) == {:ok, usd(-100000)}
+    assert Money.parse("$-1,000.00", :USD) == {:ok, usd(-100_000)}
+    assert Money.parse("$ -1,000.00", :USD) == {:ok, usd(-100_000)}
+    assert Money.parse("$- 1,000.00", :USD) == {:ok, usd(-100_000)}
+    assert Money.parse("-1000.0", :USD) == {:ok, usd(-100_000)}
 
     assert Money.parse(".25", :USD) == {:ok, usd(25)}
-    assert Money.parse(",25", :EUR, separator: ".", delimeter: ",") == {:ok, eur(25)}
-    assert Money.parse("-,25", :EUR, separator: ".", delimeter: ",") == {:ok, eur(-25)}
+    assert Money.parse(",25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(25)}
+    assert Money.parse("-,25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(-25)}
 
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
   test "parse/3 with options" do
-    assert Money.parse("€1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
-    assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
-    assert Money.parse("$ 1.000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
-    assert Money.parse("€ 1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
-    assert Money.parse("1000,0", :EUR, separator: ".", delimeter: ",") == {:ok, eur(100000)}
+    assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("$ 1.000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("€ 1000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
+    assert Money.parse("1000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
   end
 
   test "parse/2 with default currency set" do
     try do
       Application.put_env(:money, :default_currency, :GBP)
-      assert Money.parse("£1,234.56") == {:ok, Money.new(123456, :GBP)}
+      assert Money.parse("£1,234.56") == {:ok, Money.new(123_456, :GBP)}
     after
       Application.delete_env(:money, :default_currency)
     end
   end
 
   test "parse/2 with different exponents" do
-    assert Money.parse(1_000.00, :EUR) == {:ok, eur(100000)}
+    assert Money.parse(1_000.00, :EUR) == {:ok, eur(100_000)}
     assert Money.parse(1_000.00, :JPY) == {:ok, jpy(1000)}
     assert Money.parse(1_000.00, :OMR) == {:ok, omr(1_000_000)}
   end
@@ -164,58 +164,67 @@ defmodule MoneyTest do
 
   test "test divide" do
     assert Money.divide(Money.new(200, :USD), 2) == [
-      usd(100),
-      usd(100)
-    ]
+             usd(100),
+             usd(100)
+           ]
 
     assert Money.divide(Money.new(201, :USD), 2) == [
-      usd(101),
-      usd(100)
-    ]
+             usd(101),
+             usd(100)
+           ]
 
     assert Money.divide(Money.new(302, :USD), 3) == [
-      usd(101),
-      usd(101),
-      usd(100)
-    ]
+             usd(101),
+             usd(101),
+             usd(100)
+           ]
 
     assert Money.divide(Money.new(100, :USD), 3) == [
-      usd(34),
-      usd(33),
-      usd(33)
-    ]
+             usd(34),
+             usd(33),
+             usd(33)
+           ]
 
     assert Money.divide(Money.new(-7, :USD), 2) == [
-      usd(-4),
-      usd(-3)
-    ]
+             usd(-4),
+             usd(-3)
+           ]
 
     assert Money.divide(Money.new(-7, :USD), -2) == [
-      usd(4),
-      usd(3)
-    ]
+             usd(4),
+             usd(3)
+           ]
 
+    assert Money.divide(Money.new(-1, :USD), 2) == [
+             usd(-1),
+             usd(0)
+           ]
+
+    assert Money.divide(Money.new(-1, :USD), -2) == [
+             usd(1),
+             usd(0)
+           ]
   end
 
   test "test to_string" do
     assert Money.to_string(usd(500)) == "$5.00"
     assert Money.to_string(eur(1234)) == "€12.34"
     assert Money.to_string(xau(20305)) == "203.05"
-    assert Money.to_string(zar(1234567890)) == "R12,345,678.90"
+    assert Money.to_string(zar(1_234_567_890)) == "R12,345,678.90"
   end
 
   test "to_string with negative values" do
     assert Money.to_string(usd(-500)) == "$-5.00"
     assert Money.to_string(eur(-1234)) == "€-12.34"
     assert Money.to_string(xau(-20305)) == "-203.05"
-    assert Money.to_string(zar(-1234567890)) == "R-12,345,678.90"
+    assert Money.to_string(zar(-1_234_567_890)) == "R-12,345,678.90"
   end
 
   test "to_string with fractional_unit false" do
     assert Money.to_string(usd(500), fractional_unit: false) == "$5"
     assert Money.to_string(eur(1234), fractional_unit: false) == "€12"
     assert Money.to_string(xau(20305), fractional_unit: false) == "203"
-    assert Money.to_string(zar(1234567890), fractional_unit: false) == "R12,345,678"
+    assert Money.to_string(zar(1_234_567_890), fractional_unit: false) == "R12,345,678"
   end
 
   test "to_string with strip_insignificant_zeros true" do
@@ -234,6 +243,37 @@ defmodule MoneyTest do
   end
 
   test "to_string configuration defaults" do
+    try do
+      Application.put_env(:money, :separator, ".")
+      Application.put_env(:money, :delimiter, ",")
+      Application.put_env(:money, :symbol, false)
+      Application.put_env(:money, :symbol_on_right, false)
+      Application.put_env(:money, :symbol_space, false)
+
+      assert Money.to_string(zar(1_234_567_890)) == "12.345.678,90"
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true) == "R12|345|678§90"
+
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true, symbol_on_right: true) ==
+               "12|345|678§90R"
+
+      assert Money.to_string(zar(1_234_567_890),
+               separator: "|",
+               delimiter: "§",
+               symbol: true,
+               symbol_on_right: true,
+               symbol_space: true
+             ) == "12|345|678§90 R"
+
+      assert Money.to_string(zar(1_234_567_890), separator: "|", delimiter: "§", symbol: true, symbol_space: true) ==
+               "R 12|345|678§90"
+    after
+      Application.delete_env(:money, :separator)
+      Application.delete_env(:money, :delimiter)
+      Application.delete_env(:money, :symbol)
+    end
+  end
+
+  test "to_string configuration with old delimeter" do
     try do
       Application.put_env(:money, :separator, ".")
       Application.put_env(:money, :delimeter, ",")
@@ -255,6 +295,10 @@ defmodule MoneyTest do
       Application.delete_env(:money, :delimeter)
       Application.delete_env(:money, :symbol)
     end
+  end
+
+  test "to_string with passed old delimeter" do
+    assert Money.to_string(Money.new(100, "USD"), symbol: false, delimeter: ",") == "1,00"
   end
 
   test "to_string protocol" do

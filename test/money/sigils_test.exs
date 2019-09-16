@@ -13,7 +13,7 @@ defmodule Money.SigilsTest do
 
   test "it can handle underscores like normal integers" do
     assert ~M[1_000] == Money.new(1000, :GBP)
-    assert ~M[1_000_00] == Money.new(100000, :GBP)
+    assert ~M[1_000_00] == Money.new(100_000, :GBP)
   end
 
   # Revert the settins after compilation of the above tests
@@ -34,6 +34,6 @@ defmodule Money.SigilsTest do
   rescue
     ArgumentError ->
       test "it fails to expand the sigil with an invalid currency code",
-        do: assert Enum.random(1..2), "Failure to expand sigil for invalid currency"
+        do: assert(Enum.random(1..2), "Failure to expand sigil for invalid currency")
   end
 end
