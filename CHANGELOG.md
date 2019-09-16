@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### 🚀Enhancements
+
+- Strip insignificant zeros [#76]
 - Check for the new using block for Ecto.Type in Ecto 3.2 [#112]
 - Fix delimeter typo [#113]
 - Money.Ecto.Amount.Type now casting to integer [#114]
@@ -10,11 +12,13 @@
 ## 1.5.1
 
 ### 🐛Bug Fixes
+
 - Fix Money.Ecto.Type casting
 
 ## 1.5.0
 
 ### 🚀Enhancements
+
 - Allow adding custom currencies [#108]
 - Configure custom_currencies at runtime rather than compile time [#111]
 - Add Philippine Piso sign [#104]
@@ -23,12 +27,15 @@
 - Add dializer and fix warnings
 
 ### 🐛Bug Fixes
+
 - Fix typos with Money.Ecto.Map.Type docs [#105]
 
 ## 1.4.0
+
 Now hex is supported by an open organization and we are happy for new contributors and maintainers.
 
 ### 🚀Enhancements
+
 - Add support multiple currencies with map(JSON) type [#101]
 - Add support multiple currencies with PostgreSQL composite type [#96]
 - Add new Ecto Type for Currency [#87]
@@ -38,9 +45,11 @@ Now hex is supported by an open organization and we are happy for new contributo
 - Add Elixir 1.8.1 to CI [#97]
 
 ### ⛔️Deprecations
+
 - Deprecate `Money.Ecto.Type`, use `Money.Ecto.Amount.Type` module instead
 
 ### 🐛Bug Fixes
+
 - Fix dividing negative one [#95]
 - Fix cast in `Money.Ecto.Amount.Type` from money with currency other than a default [#100]
 
