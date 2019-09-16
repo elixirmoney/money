@@ -466,8 +466,10 @@ defmodule Money do
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
   """
-  def to_string(%Money{}=money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros} = get_display_options(money, opts)
+  def to_string(%Money{} = money, opts \\ []) do
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros} =
+      get_display_options(money, opts)
+
     number = format_number(money, separator, delimeter, fractional_unit, strip_insignificant_zeros, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
@@ -495,6 +497,7 @@ defmodule Money do
 
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
     sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: strip_insignificant_zeros})
+
     if fractional_unit && sub_unit != "" do
       [super_unit, sub_unit] |> Enum.join(delimeter)
     else
@@ -505,7 +508,7 @@ defmodule Money do
   defp prepare_sub_unit([value], options), do: prepare_sub_unit(value, options)
   defp prepare_sub_unit([], _), do: ""
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: false}), do: value
-  defp prepare_sub_unit(value,  %{strip_insignificant_zeros: true}), do: Regex.replace(~r/0+$/, value, "")
+  defp prepare_sub_unit(value, %{strip_insignificant_zeros: true}), do: Regex.replace(~r/0+$/, value, "")
 
   defp get_display_options(m, opts) do
     {separator, delimiter} = get_parse_options(opts)
@@ -522,7 +525,7 @@ defmodule Money do
     fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
     strip_insignificant_zeros = Keyword.get(opts, :strip_insignificant_zeros, default_strip_insignificant_zeros)
 
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros}
+    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros}
   end
 
   defp get_parse_options(opts) do
