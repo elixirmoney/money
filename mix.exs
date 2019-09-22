@@ -1,7 +1,7 @@
 defmodule Money.Mixfile do
   use Mix.Project
 
-  @version "1.5.1"
+  @version "1.6.0"
   @github_url "https://github.com/elixirmoney/money"
 
   def project do
