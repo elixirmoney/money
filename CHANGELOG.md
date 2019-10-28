@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛Bug Fixes
+
+- Revert Money.Ecto.Amount.Type casting to integer. This behavior leads to the fact that the structures after casting and loading from the database are different. Details [#116](https://github.com/elixirmoney/money/issues/116)
+
 ## 1.6.0
 
 ### 🚀Enhancements
