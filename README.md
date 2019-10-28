@@ -1,10 +1,11 @@
 # Money
+
 [![Build Status](https://travis-ci.org/elixirmoney/money.svg?branch=master)](https://travis-ci.org/elixirmoney/money)
 
 Elixir library for working with Money safer, easier, and fun,
 is an interpretation of the Fowler's Money pattern in fun.prog.
 
-> "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have $999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
+> "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have \$999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
 
 In short: You shouldn't represent monetary values by a float. Wherever
 you need to represent money, use `Money`.
@@ -35,19 +36,20 @@ Money.to_string(Money.new(1_234_56, :USD), fractional_unit: false)  # "$1,234"
 Money.to_string(Money.new(1_234_50, :USD), strip_insignificant_zeros: true)  # "$1,234.5"
 ```
 
-
 ### Serialization to database with single currency
+
 Bring `Money` to your Ecto project.
 The underlying database type is `integer`
 
 1. Set a default currency in `config.ex`:
+
 ```elixir
 config :money,
   default_currency: :USD
 ```
 
-
 2. Create migration with integer type:
+
 ```elixir
 create table(:jobs) do
   add :amount, :integer
@@ -55,6 +57,7 @@ end
 ```
 
 3. Create schema using the `Money.Ecto.Amount.Type` Ecto type (don't forget run `mix ecto.migrate`):
+
 ```elixir
 schema "jobs" do
   field :amount, Money.Ecto.Amount.Type
@@ -62,6 +65,7 @@ end
 ```
 
 3. Save to the database:
+
 ```elixir
 iex(1)> Repo.insert %Job{amount: Money.new(100, :USD)}
 [debug] QUERY OK db=90.7ms queue=0.1ms
@@ -77,6 +81,7 @@ INSERT INTO "jobs" ("amount","inserted_at","updated_at") VALUES ($1,$2,$3) RETUR
 ```
 
 4. Get from the database:
+
 ```elixir
 iex(2)> Repo.one(Job, limit: 1)
 [debug] QUERY OK source="jobs" db=1.8ms
@@ -91,9 +96,11 @@ SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0
 ```
 
 ### Serialization to PostgreSQL with multiple currency
+
 `Money.Ecto.Composite.Type` Ecto type represents serialization of `Money.t` to [PostgreSQL Composite Types](https://www.postgresql.org/docs/11/rowtypes.html) with saving currency.
 
 1. Create migration with custom type:
+
 ```elixir
   def up do
     execute """
@@ -109,6 +116,7 @@ SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0
 ```
 
 2. Then use created custom type(`money_with_currency`) for money field:
+
 ```elixir
   def change do
     alter table(:jobs) do
@@ -118,6 +126,7 @@ SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0
 ```
 
 3. Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
+
 ```elixir
 schema "jobs" do
   field :price, Money.Ecto.Composite.Type
@@ -125,6 +134,7 @@ end
 ```
 
 3. Save to the database:
+
 ```elixir
 iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
 [debug] QUERY OK db=7.7ms
@@ -140,6 +150,7 @@ INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURN
 ```
 
 4. Get from the database:
+
 ```elixir
 iex(2)> Repo.one(Job, limit: 1)
 [debug] QUERY OK source="jobs" db=1.4ms
@@ -154,9 +165,11 @@ SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 
 ```
 
 ### Serialization to database (JSON) with multiple currency
+
 `Money.Ecto.Map.Type` Ecto type represents serialization of `Money.t` to map(JSON) with saving currency.
 
 1. Create migration with map type:
+
 ```elixir
   def change do
     alter table(:jobs) do
@@ -166,6 +179,7 @@ SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 
 ```
 
 2. Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
+
 ```elixir
 schema "jobs" do
   field :price, Money.Ecto.Map.Type
@@ -173,6 +187,7 @@ end
 ```
 
 3. Save to the database:
+
 ```elixir
 iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
 [debug] QUERY OK db=4.6ms
@@ -188,6 +203,7 @@ INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURN
 ```
 
 4. Get from the database:
+
 ```elixir
 iex(8)> Repo.one(Job, limit: 1)
 [debug] QUERY OK source="jobs" db=2.0ms
@@ -200,7 +216,6 @@ SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 
   updated_at: ~N[2019-02-26 09:40:45.205084]
 }
 ```
-
 
 ### Money.Sigils
 
@@ -255,6 +270,7 @@ def deps do
   [{:money, "~> 1.4"}]
 end
 ```
+
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
 
 ## CONFIGURATION
@@ -302,6 +318,43 @@ config :money,
     BTC: %{name: "Bitcoin", symbol: "₿", exponent: 2},
     GCS: %{name: "Galactic Credit Standard", symbol: "gcs", exponent: 0}
   ]
+```
+
+## Troubleshooting
+
+### Validating amount in Ecto changeset
+
+When using the `Money.Ecto.Amount.Type` type, it may seem that a simple value validation should work, for example:
+
+```elixir
+schema "jobs" do
+  field :amount, Money.Ecto.Amount.Type
+end
+
+def changeset(struct, params \\ %{}) do
+  struct
+  |> cast(params, [:amount])
+  |> validate_number(:amount, [greater_than: 0])
+end
+```
+
+But this kind of validation will not work, since under the hood `Money.Ecto.Amount.Type` has the structure `%Money{amount: ..., currency: ...}`. To validate the data in this case, we recommend adding custom validation that matches your logic.
+
+Example:
+
+```elixir
+def changeset(struct, params \\ %{}) do
+  struct
+  |> cast(params, [:amount])
+  |> validate_money(:amount)
+end
+
+defp validate_money(changeset, field) do
+  validate_change(changeset, field, fn
+    _, %Money{amount: amount} when amount > 0 -> []
+    _, _ -> [amount: "must be greater than 0"]
+  end)
+end
 ```
 
 ## LICENSE

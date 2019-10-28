@@ -18,34 +18,34 @@ defmodule Money.Ecto.Amount.TypeTest do
   end
 
   test "cast/1 String" do
-    assert Type.cast("1000") == {:ok, 100_000}
-    assert Type.cast("1234.56") == {:ok, 123_456}
-    assert Type.cast("1,234.56") == {:ok, 123_456}
-    assert Type.cast("£1234.56") == {:ok, 123_456}
-    assert Type.cast("£1,234.56") == {:ok, 123_456}
-    assert Type.cast("£ 1234.56") == {:ok, 123_456}
-    assert Type.cast("£ 1,234.56") == {:ok, 123_456}
-    assert Type.cast("£ 1234") == {:ok, 123_400}
-    assert Type.cast("£ 1,234") == {:ok, 123_400}
+    assert Type.cast("1000") == {:ok, Money.new(100_000, :GBP)}
+    assert Type.cast("1234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("1,234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("£1234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("£1,234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("£ 1234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("£ 1,234.56") == {:ok, Money.new(123_456, :GBP)}
+    assert Type.cast("£ 1234") == {:ok, Money.new(123_400, :GBP)}
+    assert Type.cast("£ 1,234") == {:ok, Money.new(123_400, :GBP)}
   end
 
   test "cast/1 integer" do
-    assert Type.cast(1000) == {:ok, 1000}
+    assert Type.cast(1000) == {:ok, Money.new(1000, :GBP)}
   end
 
   test "cast/1 Money" do
-    assert Type.cast(Money.new(1000)) == {:ok, 1000}
+    assert Type.cast(Money.new(1000)) == {:ok, Money.new(1000, :GBP)}
   end
 
   test "cast/1 Map" do
     assert Type.cast(%{"amount" => 1000, "currency" => "EUR"}) == :error
-    assert Type.cast(%{"amount" => 1000, "currency" => "GBP"}) == {:ok, 1000}
-    assert Type.cast(%{"amount" => 1000, "currency" => "gbp"}) == {:ok, 1000}
-    assert Type.cast(%{"amount" => 1000}) == {:ok, 1000}
-    assert Type.cast(%{amount: 1000, currency: "GBP"}) == {:ok, 1000}
+    assert Type.cast(%{"amount" => 1000, "currency" => "GBP"}) == {:ok, Money.new(1000, :GBP)}
+    assert Type.cast(%{"amount" => 1000, "currency" => "gbp"}) == {:ok, Money.new(1000, :GBP)}
+    assert Type.cast(%{"amount" => 1000}) == {:ok, Money.new(1000, :GBP)}
+    assert Type.cast(%{amount: 1000, currency: "GBP"}) == {:ok, Money.new(1000, :GBP)}
     assert Type.cast(%{amount: 1000, currency: "EUR"}) == :error
-    assert Type.cast(%{amount: 1000, currency: "gbp"}) == {:ok, 1000}
-    assert Type.cast(%{amount: 1000}) == {:ok, 1000}
+    assert Type.cast(%{amount: 1000, currency: "gbp"}) == {:ok, Money.new(1000, :GBP)}
+    assert Type.cast(%{amount: 1000}) == {:ok, Money.new(1000, :GBP)}
   end
 
   test "cast/1 other" do
