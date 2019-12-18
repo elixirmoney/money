@@ -132,6 +132,12 @@ defmodule Money do
     {:ok, new(round(float * Currency.sub_units_count!(currency)), currency)}
   end
 
+  if Code.ensure_compiled?(Decimal) do
+    def parse(%Decimal{} = decimal, currency, _opts) do
+      Decimal.cast(decimal) |> Decimal.to_float() |> Money.parse(currency)
+    end
+  end
+
   defp prepare_parse_string(characters, delimiter, acc \\ [])
 
   defp prepare_parse_string([], _delimiter, acc),
@@ -482,6 +488,23 @@ defmodule Money do
       end
 
     parts |> Enum.join() |> String.trim_leading()
+  end
+
+  if Code.ensure_compiled?(Decimal) do
+    @spec to_decimal(t) :: Decimal.t()
+    @doc ~S"""
+    Converts a `Money` struct to a `Decimal` representation
+
+    ## Example:
+
+        iex> Money.to_decimal(Money.new(123456, :GBP))
+        #Decimal<1234.56>
+        iex> Money.to_decimal(Money.new(-123420, :EUR))
+        #Decimal<-1234.2>
+    """
+    def to_decimal(%Money{} = money) do
+      Decimal.from_float(money.amount / Money.Currency.sub_units_count!(money))
+    end
   end
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, strip_insignificant_zeros, money) do
