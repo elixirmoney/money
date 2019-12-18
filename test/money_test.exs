@@ -38,6 +38,9 @@ defmodule MoneyTest do
     assert Money.parse("$- 1,000.00", :USD) == {:ok, usd(-100_000)}
     assert Money.parse("-1000.0", :USD) == {:ok, usd(-100_000)}
 
+    assert Money.parse(Decimal.from_float(-1000.0), :USD) == {:ok, usd(-100_000)}
+    assert Money.parse(Decimal.from_float(4000.456), :USD) == {:ok, usd(4000_46)}
+
     assert Money.parse(".25", :USD) == {:ok, usd(25)}
     assert Money.parse(",25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(25)}
     assert Money.parse("-,25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(-25)}
@@ -329,5 +332,10 @@ defmodule MoneyTest do
   test "to_string protocol" do
     m = usd(500)
     assert to_string(m) == Money.to_string(m)
+  end
+
+  test "to_decimal" do
+    assert Money.to_decimal(Money.new(150, "USD")) == Decimal.from_float(1.5)
+    assert Money.to_decimal(Money.new(89130, "USD")) == Decimal.from_float(891.3)
   end
 end

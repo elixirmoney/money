@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### 🚀Enhancements
+
+- Support parsing `%Decimal{}` values in `parse/3` and `parse!/3` functions
+- Support `Money.to_decimal/1` to return the value as `%Decimal{}`
+
 ## 1.6.1
 
 ### 🐛Bug Fixes
