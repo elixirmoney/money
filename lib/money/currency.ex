@@ -210,8 +210,6 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
-  @currency_numbers %{}
-
   defp all_currencies do
     Map.merge(@currencies, custom_currencies())
   end
@@ -229,10 +227,6 @@ defmodule Money.Currency do
     """
     def unquote(:"#{currency}")(amount) do
       Money.new(amount, unquote(cur))
-    end
-
-    if detail[:number] do
-      @currency_numbers Map.put(@currency_numbers, detail[:number], cur)
     end
   end)
 
@@ -483,7 +477,10 @@ defmodule Money.Currency do
   end
 
   defp convert_currency(currency) when is_integer(currency) do
-    Map.fetch! @currency_numbers, currency
+    case Enum.find(all_currencies(), fn {_, %{number: number}} -> number == currency end) do
+      {cur, _} -> cur
+      nil -> nil
+    end
   rescue
     _ -> nil
   end

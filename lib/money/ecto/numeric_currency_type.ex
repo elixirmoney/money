@@ -31,7 +31,6 @@ if Code.ensure_compiled?(Ecto.Type) do
     # @spec cast(Money.t() | String.t() | Integer.t()) :: {:ok, atom()}
     def cast(val)
 
-    def cast(%Money{currency: currency}) when is_integer(currency), do: {:ok, currency}
     def cast(%Money{currency: currency}) when is_binary(currency) or is_atom(currency), do: cast(currency)
 
     def cast(currency) when is_binary(currency) or is_atom(currency) do
