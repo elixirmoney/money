@@ -295,10 +295,11 @@ defmodule Money do
       true
       iex> Money.equals?(Money.new(101, :USD), Money.new(100, :USD))
       false
+      iex> Money.equals?(Money.new(100, :USD), Money.new(100, :CAD))
+      false
   """
   def equals?(%Money{amount: amount, currency: cur}, %Money{amount: amount, currency: cur}), do: true
-  def equals?(%Money{currency: cur}, %Money{currency: cur}), do: false
-  def equals?(a, b), do: fail_currencies_must_be_equal(a, b)
+  def equals?(%Money{}, %Money{}), do: false
 
   @spec neg(t) :: t
   @doc ~S"""
