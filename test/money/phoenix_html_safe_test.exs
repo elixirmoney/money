@@ -1,4 +1,4 @@
-if Code.ensure_compiled?(Phoenix.HTML.Safe) do
+if Code.ensure_loaded?(Phoenix.HTML.Safe) do
   defmodule PhoenixHTMLSafeTeset do
     use ExUnit.Case, async: true
 

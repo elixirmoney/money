@@ -134,7 +134,7 @@ defmodule Money do
     {:ok, new(round(number * Currency.sub_units_count!(currency)), currency)}
   end
 
-  if Code.ensure_compiled?(Decimal) do
+  if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
       Decimal.cast(decimal) |> Decimal.to_float() |> Money.parse(currency)
     end
@@ -493,7 +493,7 @@ defmodule Money do
     parts |> Enum.join() |> String.trim_leading()
   end
 
-  if Code.ensure_compiled?(Decimal) do
+  if Code.ensure_loaded?(Decimal) do
     @spec to_decimal(t) :: Decimal.t()
     @doc ~S"""
     Converts a `Money` struct to a `Decimal` representation

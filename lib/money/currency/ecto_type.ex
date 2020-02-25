@@ -1,4 +1,4 @@
-if Code.ensure_compiled?(Ecto.Type) do
+if Code.ensure_loaded?(Ecto.Type) do
   defmodule Money.Currency.Ecto.Type do
     @moduledoc """
     Provides a type for Ecto to store a currency.
