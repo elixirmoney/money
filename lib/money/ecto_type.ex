@@ -1,4 +1,4 @@
-if Code.ensure_compiled?(Ecto.Type) do
+if Code.ensure_loaded?(Ecto.Type) do
   defmodule Money.Ecto.Type do
     @moduledoc """
     WARNING: this module is deprecated. Use Money.Ecto.Amount.Type module instead.
