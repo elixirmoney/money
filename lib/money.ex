@@ -136,7 +136,7 @@ defmodule Money do
 
   if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
-      Decimal.cast(decimal) |> Decimal.to_float() |> Money.parse(currency)
+      Decimal.to_float(decimal) |> Money.parse(currency)
     end
   end
 
@@ -195,7 +195,7 @@ defmodule Money do
 
   defp add_missing_leading_digit(str), do: str
 
-  @spec parse!(String.t() | float, atom | String.t(), Keyword.t()) :: t
+  @spec parse!(String.t() | number, atom | String.t(), Keyword.t()) :: t
   @doc ~S"""
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.

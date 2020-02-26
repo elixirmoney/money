@@ -7,7 +7,7 @@
 - Support parsing `%Decimal{}` values in `parse/3` and `parse!/3` functions
 - Support `Money.to_decimal/1` to return the value as `%Decimal{}`
 - `Money.equals?` no longer raises when comparing different currencies
-- `Money.parse` now accepts any number as argument
+- `Money.parse` and `Money.parse!` now accept any number as argument
 
 ## 1.6.1
 
