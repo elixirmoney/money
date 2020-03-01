@@ -4,7 +4,7 @@
 
 ### 🚀Enhancements
 
-- Add Elixir 1.9.4 and 1.10.2 to CI [#97]
+- Add Elixir 1.9 and 1.10 to CI [#97]
 - Support embedded schema for `Money.Ecto.Amount.Type` and `Money.Ecto.Map.Type` ecto types
 - Support parsing `%Decimal{}` values in `parse/3` and `parse!/3` functions
 - Support `Money.to_decimal/1` to return the value as `%Decimal{}`
