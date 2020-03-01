@@ -26,6 +26,8 @@ if Code.ensure_loaded?(Ecto.Type) do
     @spec type :: :integer
     def type, do: :integer
 
+    def embed_as(_), do: :dump
+
     @spec cast(String.t() | integer()) :: {:ok, Money.t()}
     def cast(val)
 
