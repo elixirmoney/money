@@ -1,7 +1,7 @@
 defmodule Money.Mixfile do
   use Mix.Project
 
-  @version "1.6.1"
+  @version "1.7.0"
   @github_url "https://github.com/elixirmoney/money"
 
   def project do
@@ -45,7 +45,7 @@ defmodule Money.Mixfile do
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
-      {:ex_doc, "~> 0.14", only: [:dev, :docs]}
+      {:ex_doc, "~> 0.21", only: [:dev, :docs]}
     ]
   end
 

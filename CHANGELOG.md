@@ -2,12 +2,15 @@
 
 ## Unreleased
 
+## 1.7.0
+
 ### 🚀Enhancements
 
 - Add Elixir 1.9 and 1.10 to CI [#97]
 - Support embedded schema for `Money.Ecto.Amount.Type` and `Money.Ecto.Map.Type` ecto types
 - Support parsing `%Decimal{}` values in `parse/3` and `parse!/3` functions
 - Support `Money.to_decimal/1` to return the value as `%Decimal{}`
+- Add currency ISO 4217 numbers support
 - `Money.equals?` no longer raises when comparing different currencies
 - `Money.parse` and `Money.parse!` now accept any number as argument
 
