@@ -64,7 +64,8 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def cast(_), do: :error
 
-    @spec load(integer()) :: {:ok, Money.t()}
+    @spec load(integer() | map()) :: {:ok, Money.t()}
+    def load(%{"amount" => amount, "currency" => currency}), do: {:ok, Money.new(amount, currency)}
     def load(int) when is_integer(int), do: {:ok, Money.new(int)}
 
     @spec dump(integer() | Money.t()) :: {:ok, integer()}
