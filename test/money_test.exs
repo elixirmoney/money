@@ -102,6 +102,18 @@ defmodule MoneyTest do
     end
   end
 
+  test "test cmp" do
+    assert Money.cmp(Money.new(123, :USD), Money.new(123, :USD)) == :eq
+    assert Money.cmp(Money.new(121, :USD), Money.new(123, :USD)) == :lt
+    assert Money.cmp(Money.new(124, :USD), Money.new(123, :USD)) == :gt
+  end
+
+  test "cmp error" do
+    assert_raise ArgumentError, fn ->
+      Money.cmp(Money.new(124, :EUR), Money.new(123, :USD))
+    end
+  end
+
   test "test zero?" do
     assert Money.zero?(Money.new(0, :USD))
   end

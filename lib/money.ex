@@ -217,7 +217,11 @@ defmodule Money do
   @spec compare(t, t) :: -1 | 0 | 1
   @doc ~S"""
   Compares two `Money` structs with each other.
-  They must each be of the same currency and then their amounts are compared
+  They must each be of the same currency and then their amounts are compared.
+  If the first amount is larger than the second `1` is returned, if less than
+  `-1` is returned, if both amounts are equal `0` is returned.
+
+  See `cmp/2` for a similar function that returns `:lt`, `:eq` or `:gt` instead.
 
   ## Example:
 
@@ -237,6 +241,32 @@ defmodule Money do
   end
 
   def compare(a, b), do: fail_currencies_must_be_equal(a, b)
+
+  @doc """
+  Compares two `Money` structs with each other.
+  They must each be of the same currency and then their amounts are compared.
+  If the first amount is larger than the second `:gt` is returned, if less than
+  `:lt` is returned, if both amounts are equal `:eq` is returned.
+
+  See `compare/2` for a similar function that returns `-1`, `0` or `1` instead.
+
+  ## Example:
+
+      iex> Money.cmp(Money.new(100, :USD), Money.new(100, :USD))
+      :eq
+      iex> Money.cmp(Money.new(100, :USD), Money.new(101, :USD))
+      :lt
+      iex> Money.cmp(Money.new(101, :USD), Money.new(100, :USD))
+      :gt
+  """
+  @spec cmp(t, t) :: :lt | :eq | :gt
+  def cmp(a, b) do
+    case compare(a, b) do
+      x when x == -1 -> :lt
+      x when x == 0 -> :eq
+      x when x == 1 -> :gt
+    end
+  end
 
   @spec zero?(t) :: boolean
   @doc ~S"""
