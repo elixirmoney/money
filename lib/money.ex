@@ -542,14 +542,16 @@ defmodule Money do
 
   defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, strip_insignificant_zeros, money) do
     exponent = Currency.exponent(money)
-    sub_units_count = Currency.sub_units_count!(money)
-    amount_float = amount / sub_units_count
+    amount_abs = if amount < 0, do: -amount, else: amount
+    amount_str = Integer.to_string(amount_abs)
 
-    [super_unit | sub_unit] =
-      amount_float
-      |> Kernel.abs()
-      |> :erlang.float_to_binary(decimals: exponent)
-      |> String.split(".")
+    [sub_unit, super_unit] =
+      amount_str
+      |> String.pad_leading(exponent + 1, "0")
+      |> String.reverse()
+      |> String.split_at(exponent)
+      |> Tuple.to_list()
+      |> Enum.map(&String.reverse/1)
 
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
     sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: strip_insignificant_zeros})
