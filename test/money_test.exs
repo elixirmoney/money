@@ -256,6 +256,11 @@ defmodule MoneyTest do
     assert Money.to_string(usd(10)) == "$0.10"
     assert Money.to_string(clf(20)) == "$0.0020"
     assert Money.to_string(clf(1_234_567)) == "$123.4567"
+    assert Money.to_string(usd(12_345_678)) == "$123,456.78"
+    assert Money.to_string(usd(123_456_789)) == "$1,234,567.89"
+
+    assert Money.to_string(usd(123_456_789_123_456_789_123_456_789_123_456_789)) ==
+             "$1,234,567,891,234,567,891,234,567,891,234,567.89"
   end
 
   test "to_string configuration defaults" do
