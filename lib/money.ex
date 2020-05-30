@@ -205,12 +205,12 @@ defmodule Money do
       iex> Money.parse!("1,234.56", :USD)
       %Money{amount: 123456, currency: :USD}
       iex> Money.parse!("wrong", :USD)
-      ** (ArgumentError) unable to parse "wrong"
+      ** (ArgumentError) unable to parse "wrong" with currency :USD
   """
   def parse!(value, currency \\ nil, opts \\ []) do
     case parse(value, currency, opts) do
       {:ok, money} -> money
-      :error -> raise ArgumentError, "unable to parse #{inspect(value)}"
+      :error -> raise ArgumentError, "unable to parse #{inspect(value)} with currency #{inspect(currency)}"
     end
   end
 
