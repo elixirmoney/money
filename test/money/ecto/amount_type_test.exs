@@ -60,7 +60,7 @@ defmodule Money.Ecto.Amount.TypeTest do
     assert Type.dump(1000) == {:ok, 1000}
   end
 
-  test "dmmp/1 Money" do
+  test "dump/1 Money" do
     assert Type.dump(Money.new(1000, :GBP)) == {:ok, 1000}
   end
 
