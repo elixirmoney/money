@@ -210,6 +210,8 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
+  @type index_type() :: Money.t() | String.t() | atom | integer
+
   defp all_currencies do
     Map.merge(@currencies, custom_currencies())
   end
@@ -242,7 +244,7 @@ defmodule Money.Currency do
   """
   def all, do: all_currencies()
 
-  @spec exists?(Money.t() | String.t() | atom) :: boolean
+  @spec exists?(index_type()) :: boolean
   @doc ~S"""
   Returns true if a currency is defined
 
@@ -261,7 +263,7 @@ defmodule Money.Currency do
   def exists?(currency),
     do: Map.has_key?(all_currencies(), convert_currency(currency))
 
-  @spec get(Money.t() | String.t() | atom) :: map | nil
+  @spec get(index_type()) :: map | nil
   @doc ~S"""
   Returns a map with the name and symbol of the currency or nil if it doesn’t exist.
 
@@ -287,7 +289,7 @@ defmodule Money.Currency do
   def get(currency),
     do: all_currencies()[convert_currency(currency)]
 
-  @spec get!(Money.t() | String.t() | atom) :: map
+  @spec get!(index_type()) :: map
   @doc ~S"""
   Returns a map with the name and symbol of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -302,7 +304,7 @@ defmodule Money.Currency do
   def get!(currency),
     do: get(currency) || currency_doesnt_exist_error(currency)
 
-  @spec to_atom(Money.t() | String.t() | atom) :: atom
+  @spec to_atom(index_type()) :: atom
   @doc ~S"""
   Returns the atom representation of the currency key
   An ArgumentError is raised if the currency doesn’t exist.
@@ -323,7 +325,7 @@ defmodule Money.Currency do
     currency
   end
 
-  @spec name(Money.t() | String.t() | atom) :: String.t() | nil
+  @spec name(index_type()) :: String.t() | nil
   @doc ~S"""
   Returns the name of the currency or nil if it doesn’t exist.
 
@@ -340,7 +342,7 @@ defmodule Money.Currency do
   def name(currency),
     do: get(currency)[:name]
 
-  @spec name!(Money.t() | String.t() | atom) :: String.t()
+  @spec name!(index_type()) :: String.t()
   @doc ~S"""
   Returns the name of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -355,7 +357,7 @@ defmodule Money.Currency do
   def name!(currency),
     do: name(currency) || currency_doesnt_exist_error(currency)
 
-  @spec symbol(Money.t() | String.t() | atom) :: String.t() | nil
+  @spec symbol(index_type()) :: String.t() | nil
   @doc ~S"""
   Returns the symbol of the currency or nil if it doesn’t exist.
 
@@ -372,7 +374,7 @@ defmodule Money.Currency do
   def symbol(currency),
     do: get(currency)[:symbol]
 
-  @spec symbol!(Money.t() | String.t() | atom) :: String.t()
+  @spec symbol!(index_type()) :: String.t()
   @doc ~S"""
   Returns the symbol of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -387,7 +389,7 @@ defmodule Money.Currency do
   def symbol!(currency),
     do: symbol(currency) || currency_doesnt_exist_error(currency)
 
-  @spec exponent(Money.t() | String.t() | atom) :: integer | nil
+  @spec exponent(index_type()) :: integer | nil
   @doc ~S"""
   Returns the exponent of the currency or nil if it doesn’t exist.
 
@@ -404,7 +406,7 @@ defmodule Money.Currency do
   def exponent(currency),
     do: get(currency)[:exponent]
 
-  @spec exponent!(Money.t() | String.t() | atom) :: integer
+  @spec exponent!(index_type()) :: integer
   @doc ~S"""
   Returns the exponent of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -419,7 +421,7 @@ defmodule Money.Currency do
   def exponent!(currency),
     do: exponent(currency) || currency_doesnt_exist_error(currency)
 
-  @spec sub_units_count!(Money.t() | String.t() | atom) :: integer
+  @spec sub_units_count!(index_type()) :: integer
   @doc ~S"""
   Returns the sub_units_count of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
@@ -438,7 +440,7 @@ defmodule Money.Currency do
     round(:math.pow(10, exponent))
   end
 
-  @spec number(Money.t() | String.t() | atom) :: integer | nil
+  @spec number(index_type()) :: integer | nil
   @doc ~S"""
   Returns the number of the currency or nil if it doesn’t exist.
 
@@ -455,7 +457,7 @@ defmodule Money.Currency do
   def number(currency),
     do: get(currency)[:number]
 
-  @spec number!(Money.t() | String.t() | atom) :: integer
+  @spec number!(index_type()) :: integer
   @doc ~S"""
   Returns the number of the currency.
   An ArgumentError is raised if the currency doesn’t exist.
