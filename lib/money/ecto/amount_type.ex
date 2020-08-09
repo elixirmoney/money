@@ -28,7 +28,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def embed_as(_), do: :dump
 
-    @spec cast(String.t() | integer()) :: {:ok, Money.t()}
+    @spec cast(String.t() | integer() | Money.t() | map() | any()) :: {:ok, Money.t()} | :error
     def cast(val)
 
     def cast(str) when is_binary(str) do
