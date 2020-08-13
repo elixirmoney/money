@@ -7,7 +7,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     ## Migration Example
 
-        reate table(:my_table) do
+        create table(:my_table) do
           add :price, :map
         end
 
