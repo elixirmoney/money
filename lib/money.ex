@@ -197,7 +197,7 @@ defmodule Money do
 
   defp add_missing_leading_digit(str), do: str
 
-  @spec parse!(String.t() | number, atom | String.t(), Keyword.t()) :: t
+  @spec parse!(String.t() | number | Decimal.t(), atom | String.t(), Keyword.t()) :: t
   @doc ~S"""
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
