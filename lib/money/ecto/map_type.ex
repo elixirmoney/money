@@ -33,7 +33,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     @spec dump(any()) :: :error | {:ok, {integer(), String.t()}}
     def dump(%Money{} = money) do
-      {:ok, %{"amount" => money.amount(), "currency" => to_string(money.currency)}}
+      {:ok, %{"amount" => money.amount, "currency" => to_string(money.currency)}}
     end
 
     def dump(_), do: :error
