@@ -273,19 +273,14 @@ defmodule Money.Currency do
       %{name: "US Dollar", symbol: "$", exponent: 2, number: 840}
       iex> Money.Currency.get(:WRONG)
       nil
-  """
-  def get(%Money{currency: currency}),
-    do: get(currency)
-
-  @doc ~S"""
-  Returns a map with the name and symbol of the currency.
-  An ArgumentError is raised if the currency doesn’t exist.
-
-  ## Example:
-
       iex> Money.Currency.get(826)
       %{name: "Pound Sterling", symbol: "£", exponent: 2, number: 826}
   """
+  def get(currency)
+
+  def get(%Money{currency: currency}),
+    do: get(currency)
+
   def get(currency),
     do: all_currencies()[convert_currency(currency)]
 
