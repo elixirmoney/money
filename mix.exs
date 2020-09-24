@@ -38,7 +38,7 @@ defmodule Money.Mixfile do
       # Soft dependencies
       {:ecto, "~> 1.0 or ~> 2.0 or ~> 2.1 or ~> 3.0", optional: true},
       {:phoenix_html, "~> 2.0", optional: true},
-      {:decimal, "~> 1.0", optional: true},
+      {:decimal, "~> 1.0 or ~> 2.0", optional: true},
 
       # Code style and analyzers
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false, optional: true},
