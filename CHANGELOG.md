@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## 1.8.0
+
+### 🚀Enhancements
+
+- Improves error message when Money.parse! fails
+- Add Money.cmp/2 function
+- Add decimal@v2.0.0 to optional list in mix.exs
+
+### 🐛Bug Fixes
+
+- Fix: avoic float rounding in Money.to_string
+- Fix some type specs (did not include valid types)
+- Fix Elixir 1.11.0 complain about variable usage
+- Fix duplicate doc for Money.Currency.get/1
+
+
 ## 1.7.0
 
 ### 🚀Enhancements
