@@ -1,18 +1,20 @@
 # Money
 
 [![Build Status](https://travis-ci.org/elixirmoney/money.svg?branch=master)](https://travis-ci.org/elixirmoney/money)
+[![Module Version](https://img.shields.io/hexpm/v/money.svg)](https://hex.pm/packages/money)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/money/)
+[![Total Download](https://img.shields.io/hexpm/dt/money.svg)](https://hex.pm/packages/money)
+[![License](https://img.shields.io/hexpm/l/money.svg)](https://hex.pm/packages/money)
+[![Last Updated](https://img.shields.io/github/last-commit/elixirmoney/money.svg)](https://github.com/elixirmoney/money/commits/master)
 
-Elixir library for working with Money safer, easier, and fun,
-is an interpretation of the Fowler's Money pattern in fun.prog.
+Elixir library for working with Money safer, easier, and fun, is an interpretation of the Martin Fowler's [Money pattern](https://www.martinfowler.com/eaaCatalog/money.html) in functional programming.
 
 > "If I had a dime for every time I've seen someone use FLOAT to store currency, I'd have \$999.997634" -- [Bill Karwin](https://twitter.com/billkarwin/status/347561901460447232)
 
 In short: You shouldn't represent monetary values by a float. Wherever
 you need to represent money, use `Money`.
 
-Documentation can be found at [https://hexdocs.pm/money/Money.html](https://hexdocs.pm/money/Money.html) on [HexDocs](https://hexdocs.pm)
-
-## USAGE
+## Usage
 
 ```elixir
 five_eur         = Money.new(500, :EUR)             # %Money{amount: 500, currency: :EUR}
@@ -41,181 +43,181 @@ Money.to_string(Money.new(1_234_50, :USD), strip_insignificant_zeros: true)  # "
 Bring `Money` to your Ecto project.
 The underlying database type is `integer`
 
-1. Set a default currency in `config.ex`:
+1.  Set a default currency in `config.ex`:
 
-```elixir
-config :money,
-  default_currency: :USD
-```
+    ```elixir
+    config :money,
+      default_currency: :USD
+    ```
 
-2. Create migration with integer type:
+2.  Create migration with integer type:
 
-```elixir
-create table(:jobs) do
-  add :amount, :integer
-end
-```
+    ```elixir
+    create table(:jobs) do
+      add :amount, :integer
+    end
+    ```
 
-3. Create schema using the `Money.Ecto.Amount.Type` Ecto type (don't forget run `mix ecto.migrate`):
+3.  Create schema using the `Money.Ecto.Amount.Type` Ecto type (don't forget run `mix ecto.migrate`):
 
-```elixir
-schema "jobs" do
-  field :amount, Money.Ecto.Amount.Type
-end
-```
+    ```elixir
+    schema "jobs" do
+      field :amount, Money.Ecto.Amount.Type
+    end
+    ```
 
-3. Save to the database:
+4.  Save to the database:
 
-```elixir
-iex(1)> Repo.insert %Job{amount: Money.new(100, :USD)}
-[debug] QUERY OK db=90.7ms queue=0.1ms
-INSERT INTO "jobs" ("amount","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [100, {{2019, 2, 12}, {7, 29, 8, 589489}}, {{2019, 2, 12}, {7, 29, 8, 593185}}]
-{:ok,
- %MoneyTest.Offers.Job{
-   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-   amount: %Money{amount: 100, currency: :USD},
-   id: 1,
-   inserted_at: ~N[2019-02-12 07:29:08.589489],
-   updated_at: ~N[2019-02-12 07:29:08.593185]
- }}
-```
+    ```elixir
+    iex(1)> Repo.insert %Job{amount: Money.new(100, :USD)}
+    [debug] QUERY OK db=90.7ms queue=0.1ms
+    INSERT INTO "jobs" ("amount","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [100, {{2019, 2, 12}, {7, 29, 8, 589489}}, {{2019, 2, 12}, {7, 29, 8, 593185}}]
+    {:ok,
+     %MoneyTest.Offers.Job{
+       __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+       amount: %Money{amount: 100, currency: :USD},
+       id: 1,
+       inserted_at: ~N[2019-02-12 07:29:08.589489],
+       updated_at: ~N[2019-02-12 07:29:08.593185]
+     }}
+    ```
 
-4. Get from the database:
+5.  Get from the database:
 
-```elixir
-iex(2)> Repo.one(Job, limit: 1)
-[debug] QUERY OK source="jobs" db=1.8ms
-SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
-%MoneyTest.Offers.Job{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-  amount: %Money{amount: 100, currency: :USD},
-  id: 1,
-  inserted_at: ~N[2019-02-12 07:29:08.589489],
-  updated_at: ~N[2019-02-12 07:29:08.593185]
-}
-```
+    ```elixir
+    iex(2)> Repo.one(Job, limit: 1)
+    [debug] QUERY OK source="jobs" db=1.8ms
+    SELECT j0."id", j0."amount", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+    %MoneyTest.Offers.Job{
+      __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+      amount: %Money{amount: 100, currency: :USD},
+      id: 1,
+      inserted_at: ~N[2019-02-12 07:29:08.589489],
+      updated_at: ~N[2019-02-12 07:29:08.593185]
+    }
+    ```
 
 ### Serialization to PostgreSQL with multiple currency
 
 `Money.Ecto.Composite.Type` Ecto type represents serialization of `Money.t` to [PostgreSQL Composite Types](https://www.postgresql.org/docs/11/rowtypes.html) with saving currency.
 
-1. Create migration with custom type:
+1.  Create migration with custom type:
 
-```elixir
-  def up do
-    execute """
-    CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
-    """
-  end
+    ```elixir
+      def up do
+        execute """
+        CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
+        """
+      end
 
-  def down do
-    execute """
-    DROP TYPE public.money_with_currency
-    """
-  end
-```
+      def down do
+        execute """
+        DROP TYPE public.money_with_currency
+        """
+      end
+    ```
 
-2. Then use created custom type(`money_with_currency`) for money field:
+2.  Then use created custom type(`money_with_currency`) for money field:
 
-```elixir
-  def change do
-    alter table(:jobs) do
-      add :price, :money_with_currency
+    ```elixir
+      def change do
+        alter table(:jobs) do
+          add :price, :money_with_currency
+        end
+      end`
+    ```
+
+3.  Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
+
+    ```elixir
+    schema "jobs" do
+      field :price, Money.Ecto.Composite.Type
     end
-  end`
-```
+    ```
 
-3. Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
+3.  Save to the database:
 
-```elixir
-schema "jobs" do
-  field :price, Money.Ecto.Composite.Type
-end
-```
+    ```elixir
+    iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+    [debug] QUERY OK db=7.7ms
+    INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [{100, "JPY"}, {{2019, 2, 12}, {8, 7, 44, 729114}}, {{2019, 2, 12}, {8, 7, 44, 729124}}]
+    {:ok,
+     %MoneyTest.Offers.Job{
+       __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+       id: 6,
+       inserted_at: ~N[2019-02-12 08:07:44.729114],
+       price: %Money{amount: 100, currency: :JPY},
+       updated_at: ~N[2019-02-12 08:07:44.729124]
+     }}
+    ```
 
-3. Save to the database:
+4.  Get from the database:
 
-```elixir
-iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
-[debug] QUERY OK db=7.7ms
-INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [{100, "JPY"}, {{2019, 2, 12}, {8, 7, 44, 729114}}, {{2019, 2, 12}, {8, 7, 44, 729124}}]
-{:ok,
- %MoneyTest.Offers.Job{
-   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-   id: 6,
-   inserted_at: ~N[2019-02-12 08:07:44.729114],
-   price: %Money{amount: 100, currency: :JPY},
-   updated_at: ~N[2019-02-12 08:07:44.729124]
- }}
-```
-
-4. Get from the database:
-
-```elixir
-iex(2)> Repo.one(Job, limit: 1)
-[debug] QUERY OK source="jobs" db=1.4ms
-SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
-%MoneyTest.Offers.Job{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-  id: 6,
-  inserted_at: ~N[2019-02-12 08:07:44.729114],
-  price: %Money{amount: 100, currency: :JPY},
-  updated_at: ~N[2019-02-12 08:07:44.729124]
-}
-```
+    ```elixir
+    iex(2)> Repo.one(Job, limit: 1)
+    [debug] QUERY OK source="jobs" db=1.4ms
+    SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+    %MoneyTest.Offers.Job{
+      __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+      id: 6,
+      inserted_at: ~N[2019-02-12 08:07:44.729114],
+      price: %Money{amount: 100, currency: :JPY},
+      updated_at: ~N[2019-02-12 08:07:44.729124]
+    }
+    ```
 
 ### Serialization to database (JSON) with multiple currency
 
 `Money.Ecto.Map.Type` Ecto type represents serialization of `Money.t` to map(JSON) with saving currency.
 
-1. Create migration with map type:
+1.  Create migration with map type:
 
-```elixir
-  def change do
-    alter table(:jobs) do
-      add :price, :map
+    ```elixir
+      def change do
+        alter table(:jobs) do
+          add :price, :map
+        end
+      end
+    ```
+
+2.  Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
+
+    ```elixir
+    schema "jobs" do
+      field :price, Money.Ecto.Map.Type
     end
-  end
-```
+    ```
 
-2. Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
+3.  Save to the database:
 
-```elixir
-schema "jobs" do
-  field :price, Money.Ecto.Map.Type
-end
-```
+    ```elixir
+    iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
+    [debug] QUERY OK db=4.6ms
+    INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [%{"amount" => 100, "currency" => "JPY"}, {{2019, 2, 26}, {9, 40, 14, 381721}}, {{2019, 2, 26}, {9, 40, 14, 381730}}]
+    {:ok,
+     %MoneyTest.Offers.Job{
+       __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+       id: 9,
+       inserted_at: ~N[2019-02-26 09:40:14.381721],
+       price: %Money{amount: 100, currency: :JPY},
+       updated_at: ~N[2019-02-26 09:40:14.381730]
+     }}
+    ```
 
-3. Save to the database:
+4.  Get from the database:
 
-```elixir
-iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
-[debug] QUERY OK db=4.6ms
-INSERT INTO "jobs" ("price","inserted_at","updated_at") VALUES ($1,$2,$3) RETURNING "id" [%{"amount" => 100, "currency" => "JPY"}, {{2019, 2, 26}, {9, 40, 14, 381721}}, {{2019, 2, 26}, {9, 40, 14, 381730}}]
-{:ok,
- %MoneyTest.Offers.Job{
-   __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-   id: 9,
-   inserted_at: ~N[2019-02-26 09:40:14.381721],
-   price: %Money{amount: 100, currency: :JPY},
-   updated_at: ~N[2019-02-26 09:40:14.381730]
- }}
-```
-
-4. Get from the database:
-
-```elixir
-iex(8)> Repo.one(Job, limit: 1)
-[debug] QUERY OK source="jobs" db=2.0ms
-SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
-%MoneyTest.Offers.Job{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
-  id: 10,
-  inserted_at: ~N[2019-02-26 09:40:45.205076],
-  price: %Money{amount: 100, currency: :JPY},
-  updated_at: ~N[2019-02-26 09:40:45.205084]
-}
-```
+    ```elixir
+    iex(8)> Repo.one(Job, limit: 1)
+    [debug] QUERY OK source="jobs" db=2.0ms
+    SELECT j0."id", j0."price", j0."inserted_at", j0."updated_at" FROM "jobs" AS j0 []
+    %MoneyTest.Offers.Job{
+      __meta__: #Ecto.Schema.Metadata<:loaded, "jobs">,
+      id: 10,
+      inserted_at: ~N[2019-02-26 09:40:45.205076],
+      price: %Money{amount: 100, currency: :JPY},
+      updated_at: ~N[2019-02-26 09:40:45.205084]
+    }
+    ```
 
 ### Money.Sigils
 
@@ -259,7 +261,7 @@ If you are using Phoenix, you can include money objects directly into your outpu
 <b><%= Money.new(12345,67, :GBP) %></b>
 ```
 
-## INSTALLATION
+## Installation
 
 Money comes with no required dependencies.
 
@@ -273,7 +275,7 @@ end
 
 then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
 
-## CONFIGURATION
+## Configuration
 
 You can set a default currency and default formatting preferences as follows:
 
@@ -307,7 +309,7 @@ iex> Money.to_string(amount, symbol: true, symbol_on_right: true, symbol_space: 
 "1.234,50 €"
 ```
 
-## Adding your own currencies
+### Custom Currencies
 
 In some cases we can need to add not common currencies, like crypto currencies or others.
 In order to add your own currencies you have to add them in the config file following this format:
@@ -357,6 +359,6 @@ defp validate_money(changeset, field) do
 end
 ```
 
-## LICENSE
+## License
 
 MIT License please see the [LICENSE](./LICENSE) file.

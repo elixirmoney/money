@@ -4,7 +4,7 @@ defmodule Money do
   @moduledoc """
   Defines a `Money` struct along with convenience methods for working with currencies.
 
-  ## Example:
+  ## Examples
 
       iex> money = Money.new(500, :USD)
       %Money{amount: 500, currency: :USD}
@@ -13,11 +13,9 @@ defmodule Money do
       iex> Money.to_string(money)
       "$10.50"
 
-  ## Configuration options
+  ## Configuration
 
   You can set defaults in your Mix configuration to make working with `Money` a little easier.
-
-  ## Configuration:
 
       config :money,
         default_currency: :EUR,           # this allows you to do Money.new(100)
@@ -28,6 +26,7 @@ defmodule Money do
         symbol_space: false               # add a space between symbol and number
         fractional_unit: true             # display units after the delimeter
         strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
+
   """
 
   @type t :: %__MODULE__{
@@ -44,15 +43,16 @@ defmodule Money do
   Create a new `Money` struct using a default currency.
   The default currency can be set in the system Mix config.
 
-  ## Example Config:
+  ## Config
 
       config :money,
         default_currency: :USD
 
-  ## Example:
+  ## Examples
 
       Money.new(123)
       %Money{amount: 123, currency: :USD}
+
   """
   def new(amount) do
     currency = Application.get_env(:money, :default_currency)
@@ -68,10 +68,11 @@ defmodule Money do
   @doc """
   Create a new `Money` struct from currency sub-units (cents)
 
-  ## Example:
+  ## Examples
 
       iex> Money.new(1_000_00, :USD)
       %Money{amount: 1_000_00, currency: :USD}
+
   """
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
@@ -82,27 +83,34 @@ defmodule Money do
 
   The following options are available:
 
-    - `separator` - default `","`, sets the separator for groups of thousands.
+    * `:separator` - default `","`, sets the separator for groups of thousands.
       "1,000"
-    - `delimiter` - default `"."`, sets the decimal delimiter.
+    * `:delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
 
-  ## Examples:
+  ## Examples
 
       iex> Money.parse("$1,234.56", :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
+
       iex> Money.parse("1.234,56", :EUR, separator: ".", delimiter: ",")
       {:ok, %Money{amount: 123456, currency: :EUR}}
+
       iex> Money.parse("1.234,56", :WRONG)
       :error
+
       iex> Money.parse(1_234.56, :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
+
       iex> Money.parse(1_234, :USD)
       {:ok, %Money{amount: 123400, currency: :USD}}
+
       iex> Money.parse(-1_234.56, :USD)
       {:ok, %Money{amount: -123456, currency: :USD}}
+
       iex> Money.parse(Decimal.cast(1_234.56), :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
+
   """
   def parse(value, currency \\ nil, opts \\ [])
 
@@ -202,12 +210,14 @@ defmodule Money do
   Parse a value into a `Money` type.
   Similar to `parse/3` but returns a `%Money{}` or raises an error if parsing fails.
 
-  ## Example:
+  ## Examples
 
       iex> Money.parse!("1,234.56", :USD)
       %Money{amount: 123456, currency: :USD}
+
       iex> Money.parse!("wrong", :USD)
       ** (ArgumentError) unable to parse "wrong" with currency :USD
+
   """
   def parse!(value, currency \\ nil, opts \\ []) do
     case parse(value, currency, opts) do
@@ -225,14 +235,17 @@ defmodule Money do
 
   See `cmp/2` for a similar function that returns `:lt`, `:eq` or `:gt` instead.
 
-  ## Example:
+  ## Examples
 
       iex> Money.compare(Money.new(100, :USD), Money.new(100, :USD))
       0
+
       iex> Money.compare(Money.new(100, :USD), Money.new(101, :USD))
       -1
+
       iex> Money.compare(Money.new(101, :USD), Money.new(100, :USD))
       1
+
   """
   def compare(%Money{currency: cur} = a, %Money{currency: cur} = b) do
     case a.amount - b.amount do
@@ -252,14 +265,17 @@ defmodule Money do
 
   See `compare/2` for a similar function that returns `-1`, `0` or `1` instead.
 
-  ## Example:
+  ## Examples
 
       iex> Money.cmp(Money.new(100, :USD), Money.new(100, :USD))
       :eq
+
       iex> Money.cmp(Money.new(100, :USD), Money.new(101, :USD))
       :lt
+
       iex> Money.cmp(Money.new(101, :USD), Money.new(100, :USD))
       :gt
+
   """
   @spec cmp(t, t) :: :lt | :eq | :gt
   def cmp(a, b) do
@@ -274,12 +290,14 @@ defmodule Money do
   @doc ~S"""
   Returns true if the amount of a `Money` struct is zero
 
-  ## Example:
+  ## Examples
 
       iex> Money.zero?(Money.new(0, :USD))
       true
+
       iex> Money.zero?(Money.new(1, :USD))
       false
+
   """
   def zero?(%Money{amount: amount}) do
     amount == 0
@@ -289,14 +307,17 @@ defmodule Money do
   @doc ~S"""
   Returns true if the amount of a `Money` is greater than zero
 
-  ## Example:
+  ## Examples
 
       iex> Money.positive?(Money.new(0, :USD))
       false
+
       iex> Money.positive?(Money.new(1, :USD))
       true
+
       iex> Money.positive?(Money.new(-1, :USD))
       false
+
   """
   def positive?(%Money{amount: amount}) do
     amount > 0
@@ -306,14 +327,17 @@ defmodule Money do
   @doc ~S"""
   Returns true if the amount of a `Money` is less than zero
 
-  ## Example:
+  ## Examples
 
       iex> Money.negative?(Money.new(0, :USD))
       false
+
       iex> Money.negative?(Money.new(1, :USD))
       false
+
       iex> Money.negative?(Money.new(-1, :USD))
       true
+
   """
   def negative?(%Money{amount: amount}) do
     amount < 0
@@ -323,14 +347,17 @@ defmodule Money do
   @doc ~S"""
   Returns true if two `Money` of the same currency have the same amount
 
-  ## Example:
+  ## Examples
 
       iex> Money.equals?(Money.new(100, :USD), Money.new(100, :USD))
       true
+
       iex> Money.equals?(Money.new(101, :USD), Money.new(100, :USD))
       false
+
       iex> Money.equals?(Money.new(100, :USD), Money.new(100, :CAD))
       false
+
   """
   def equals?(%Money{amount: amount, currency: cur}, %Money{amount: amount, currency: cur}), do: true
   def equals?(%Money{}, %Money{}), do: false
@@ -339,12 +366,14 @@ defmodule Money do
   @doc ~S"""
   Returns a `Money` with the amount negated.
 
-  ## Examples:
+  ## Examples
 
       iex> Money.new(100, :USD) |> Money.neg
       %Money{amount: -100, currency: :USD}
+
       iex> Money.new(-100, :USD) |> Money.neg
       %Money{amount: 100, currency: :USD}
+
   """
   def neg(%Money{amount: amount, currency: cur}),
     do: %Money{amount: -amount, currency: cur}
@@ -353,12 +382,14 @@ defmodule Money do
   @doc ~S"""
   Returns a `Money` with the arithmetical absolute of the amount.
 
-  ## Examples:
+  ## Examples
 
       iex> Money.new(-100, :USD) |> Money.abs
       %Money{amount: 100, currency: :USD}
+
       iex> Money.new(100, :USD) |> Money.abs
       %Money{amount: 100, currency: :USD}
+
   """
   def abs(%Money{amount: amount, currency: cur}),
     do: %Money{amount: Kernel.abs(amount), currency: cur}
@@ -367,14 +398,17 @@ defmodule Money do
   @doc ~S"""
   Adds two `Money` together or an integer (cents) amount to a `Money`
 
-  ## Example:
+  ## Examples
 
       iex> Money.add(Money.new(100, :USD), Money.new(50, :USD))
       %Money{amount: 150, currency: :USD}
+
       iex> Money.add(Money.new(100, :USD), 50)
       %Money{amount: 150, currency: :USD}
+
       iex> Money.add(Money.new(100, :USD), 5.55)
       %Money{amount: 655, currency: :USD}
+
   """
   def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a + b, cur)
@@ -391,14 +425,17 @@ defmodule Money do
   @doc ~S"""
   Subtracts one `Money` from another or an integer (cents) from a `Money`
 
-  ## Example:
+  ## Examples
 
       iex> Money.subtract(Money.new(150, :USD), Money.new(50, :USD))
       %Money{amount: 100, currency: :USD}
+
       iex> Money.subtract(Money.new(150, :USD), 50)
       %Money{amount: 100, currency: :USD}
+
       iex> Money.subtract(Money.new(150, :USD), 1.25)
       %Money{amount: 25, currency: :USD}
+
   """
   def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a - b, cur)
@@ -415,11 +452,14 @@ defmodule Money do
   @doc ~S"""
   Multiplies a `Money` by an amount
 
-  ## Example:
+  ## Examples
+
       iex> Money.multiply(Money.new(100, :USD), 10)
       %Money{amount: 1000, currency: :USD}
+
       iex> Money.multiply(Money.new(100, :USD), 1.5)
       %Money{amount: 150, currency: :USD}
+
   """
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
@@ -431,11 +471,14 @@ defmodule Money do
   @doc ~S"""
   Divides up `Money` by an amount
 
-  ## Example:
+  ## Examples
+
       iex> Money.divide(Money.new(100, :USD), 2)
       [%Money{amount: 50, currency: :USD}, %Money{amount: 50, currency: :USD}]
+
       iex> Money.divide(Money.new(101, :USD), 2)
       [%Money{amount: 51, currency: :USD}, %Money{amount: 50, currency: :USD}]
+
   """
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
     value = div(amount, denominator)
@@ -473,28 +516,33 @@ defmodule Money do
 
   The following options are available:
 
-    - `separator` - default `","`, sets the separator for groups of thousands.
+    * `:separator` - default `","`, sets the separator for groups of thousands.
       "1,000"
-    - `delimiter` - default `"."`, sets the decimal delimiter.
+    * `:delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
-    - `symbol` - default `true`, sets whether to display the currency symbol or not.
-    - `symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
-    - `symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
-    - `fractional_unit` - default `true`, show the remaining units after the delimeter
-    - `strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
+    * `:symbol` - default `true`, sets whether to display the currency symbol or not.
+    * `:symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
+    * `:symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
+    * `:fractional_unit` - default `true`, show the remaining units after the delimeter
+    * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
 
-  ## Example:
+  ## Examples
 
       iex> Money.to_string(Money.new(123456, :GBP))
       "£1,234.56"
+
       iex> Money.to_string(Money.new(123456, :EUR), separator: ".", delimiter: ",")
       "€1.234,56"
+
       iex> Money.to_string(Money.new(123456, :EUR), symbol: false)
       "1,234.56"
+
       iex> Money.to_string(Money.new(123456, :EUR), symbol: false, separator: "")
       "1234.56"
+
       iex> Money.to_string(Money.new(123456, :EUR), fractional_unit: false)
       "€1,234"
+
       iex> Money.to_string(Money.new(123450, :EUR), strip_insignificant_zeros: true)
       "€1,234.5"
 
@@ -502,10 +550,11 @@ defmodule Money do
   To control the formatting, you can use the above options in your config,
   more information is in the introduction to `Money`
 
-  ## Example:
+  ## Examples
 
       iex> "Total: #{Money.new(100_00, :USD)}"
       "Total: $100.00"
+
   """
   def to_string(%Money{} = money, opts \\ []) do
     {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros} =
@@ -530,12 +579,14 @@ defmodule Money do
     @doc ~S"""
     Converts a `Money` struct to a `Decimal` representation
 
-    ## Example:
+    ## Examples
 
         iex> Money.to_decimal(Money.new(123456, :GBP))
         #Decimal<1234.56>
+
         iex> Money.to_decimal(Money.new(-123420, :EUR))
         #Decimal<-1234.2>
+
     """
     def to_decimal(%Money{} = money) do
       Decimal.from_float(money.amount / Money.Currency.sub_units_count!(money))

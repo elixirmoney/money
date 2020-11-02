@@ -4,17 +4,18 @@ if Code.ensure_loaded?(Ecto.Type) do
     Provides a type for Ecto to store a currency.
     The underlying data type is a integer.
 
-    ## Migration Example
+    ## Migration
 
         create table(:my_table) do
           add :currency, :integer
         end
 
-    ## Schema Example
+    ## Schema
 
         schema "my_table" do
           field :currency, Money.Ecto.NumericCurrency.Type
         end
+
     """
 
     alias Money.Currency

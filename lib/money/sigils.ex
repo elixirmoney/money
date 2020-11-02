@@ -4,7 +4,8 @@ defmodule Money.Sigils do
   @doc ~S"""
   Handles the sigil `~M` for Money
 
-  The lower case `~m` variant does not exist as interpolation and excape characters are not useful for Money sigils.
+  The lower case `~m` variant does not exist as interpolation and excape
+  characters are not useful for Money sigils.
 
   ## Usage
 
@@ -14,6 +15,7 @@ defmodule Money.Sigils do
 
       ~M[1000]USD
       #> %Money{amount: 1000, currency: :USD}
+
   """
   defmacro sigil_M({:<<>>, _meta, [amount]}, []),
     do: Macro.escape(Money.new(to_integer(amount)))
