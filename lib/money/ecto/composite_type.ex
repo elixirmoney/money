@@ -4,18 +4,20 @@ if Code.ensure_loaded?(Ecto.Type) do
     Provides a type for Ecto to store a multi-currency price.
     The underlying data type should be an user-defined Postgres composite type `:money_with_currency`.
 
-    ## Migration Example
+    ## Migration
+
         execute "CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))"
 
         create table(:my_table) do
           add :price, :money_with_currency
         end
 
-    ## Schema Example
+    ## Schema
 
         schema "my_table" do
           field :price, Money.Ecto.Composite.Type
         end
+
     """
 
     if macro_exported?(Ecto.Type, :__using__, 1) do

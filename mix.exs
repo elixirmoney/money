@@ -12,14 +12,14 @@ defmodule Money.Mixfile do
       version: @version,
       elixir: "~> 1.0",
       deps: deps(),
-      source_url: "https://github.com/elixirmoney/money",
       docs: fn ->
         [
+          main: "readme",
           source_ref: "v#{@version}",
-          canonical: "http://hexdocs.pm/money",
-          main: "Money",
           source_url: @github_url,
-          extras: ["README.md", "CONTRIBUTING.md"]
+          canonical: "http://hexdocs.pm/money",
+          source_url: @github_url,
+          extras: ["README.md", "CHANGELOG.md", "CONTRIBUTING.md", "LICENSE.md"]
         ]
       end,
       description: description(),
@@ -51,7 +51,8 @@ defmodule Money.Mixfile do
 
   defp description do
     """
-    Elixir library for working with Money safer, easier, and fun, is an interpretation of the Fowler's Money pattern in fun.prog.
+    Elixir library for working with Money safer, easier, and fun, is an
+    interpretation of the Fowler's Money pattern in fun.prog.
     """
   end
 
@@ -60,7 +61,10 @@ defmodule Money.Mixfile do
       maintainers: ["Petr Stepchenko", "Giulio De Donato", "Andrew Timberlake"],
       contributors: ["Petr Stepchenko", "Giulio De Donato", "Andrew Timberlake"],
       licenses: ["MIT"],
-      links: %{"GitHub" => @github_url}
+      links: %{
+        "Changelog" => "#{@github_url}/blob/master/CHANGELOG.md",
+        "GitHub" => @github_url
+      }
     ]
   end
 

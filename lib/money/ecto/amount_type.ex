@@ -4,17 +4,18 @@ if Code.ensure_loaded?(Ecto.Type) do
     Provides a type for Ecto to store a amount.
     The underlying data type should be an integer.
 
-    ## Migration Example
+    ## Migration
 
         create table(:my_table) do
           add :amount, :integer
         end
 
-    ## Schema Example
+    ## Schema
 
         schema "my_table" do
           field :amount, Money.Ecto.Amount.Type
         end
+
     """
 
     if macro_exported?(Ecto.Type, :__using__, 1) do

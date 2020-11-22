@@ -5,17 +5,18 @@ if Code.ensure_loaded?(Ecto.Type) do
     The underlying data type should be a map(JSON).
     Suitable for databases that do not support composite types, but support JSON (e.g. MySQL).
 
-    ## Migration Example
+    ## Migration
 
         create table(:my_table) do
           add :price, :map
         end
 
-    ## Schema Example
+    ## Schema
 
         schema "my_table" do
           field :price, Money.Ecto.Map.Type
         end
+
     """
 
     if macro_exported?(Ecto.Type, :__using__, 1) do
