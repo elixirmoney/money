@@ -185,6 +185,7 @@ defmodule Money.Currency do
     UYI: %{name: "Peso Uruguayo Uruguay Peso en Unidades Indexadas", symbol: "$U", exponent: 0, number: 940},
     UYU: %{name: "Peso Uruguayo Uruguay Peso en Unidades Indexadas", symbol: "$U", exponent: 2, number: 858},
     UZS: %{name: "Uzbekistan Sum", symbol: "лв", exponent: 2, number: 860},
+    VEF: %{name: "Bolivar Fuerte", symbol: "Bs", exponent: 2, number: 937},
     VES: %{name: "Venezuelan Bolivar Soberano", symbol: "Bs", exponent: 2, number: 928},
     VND: %{name: "Dong", symbol: "₫", exponent: 0, number: 704},
     VUV: %{name: "Vatu", symbol: "VT", exponent: 0, number: 548},
