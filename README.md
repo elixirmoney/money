@@ -317,7 +317,7 @@ In order to add your own currencies you have to add them in the config file foll
 ```elixir
 config :money,
   custom_currencies: [
-    BTC: %{name: "Bitcoin", symbol: "₿", exponent: 2},
+    BTC: %{name: "Bitcoin", symbol: "₿", exponent: 8},
     GCS: %{name: "Galactic Credit Standard", symbol: "gcs", exponent: 0}
   ]
 ```
