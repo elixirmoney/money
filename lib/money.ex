@@ -108,7 +108,7 @@ defmodule Money do
       iex> Money.parse(-1_234.56, :USD)
       {:ok, %Money{amount: -123456, currency: :USD}}
 
-      iex> Money.parse(Decimal.cast(1_234.56), :USD)
+      iex> Money.parse(Decimal.from_float(1_234.56), :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
 
   """
@@ -585,11 +585,15 @@ defmodule Money do
         #Decimal<1234.56>
 
         iex> Money.to_decimal(Money.new(-123420, :EUR))
-        #Decimal<-1234.2>
+        #Decimal<-1234.20>
 
     """
     def to_decimal(%Money{} = money) do
-      Decimal.from_float(money.amount / Money.Currency.sub_units_count!(money))
+      sign = if Money.positive?(money), do: 1, else: -1
+      coef = Money.abs(money).amount
+      exp = -Money.Currency.exponent!(money)
+
+      Decimal.new(sign, coef, exp)
     end
   end
 

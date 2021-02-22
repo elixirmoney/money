@@ -25,7 +25,7 @@ defmodule Money.Mixfile do
       description: description(),
       package: package(),
       preferred_cli_env: [check: :test],
-      dialyzer: [plt_add_apps: [:ecto, :phoenix_html]]
+      dialyzer: [plt_add_apps: [:ecto, :phoenix_html, :decimal]]
     ]
   end
 
@@ -41,8 +41,8 @@ defmodule Money.Mixfile do
       {:decimal, "~> 1.0 or ~> 2.0", optional: true},
 
       # Code style and analyzers
-      {:credo, "~> 1.1", only: [:dev, :test], runtime: false, optional: true},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false, optional: true},
+      {:credo, "~> 1.4.1", only: [:dev, :test], runtime: false, optional: true},
+      {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
       {:ex_doc, "~> 0.21", only: [:dev, :docs]}

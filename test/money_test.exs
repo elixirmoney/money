@@ -353,7 +353,7 @@ defmodule MoneyTest do
   end
 
   test "to_decimal" do
-    assert Money.to_decimal(Money.new(150, "USD")) == Decimal.from_float(1.5)
-    assert Money.to_decimal(Money.new(89130, "USD")) == Decimal.from_float(891.3)
+    assert Money.to_decimal(Money.new(150, "USD")) == Decimal.new(1, 150, -2)
+    assert Money.to_decimal(Money.new(89130, "USD")) == Decimal.new(1, 89130, -2)
   end
 end
