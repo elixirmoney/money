@@ -29,10 +29,9 @@ if Code.ensure_loaded?(Ecto.Type) do
     @spec type :: :integer
     def type, do: :integer
 
-    # @spec cast(Money.t() | String.t() | Integer.t()) :: {:ok, atom()}
-    def cast(val)
-
-    def cast(%Money{currency: currency}) when is_binary(currency) or is_atom(currency), do: cast(currency)
+    @spec cast(Money.t() | String.t() | atom() | integer()) :: {:ok, atom()} | :error
+    def cast(%Money{currency: currency}) when is_binary(currency) or is_atom(currency),
+      do: cast(currency)
 
     def cast(currency) when is_binary(currency) or is_atom(currency) do
       {:ok, Currency.to_atom(currency)}
@@ -46,10 +45,10 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def cast(_), do: :error
 
-    @spec load(Integer.t()) :: {:ok, atom()}
+    @spec load(integer()) :: {:ok, atom()}
     def load(int) when is_integer(int), do: {:ok, Currency.to_atom(int)}
 
-    @spec dump(atom()) :: {:ok, Integer.t()}
+    @spec dump(atom()) :: {:ok, integer()}
     def dump(atom) when is_atom(atom), do: {:ok, Currency.number(atom)}
     def dump(_), do: :error
   end
