@@ -589,7 +589,7 @@ defmodule Money do
 
     """
     def to_decimal(%Money{} = money) do
-      sign = if Money.positive?(money), do: 1, else: -1
+      sign = if money.amount >= 0, do: 1, else: -1
       coef = Money.abs(money).amount
       exp = -Money.Currency.exponent!(money)
 
