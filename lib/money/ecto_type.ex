@@ -1,27 +1,29 @@
 if Code.ensure_loaded?(Ecto.Type) do
   defmodule Money.Ecto.Type do
     @moduledoc """
-    WARNING: this module is deprecated. Use Money.Ecto.Amount.Type module instead.
+    **WARNING:** This module is deprecated. Use `Money.Ecto.Amount.Type` module instead.
+
     Provides a type for Ecto usage.
     The underlying data type should be an integer.
 
     This type expects you to use a single currency.
     The currency must be defined in your configuration.
 
-    config :money,
-      default_currency: :GBP
+        config :money,
+          default_currency: :GBP
 
     ## Migration Example
 
-    create table(:my_table) do
-      add :amount, :integer
-    end
+        create table(:my_table) do
+          add :amount, :integer
+        end
 
     ## Schema Example
 
-    schema "my_table" do
-      field :amount, Money.Ecto.Type
-    end
+        schema "my_table" do
+          field :amount, Money.Ecto.Type
+        end
+
     """
 
     if macro_exported?(Ecto.Type, :__using__, 1) do

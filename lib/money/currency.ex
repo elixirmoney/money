@@ -1,6 +1,6 @@
 defmodule Money.Currency do
   @moduledoc """
-  Provides currency support to `Money`
+  Provides currency support to `Money`.
 
   Some useful helper methods include:
 
@@ -14,7 +14,7 @@ defmodule Money.Currency do
     * `symbol!/1`
     * `all/0`
 
-  A helper function exists for each currency using the lowercase three-character currency code
+  A helper function exists for each currency using the lowercase three-character currency code.
 
   ## Examples
 

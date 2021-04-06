@@ -104,27 +104,27 @@ The underlying database type is `integer`
 1.  Create migration with custom type:
 
     ```elixir
-      def up do
-        execute """
-        CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
-        """
-      end
+    def up do
+      execute """
+      CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
+      """
+    end
 
-      def down do
-        execute """
-        DROP TYPE public.money_with_currency
-        """
-      end
+    def down do
+      execute """
+      DROP TYPE public.money_with_currency
+      """
+    end
     ```
 
 2.  Then use created custom type(`money_with_currency`) for money field:
 
     ```elixir
-      def change do
-        alter table(:jobs) do
-          add :price, :money_with_currency
-        end
-      end`
+    def change do
+      alter table(:jobs) do
+        add :price, :money_with_currency
+      end
+    end
     ```
 
 3.  Create schema using the `Money.Ecto.Composite.Type` Ecto type (don't forget run `mix ecto.migrate`):
@@ -173,11 +173,11 @@ The underlying database type is `integer`
 1.  Create migration with map type:
 
     ```elixir
-      def change do
-        alter table(:jobs) do
-          add :price, :map
-        end
+    def change do
+      alter table(:jobs) do
+        add :price, :map
       end
+    end
     ```
 
 2.  Create schema using the `Money.Ecto.Map.Type` Ecto type (don't forget run `mix ecto.migrate`):
@@ -361,4 +361,4 @@ end
 
 ## License
 
-MIT License please see the [LICENSE](./LICENSE) file.
+MIT License please see the [LICENSE.md](./LICENSE.md) file.
