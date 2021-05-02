@@ -26,6 +26,7 @@ defmodule Money do
         symbol_space: false               # add a space between symbol and number
         fractional_unit: true             # display units after the delimeter
         strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
+        code: false                       # add the currency code after the number
 
   """
 
@@ -525,6 +526,7 @@ defmodule Money do
     * `:symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
     * `:fractional_unit` - default `true`, show the remaining units after the delimeter
     * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
+    * `:code` - default `false`, append the currency code after the number
 
   ## Examples
 
@@ -545,6 +547,9 @@ defmodule Money do
 
       iex> Money.to_string(Money.new(123450, :EUR), strip_insignificant_zeros: true)
       "€1,234.5"
+
+      iex> Money.to_string(Money.new(123450, :EUR), code: true)
+      "€1,234.50 EUR"
 
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
