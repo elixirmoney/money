@@ -250,6 +250,13 @@ defmodule MoneyTest do
     assert Money.to_string(zar(1_234_567_890), strip_insignificant_zeros: true) == "R12,345,678.9"
   end
 
+  test "to_string with code true" do
+    assert Money.to_string(usd(500), code: true) == "$5.00 USD"
+    assert Money.to_string(eur(1234), code: true) == "€12.34 EUR"
+    assert Money.to_string(xau(20305), code: true) == "203.05 XAU"
+    assert Money.to_string(zar(1_234_567_890), code: true) == "R12,345,678.90 ZAR"
+  end
+
   test "to_string with different exponents" do
     assert Money.to_string(jpy(1_234)) == "¥1,234"
     assert Money.to_string(eur(1_234)) == "€12.34"
