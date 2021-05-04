@@ -26,6 +26,7 @@ defmodule Money do
         symbol_space: false               # add a space between symbol and number
         fractional_unit: true             # display units after the delimeter
         strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
+        code: false                       # add the currency code after the number
 
   """
 
@@ -525,6 +526,7 @@ defmodule Money do
     * `:symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
     * `:fractional_unit` - default `true`, show the remaining units after the delimeter
     * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
+    * `:code` - default `false`, append the currency code after the number
 
   ## Examples
 
@@ -546,6 +548,9 @@ defmodule Money do
       iex> Money.to_string(Money.new(123450, :EUR), strip_insignificant_zeros: true)
       "€1,234.5"
 
+      iex> Money.to_string(Money.new(123450, :EUR), code: true)
+      "€1,234.50 EUR"
+
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
   more information is in the introduction to `Money`
@@ -557,18 +562,19 @@ defmodule Money do
 
   """
   def to_string(%Money{} = money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros} =
+    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros, code} =
       get_display_options(money, opts)
 
     number = format_number(money, separator, delimeter, fractional_unit, strip_insignificant_zeros, money)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
+    code = if code, do: " #{money.currency}"
 
     parts =
       if symbol_on_right do
-        [sign, number, space, symbol]
+        [sign, number, space, symbol, code]
       else
-        [symbol, space, sign, number]
+        [symbol, space, sign, number, code]
       end
 
     parts |> Enum.join() |> String.trim_leading()
@@ -633,14 +639,16 @@ defmodule Money do
     default_symbol_space = Application.get_env(:money, :symbol_space, false)
     default_fractional_unit = Application.get_env(:money, :fractional_unit, true)
     default_strip_insignificant_zeros = Application.get_env(:money, :strip_insignificant_zeros, false)
+    default_code = Application.get_env(:money, :code, false)
 
     symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
     symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
     symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
     fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
     strip_insignificant_zeros = Keyword.get(opts, :strip_insignificant_zeros, default_strip_insignificant_zeros)
+    code = Keyword.get(opts, :code, default_code)
 
-    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros}
+    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros, code}
   end
 
   defp get_parse_options(opts) do
