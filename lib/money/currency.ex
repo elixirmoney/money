@@ -50,6 +50,7 @@ defmodule Money.Currency do
     BOV: %{name: "Boliviano Mvdol", symbol: "$b", exponent: 2, number: 984},
     BRL: %{name: "Brazilian Real", symbol: "R$", exponent: 2, number: 986},
     BSD: %{name: "Bahamian Dollar", symbol: "$", exponent: 2, number: 044},
+    BTC: %{name: "Bitcoin", symbol: "₿", exponent: 8, number: 000},
     BTN: %{name: "Indian Rupee Ngultrum", symbol: "Nu.", exponent: 2, number: 064},
     BWP: %{name: "Pula", symbol: "P", exponent: 2, number: 072},
     BYN: %{name: "Belarusian Ruble", symbol: "p.", exponent: 2, number: 933},

@@ -91,20 +91,20 @@ defmodule Money.CurrencyTest do
       Application.put_env(:money, :custom_currencies, [])
     end)
 
-    Application.put_env(:money, :custom_currencies, BTC: %{name: "Bitcoin", symbol: "₿", exponent: 2})
+    Application.put_env(:money, :custom_currencies, SAT: %{name: "Satoshis", symbol: "₿", exponent: 2})
 
-    assert Currency.exists?(:BTC)
-    assert Currency.get(:BTC) == %{name: "Bitcoin", symbol: "₿", exponent: 2}
-    assert Currency.get!(:BTC) == %{name: "Bitcoin", symbol: "₿", exponent: 2}
-    assert Currency.name(:BTC) == "Bitcoin"
-    assert Currency.name!(:BTC) == "Bitcoin"
-    assert Currency.symbol(:BTC) == "₿"
-    assert Currency.symbol!(:BTC) == "₿"
-    assert Currency.exponent(:BTC) == 2
-    assert Currency.exponent!(:BTC) == 2
-    assert Currency.sub_units_count!(:BTC) == 100
-    assert Currency.to_atom(:BTC) == :BTC
-    assert %Money{amount: 1001, currency: :BTC} == Money.new(1001, :BTC)
-    assert "₿10.01" == Money.to_string(Money.new(1001, :BTC))
+    assert Currency.exists?(:SAT)
+    assert Currency.get(:SAT) == %{name: "Satoshis", symbol: "₿", exponent: 2}
+    assert Currency.get!(:SAT) == %{name: "Satoshis", symbol: "₿", exponent: 2}
+    assert Currency.name(:SAT) == "Satoshis"
+    assert Currency.name!(:SAT) == "Satoshis"
+    assert Currency.symbol(:SAT) == "₿"
+    assert Currency.symbol!(:SAT) == "₿"
+    assert Currency.exponent(:SAT) == 2
+    assert Currency.exponent!(:SAT) == 2
+    assert Currency.sub_units_count!(:SAT) == 100
+    assert Currency.to_atom(:SAT) == :SAT
+    assert %Money{amount: 1001, currency: :SAT} == Money.new(1001, :SAT)
+    assert "₿10.01" == Money.to_string(Money.new(1001, :SAT))
   end
 end
