@@ -14,6 +14,20 @@ Elixir library for working with Money safer, easier, and fun, is an interpretati
 In short: You shouldn't represent monetary values by a float. Wherever
 you need to represent money, use `Money`.
 
+## Installation
+
+Money comes with no required dependencies.
+
+Add the following to your `mix.exs`:
+
+```elixir
+def deps do
+  [{:money, "~> 1.4"}]
+end
+```
+
+then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
+
 ## Usage
 
 ```elixir
@@ -260,20 +274,6 @@ If you are using Phoenix, you can include money objects directly into your outpu
 ```elixir
 <b><%= Money.new(12345,67, :GBP) %></b>
 ```
-
-## Installation
-
-Money comes with no required dependencies.
-
-Add the following to your `mix.exs`:
-
-```elixir
-def deps do
-  [{:money, "~> 1.4"}]
-end
-```
-
-then run [`mix deps.get`](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix).
 
 ## Configuration
 
