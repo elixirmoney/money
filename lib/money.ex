@@ -449,7 +449,7 @@ defmodule Money do
 
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
-  @spec multiply(t, integer | float) :: t
+  @spec multiply(t, integer | float | Decimal.t()) :: t
   @doc ~S"""
   Multiplies a `Money` by an amount
 
@@ -467,6 +467,16 @@ defmodule Money do
 
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
     do: Money.new(round(amount * multiplier), cur)
+
+  if Code.ensure_loaded?(Decimal) do
+    def multiply(%Money{amount: amount, currency: cur}, %Decimal{} = multiplier),
+      do:
+        amount
+        |> Decimal.mult(multiplier)
+        |> Decimal.round(0, Decimal.Context.get().rounding)
+        |> Decimal.to_integer()
+        |> Money.new(cur)
+  end
 
   @spec divide(t, integer) :: [t]
   @doc ~S"""

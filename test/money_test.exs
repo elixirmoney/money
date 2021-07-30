@@ -176,6 +176,12 @@ defmodule MoneyTest do
     assert Money.multiply(Money.new(200, :USD), 1.5) == Money.new(300, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.333) == Money.new(267, :USD)
     assert Money.multiply(Money.new(200, :USD), 1.335) == Money.new(267, :USD)
+    assert Money.multiply(Money.new(200, :USD), Decimal.new("1.333")) == Money.new(267, :USD)
+    assert Money.multiply(Money.new(200, :USD), Decimal.new("1.335")) == Money.new(267, :USD)
+
+    Decimal.Context.with(%Decimal.Context{rounding: :floor}, fn ->
+      assert Money.multiply(Money.new(200, :USD), Decimal.new("1.333")) == Money.new(266, :USD)
+    end)
   end
 
   test "test divide" do
