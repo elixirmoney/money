@@ -56,6 +56,10 @@ defmodule Money.Ecto.Amount.TypeTest do
     assert Type.load(1000) == {:ok, Money.new(1000, :GBP)}
   end
 
+  test "load/1 map" do
+    assert Type.load(%{amount: 1_619_00, currency: "USD"}) == {:ok, Money.new(1_619_00, :USD)}
+  end
+
   test "dump/1 integer" do
     assert Type.dump(1000) == {:ok, 1000}
   end
