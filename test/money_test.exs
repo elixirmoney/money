@@ -39,7 +39,11 @@ defmodule MoneyTest do
     assert Money.parse("-1000.0", :USD) == {:ok, usd(-100_000)}
 
     assert Money.parse(Decimal.from_float(-1000.0), :USD) == {:ok, usd(-100_000)}
-    assert Money.parse(Decimal.from_float(4000.456), :USD) == {:ok, usd(4000_46)}
+    assert Money.parse(Decimal.from_float(4000.765), :USD) == {:ok, usd(4000_77)}
+
+    Decimal.Context.with(%Decimal.Context{rounding: :floor}, fn ->
+      assert Money.parse(Decimal.from_float(4000.765), :USD) == {:ok, usd(4000_76)}
+    end)
 
     assert Money.parse(".25", :USD) == {:ok, usd(25)}
     assert Money.parse(",25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(25)}

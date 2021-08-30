@@ -147,7 +147,12 @@ defmodule Money do
 
   if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
-      Decimal.to_float(decimal) |> Money.parse(currency)
+      {:ok,
+       decimal
+       |> Decimal.mult(Currency.sub_units_count!(currency))
+       |> Decimal.round(0, Decimal.Context.get().rounding)
+       |> Decimal.to_integer()
+       |> new(currency)}
     end
   end
 
