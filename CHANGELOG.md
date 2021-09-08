@@ -1,6 +1,19 @@
 # Changelog
 
-## Unreleased
+## 1.9.0
+
+### 🚀Enhancements
+
+- Add Bolivar Soberano (#155)
+- Improve Money.to_decimal to respect decimal places (#157)
+- Add :code option for to_string rendering (#161)
+- Allow Phoenix HTML 2.0 or 3.0 (#168)
+- Support multiplying money by a decimal (#167)
+- Use the rounding algorithm set in Decimal's context (#166)
+
+### 🐛Bug Fixes
+
+- Fix bug when using Money.to_decimal with amount 0 (#158)
 
 ## 1.8.0
 
@@ -16,7 +29,6 @@
 - Fix some type specs (did not include valid types)
 - Fix Elixir 1.11.0 complain about variable usage
 - Fix duplicate doc for Money.Currency.get/1
-
 
 ## 1.7.0
 
