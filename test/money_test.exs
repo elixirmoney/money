@@ -240,10 +240,19 @@ defmodule MoneyTest do
   end
 
   test "to_string with negative values" do
-    assert Money.to_string(usd(-500)) == "$-5.00"
-    assert Money.to_string(eur(-1234)) == "€-12.34"
+    assert Money.to_string(usd(-500)) == "-$5.00"
+    assert Money.to_string(eur(-1234)) == "-€12.34"
     assert Money.to_string(xau(-20305)) == "-203.05"
-    assert Money.to_string(zar(-1_234_567_890)) == "R-12,345,678.90"
+    assert Money.to_string(zar(-1_234_567_890)) == "-R12,345,678.90"
+  end
+
+  test "to_string with negative values symbol_on_right true" do
+    opts = [symbol_on_right: true]
+
+    assert Money.to_string(usd(-500), opts) == "-5.00$"
+    assert Money.to_string(eur(-1234), opts) == "-12.34€"
+    assert Money.to_string(xau(-20305), opts) == "-203.05"
+    assert Money.to_string(zar(-1_234_567_890), opts) == "-12,345,678.90R"
   end
 
   test "to_string with fractional_unit false" do
