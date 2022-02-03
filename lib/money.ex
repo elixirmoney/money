@@ -125,6 +125,12 @@ defmodule Money do
     end
   end
 
+  if Code.ensure_loaded?(Decimal) do
+    @parser Decimal
+  else
+    @parser Float
+  end
+
   def parse(str, currency, opts) when is_binary(str) do
     {_separator, delimiter} = get_parse_options(opts)
 
@@ -133,7 +139,7 @@ defmodule Money do
       |> prepare_parse_string(delimiter)
       |> add_missing_leading_digit
 
-    case Float.parse(value) do
+    case @parser.parse(value) do
       {float, _} -> parse(float, currency, [])
       :error -> :error
     end
