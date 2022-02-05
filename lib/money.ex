@@ -1,5 +1,5 @@
 defmodule Money do
-  import Kernel, except: [abs: 1]
+  import Kernel, except: [abs: 1, round: 1]
 
   @moduledoc """
   Defines a `Money` struct along with convenience methods for working with currencies.
@@ -142,7 +142,7 @@ defmodule Money do
   end
 
   def parse(number, currency, _opts) when is_number(number) do
-    {:ok, new(round(number * Currency.sub_units_count!(currency)), currency)}
+    {:ok, new(Kernel.round(number * Currency.sub_units_count!(currency)), currency)}
   end
 
   if Code.ensure_loaded?(Decimal) do
@@ -423,7 +423,7 @@ defmodule Money do
     do: Money.new(amount + addend, cur)
 
   def add(%Money{} = m, addend) when is_float(addend),
-    do: add(m, round(addend * 100))
+    do: add(m, Kernel.round(addend * 100))
 
   def add(a, b), do: fail_currencies_must_be_equal(a, b)
 
@@ -450,7 +450,7 @@ defmodule Money do
     do: Money.new(a - subtractend, cur)
 
   def subtract(%Money{} = m, subtractend) when is_float(subtractend),
-    do: subtract(m, round(subtractend * 100))
+    do: subtract(m, Kernel.round(subtractend * 100))
 
   def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
 
@@ -471,7 +471,7 @@ defmodule Money do
     do: Money.new(amount * multiplier, cur)
 
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_float(multiplier),
-    do: Money.new(round(amount * multiplier), cur)
+    do: Money.new(Kernel.round(amount * multiplier), cur)
 
   if Code.ensure_loaded?(Decimal) do
     def multiply(%Money{amount: amount, currency: cur}, %Decimal{} = multiplier),
@@ -615,6 +615,45 @@ defmodule Money do
       exp = -Money.Currency.exponent!(money)
 
       Decimal.new(sign, coef, exp)
+    end
+
+    @spec round(t, integer()) :: t
+    @doc ~S"""
+    Rounds a `Money` struct using a given number of places. `round` respects the
+    rounding mode within the current Decimal context.
+
+    By default `round` rounds to zero decimal places, using the currency's
+    exponent. This results in rounding to whole values of the currency.
+    Currencies without an exponent are not rounded unless a different value is
+    passed for `places` other than the default.
+
+    ## Examples
+
+        iex> Money.round(Money.new(123456, :GBP))
+        %Money{amount: 123500, currency: :GBP}
+
+        iex> Money.round(Money.new(-123420, :EUR))
+        %Money{amount: -123400, currency: :EUR}
+
+        iex> Money.round(Money.new(-123420, :EUR), -3)
+        %Money{amount: -100000, currency: :EUR}
+
+        # Currencies round based on their exponent
+        iex> Money.round(Money.new(820412, :JPY))
+        %Money{amount: 820412, currency: :JPY}
+
+        iex> Money.round(Money.new(820412, :JPY), -3)
+        %Money{amount: 820000, currency: :JPY}
+
+    """
+    def round(%Money{} = money, places \\ 0) do
+      {:ok, result} =
+        money
+        |> Money.to_decimal()
+        |> Decimal.round(places, Decimal.Context.get().rounding)
+        |> Money.parse(money.currency)
+
+      result
     end
   end
 
