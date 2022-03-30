@@ -638,6 +638,10 @@ defmodule Money do
         iex> Money.round(Money.new(-123420, :EUR), -3)
         %Money{amount: -100000, currency: :EUR}
 
+        # Round to tenth of exponent
+        iex> Money.round(Money.new(123425, :EUR), 1)
+        %Money{amount: 123430, currency: :EUR}
+
         # Currencies round based on their exponent
         iex> Money.round(Money.new(820412, :JPY))
         %Money{amount: 820412, currency: :JPY}
