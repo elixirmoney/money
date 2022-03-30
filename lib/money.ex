@@ -646,7 +646,7 @@ defmodule Money do
         %Money{amount: 820000, currency: :JPY}
 
     """
-    def round(%Money{} = money, places \\ 0) do
+    def round(%Money{} = money, places \\ 0) when is_integer(places) do
       {:ok, result} =
         money
         |> Money.to_decimal()
