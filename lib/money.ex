@@ -20,13 +20,14 @@ defmodule Money do
       config :money,
         default_currency: :EUR,           # this allows you to do Money.new(100)
         separator: ".",                   # change the default thousands separator for Money.to_string
-        delimiter: ",",                   # change the default decimal delimeter for Money.to_string
+        delimiter: ",",                   # change the default decimal delimiter for Money.to_string
         symbol: false                     # don’t display the currency symbol in Money.to_string
         symbol_on_right: false,           # position the symbol
         symbol_space: false               # add a space between symbol and number
-        fractional_unit: true             # display units after the delimeter
-        strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimeter
+        fractional_unit: true             # display units after the delimiter
+        strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimiter
         code: false                       # add the currency code after the number
+        minus_sign_first: true            # display the minus sign before the currency symbol for Money.to_string
 
   """
 
@@ -38,6 +39,8 @@ defmodule Money do
   defstruct amount: 0, currency: :USD
 
   alias Money.Currency
+  alias Money.DisplayOptions
+  alias Money.ParseOptions
 
   @spec new(integer) :: t
   @doc ~S"""
@@ -132,7 +135,7 @@ defmodule Money do
   end
 
   def parse(str, currency, opts) when is_binary(str) do
-    {_separator, delimiter} = get_parse_options(opts)
+    %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
     value =
       str
@@ -545,8 +548,8 @@ defmodule Money do
     * `:symbol` - default `true`, sets whether to display the currency symbol or not.
     * `:symbol_on_right` - default `false`, display the currency symbol on the right of the number, eg: 123.45€
     * `:symbol_space` - default `false`, add a space between currency symbol and number, eg: € 123,45 or 123.45 €
-    * `:fractional_unit` - default `true`, show the remaining units after the delimeter
-    * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimeter
+    * `:fractional_unit` - default `true`, show the remaining units after the delimiter
+    * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimiter
     * `:code` - default `false`, append the currency code after the number
 
   ## Examples
@@ -583,22 +586,36 @@ defmodule Money do
 
   """
   def to_string(%Money{} = money, opts \\ []) do
-    {separator, delimeter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros, code} =
-      get_display_options(money, opts)
+    %DisplayOptions{
+      symbol: symbol,
+      symbol_on_right: symbol_on_right,
+      symbol_space: symbol_space,
+      code: code
+    } = opts = DisplayOptions.get(money, opts)
 
-    number = format_number(money, separator, delimeter, fractional_unit, strip_insignificant_zeros, money)
+    number = format_number(money, opts)
     sign = if negative?(money), do: "-"
     space = if symbol_space, do: " "
     code = if code, do: " #{money.currency}"
 
     parts =
-      if symbol_on_right do
-        [sign, number, space, symbol, code]
-      else
-        [symbol, space, sign, number, code]
+      cond do
+        symbol_on_right ->
+          [sign, number, space, symbol, code]
+
+        negative?(money) and symbol == " " ->
+          [sign, number, code]
+
+        negative?(money) ->
+          [sign, symbol, number, code]
+
+        true ->
+          [symbol, space, sign, number, code]
       end
 
-    parts |> Enum.join() |> String.trim_leading()
+    parts
+    |> Enum.join()
+    |> String.trim()
   end
 
   if Code.ensure_loaded?(Decimal) do
@@ -667,7 +684,12 @@ defmodule Money do
     end
   end
 
-  defp format_number(%Money{amount: amount}, separator, delimeter, fractional_unit, strip_insignificant_zeros, money) do
+  defp format_number(%Money{amount: amount} = money, %DisplayOptions{
+         separator: separator,
+         delimiter: delimiter,
+         fractional_unit: fractional_unit,
+         strip_insignificant_zeros: strip_insignificant_zeros
+       }) do
     exponent = Currency.exponent(money)
     amount_abs = if amount < 0, do: -amount, else: amount
     amount_str = Integer.to_string(amount_abs)
@@ -684,7 +706,7 @@ defmodule Money do
     sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: strip_insignificant_zeros})
 
     if fractional_unit && sub_unit != "" do
-      [super_unit, sub_unit] |> Enum.join(delimeter)
+      [super_unit, sub_unit] |> Enum.join(delimiter)
     else
       super_unit
     end
@@ -694,34 +716,6 @@ defmodule Money do
   defp prepare_sub_unit([], _), do: ""
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: false}), do: value
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: true}), do: Regex.replace(~r/0+$/, value, "")
-
-  defp get_display_options(m, opts) do
-    {separator, delimiter} = get_parse_options(opts)
-
-    default_symbol = Application.get_env(:money, :symbol, true)
-    default_symbol_on_right = Application.get_env(:money, :symbol_on_right, false)
-    default_symbol_space = Application.get_env(:money, :symbol_space, false)
-    default_fractional_unit = Application.get_env(:money, :fractional_unit, true)
-    default_strip_insignificant_zeros = Application.get_env(:money, :strip_insignificant_zeros, false)
-    default_code = Application.get_env(:money, :code, false)
-
-    symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(m), else: ""
-    symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
-    symbol_space = Keyword.get(opts, :symbol_space, default_symbol_space)
-    fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
-    strip_insignificant_zeros = Keyword.get(opts, :strip_insignificant_zeros, default_strip_insignificant_zeros)
-    code = Keyword.get(opts, :code, default_code)
-
-    {separator, delimiter, symbol, symbol_on_right, symbol_space, fractional_unit, strip_insignificant_zeros, code}
-  end
-
-  defp get_parse_options(opts) do
-    default_separator = Application.get_env(:money, :separator, ",")
-    separator = Keyword.get(opts, :separator, default_separator)
-    default_delimiter = Application.get_env(:money, :delimiter) || Application.get_env(:money, :delimeter, ".")
-    delimiter = Keyword.get(opts, :delimiter) || Keyword.get(opts, :delimeter, default_delimiter)
-    {separator, delimiter}
-  end
 
   defp fail_currencies_must_be_equal(a, b) do
     raise ArgumentError, message: "Currency of #{a.currency} must be the same as #{b.currency}"
