@@ -52,6 +52,17 @@ defmodule MoneyTest do
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
+  test "parse/1 big money" do
+    assert Money.parse("$1,000,000,000,000,000.01", :USD) ==
+             {:ok, usd(1_000_000_000_000_000_01)}
+
+    assert Money.parse("$1,000,000,000,000,000,000.01", :USD) ==
+             {:ok, usd(1_000_000_000_000_000_000_01)}
+
+    assert Money.parse("$1,000,000,000,000,000,000,000.01", :USD) ==
+             {:ok, usd(1_000_000_000_000_000_000_000_01)}
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
