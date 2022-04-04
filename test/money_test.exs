@@ -374,4 +374,41 @@ defmodule MoneyTest do
     assert Money.to_decimal(Money.new(89130, "USD")) == Decimal.new(1, 89130, -2)
     assert Money.to_decimal(Money.new(0, "USD")) == Decimal.new(1, 0, -2)
   end
+
+  describe "round/2" do
+    test "no decimal places" do
+      assert %Money{amount: 100_000} = Money.round(usd(100_045))
+      assert %Money{amount: 100_100} = Money.round(eur(100_078))
+      assert %Money{amount: 120_100_045} = Money.round(jpy(120_100_045))
+    end
+
+    test "with significant digits" do
+      assert %Money{amount: 124_000} = Money.round(usd(123_789), -1)
+      assert %Money{amount: 650_000} = Money.round(eur(654_321), -2)
+      assert %Money{amount: 120_100_000} = Money.round(jpy(120_100_445), -3)
+    end
+
+    test "with positive places" do
+      # For currencies with fractional units (e.g. GBP, EUR, USD, etc.), users can pass a positive number for
+      # the `places` argument to round the fractional units.
+      assert %Money{amount: 123_790} = Money.round(usd(123_789), 1)
+      assert %Money{amount: 654_320} = Money.round(eur(654_321), 1)
+
+      # `places` values equal to or higher than the exponent have no effect
+      assert %Money{amount: 654_321} = Money.round(eur(654_321), 2)
+      assert %Money{amount: 654_321} = Money.round(eur(654_321), 3)
+      assert %Money{amount: 120_100_445} = Money.round(jpy(120_100_445), 1)
+    end
+
+    test "with the rounding mode in Decimal's context" do
+      Decimal.Context.with(%Decimal.Context{rounding: :down}, fn ->
+        assert %Money{amount: 123_400} = Money.round(usd(123_456), 0)
+        assert %Money{amount: 120_100_045} = Money.round(jpy(120_100_045), 0)
+      end)
+
+      Decimal.Context.with(%Decimal.Context{rounding: :up}, fn ->
+        assert %Money{amount: 654_400} = Money.round(eur(654_321), 0)
+      end)
+    end
+  end
 end
