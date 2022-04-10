@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.0 – 2022-04-10
+
+### 🚀Enhancements
+
+- Allow rounding Money values with Decimal (#177)
+- Parse with Decimal if present (#176)
+- Display minus sign before the currency symbol (fixes #154) (#173)
+
 ## 1.9.0
 
 ### 🚀Enhancements
