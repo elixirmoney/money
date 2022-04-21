@@ -120,7 +120,7 @@ The underlying database type is `integer`
     ```elixir
     def up do
       execute """
-      CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))
+      CREATE TYPE public.money_with_currency AS (amount integer, currency varchar(3))
       """
     end
 
@@ -149,7 +149,7 @@ The underlying database type is `integer`
     end
     ```
 
-3.  Save to the database:
+4.  Save to the database:
 
     ```elixir
     iex(1)> Repo.insert %Job{price: Money.new(100, :JPY)}
@@ -165,7 +165,7 @@ The underlying database type is `integer`
      }}
     ```
 
-4.  Get from the database:
+5.  Get from the database:
 
     ```elixir
     iex(2)> Repo.one(Job, limit: 1)
