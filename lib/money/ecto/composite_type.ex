@@ -6,7 +6,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     ## Migration
 
-        execute "CREATE TYPE public.money_with_currency AS (amount integer, currency char(3))"
+        execute "CREATE TYPE public.money_with_currency AS (amount integer, currency varchar(3))"
 
         create table(:my_table) do
           add :price, :money_with_currency
