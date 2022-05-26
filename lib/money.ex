@@ -21,12 +21,12 @@ defmodule Money do
         default_currency: :EUR,           # this allows you to do Money.new(100)
         separator: ".",                   # change the default thousands separator for Money.to_string
         delimiter: ",",                   # change the default decimal delimiter for Money.to_string
-        symbol: false                     # don’t display the currency symbol in Money.to_string
+        symbol: false,                    # don’t display the currency symbol in Money.to_string
         symbol_on_right: false,           # position the symbol
-        symbol_space: false               # add a space between symbol and number
-        fractional_unit: true             # display units after the delimiter
-        strip_insignificant_zeros: false  # don’t display the insignificant zeros or the delimiter
-        code: false                       # add the currency code after the number
+        symbol_space: false,              # add a space between symbol and number
+        fractional_unit: true,            # display units after the delimiter
+        strip_insignificant_zeros: false, # don’t display the insignificant zeros or the delimiter
+        code: false,                      # add the currency code after the number
         minus_sign_first: true            # display the minus sign before the currency symbol for Money.to_string
 
   """
