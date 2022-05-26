@@ -607,7 +607,7 @@ defmodule Money do
           [sign, number, code]
 
         negative?(money) ->
-          [sign, symbol, number, code]
+          [sign, symbol, space, number, code]
 
         true ->
           [symbol, space, sign, number, code]
