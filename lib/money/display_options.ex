@@ -11,7 +11,8 @@ defmodule Money.DisplayOptions do
           symbol_space: boolean(),
           fractional_unit: boolean(),
           strip_insignificant_zeros: boolean(),
-          code: boolean()
+          code: boolean(),
+          minus_sign_first: boolean()
         }
 
   @all_fields [
@@ -22,7 +23,8 @@ defmodule Money.DisplayOptions do
     :symbol_space,
     :fractional_unit,
     :strip_insignificant_zeros,
-    :code
+    :code,
+    :minus_sign_first
   ]
   @enforce_keys @all_fields
   defstruct @all_fields
@@ -37,6 +39,7 @@ defmodule Money.DisplayOptions do
     default_fractional_unit = Application.get_env(:money, :fractional_unit, true)
     default_strip_insignificant_zeros = Application.get_env(:money, :strip_insignificant_zeros, false)
     default_code = Application.get_env(:money, :code, false)
+    default_minus_sign_first = Application.get_env(:money, :minus_sign_first, true)
 
     symbol = if Keyword.get(opts, :symbol, default_symbol), do: Currency.symbol(money), else: ""
     symbol_on_right = Keyword.get(opts, :symbol_on_right, default_symbol_on_right)
@@ -44,6 +47,7 @@ defmodule Money.DisplayOptions do
     fractional_unit = Keyword.get(opts, :fractional_unit, default_fractional_unit)
     strip_insignificant_zeros = Keyword.get(opts, :strip_insignificant_zeros, default_strip_insignificant_zeros)
     code = Keyword.get(opts, :code, default_code)
+    minus_sign_first = Keyword.get(opts, :minus_sign_first, default_minus_sign_first)
 
     %__MODULE__{
       separator: separator,
@@ -53,7 +57,8 @@ defmodule Money.DisplayOptions do
       symbol_space: symbol_space,
       fractional_unit: fractional_unit,
       strip_insignificant_zeros: strip_insignificant_zeros,
-      code: code
+      code: code,
+      minus_sign_first: minus_sign_first
     }
   end
 end
