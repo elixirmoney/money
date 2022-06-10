@@ -1,8 +1,8 @@
 defmodule Money.Ecto.TypeTest do
   use ExUnit.Case, async: false
-  doctest Money.Ecto.Type
+  doctest Money.Ecto.Amount.Type
 
-  alias Money.Ecto.Type
+  alias Money.Ecto.Amount.Type
 
   setup do
     Application.put_env(:money, :default_currency, :GBP)
@@ -37,10 +37,11 @@ defmodule Money.Ecto.TypeTest do
   end
 
   test "cast/1 Map" do
-    assert Type.cast(%{"amount" => 1000, "currency" => "EUR"}) == {:ok, Money.new(1000, :EUR)}
+    assert Type.cast(%{"amount" => 1000, "currency" => "GBP"}) == {:ok, Money.new(1000, :GBP)}
     assert Type.cast(%{"amount" => 1000}) == {:ok, Money.new(1000, :GBP)}
-    assert Type.cast(%{amount: 1000, currency: "EUR"}) == {:ok, Money.new(1000, :EUR)}
+    assert Type.cast(%{amount: 1000, currency: "GBP"}) == {:ok, Money.new(1000, :GBP)}
     assert Type.cast(%{amount: 1000}) == {:ok, Money.new(1000, :GBP)}
+    assert Type.cast(%{amount: 1000, currency: "EUR"}) == :error
   end
 
   test "cast/1 other" do
