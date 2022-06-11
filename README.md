@@ -288,7 +288,10 @@ config :money,
   symbol_on_right: false,
   symbol_space: false,
   fractional_unit: true,
-  strip_insignificant_zeros: false
+  strip_insignificant_zeros: false,
+  code: false,
+  minus_sign_first: true,
+  strip_insignificant_fractional_unit: false
 ```
 
 Then you don’t have to specify the currency.
