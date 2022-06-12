@@ -551,6 +551,7 @@ defmodule Money do
     * `:fractional_unit` - default `true`, show the remaining units after the delimiter
     * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimiter
     * `:code` - default `false`, append the currency code after the number
+    * `:minus_sign_first` - default `true`, display the minus sign before the currency symbol for negative values
 
   ## Examples
 
@@ -575,6 +576,12 @@ defmodule Money do
       iex> Money.to_string(Money.new(123450, :EUR), code: true)
       "€1,234.50 EUR"
 
+      iex> Money.to_string(Money.new(-123450, :EUR))
+      "-€1,234.50"
+
+      iex> Money.to_string(Money.new(-123450, :EUR), minus_sign_first: false)
+      "€-1,234.50"
+
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
   more information is in the introduction to `Money`
@@ -590,7 +597,8 @@ defmodule Money do
       symbol: symbol,
       symbol_on_right: symbol_on_right,
       symbol_space: symbol_space,
-      code: code
+      code: code,
+      minus_sign_first: minus_sign_first
     } = opts = DisplayOptions.get(money, opts)
 
     number = format_number(money, opts)
@@ -606,7 +614,7 @@ defmodule Money do
         negative?(money) and symbol == " " ->
           [sign, number, code]
 
-        negative?(money) ->
+        negative?(money) and minus_sign_first ->
           [sign, symbol, space, number, code]
 
         true ->

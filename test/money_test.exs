@@ -253,6 +253,7 @@ defmodule MoneyTest do
   test "to_string with negative values" do
     assert Money.to_string(usd(-500)) == "-$5.00"
     assert Money.to_string(usd(-500), symbol_space: true) == "-$ 5.00"
+    assert Money.to_string(usd(-500), minus_sign_first: false) == "$-5.00"
     assert Money.to_string(eur(-1234)) == "-€12.34"
     assert Money.to_string(xau(-20305)) == "-203.05"
     assert Money.to_string(zar(-1_234_567_890)) == "-R12,345,678.90"
