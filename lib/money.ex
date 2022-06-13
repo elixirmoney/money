@@ -18,16 +18,17 @@ defmodule Money do
   You can set defaults in your Mix configuration to make working with `Money` a little easier.
 
       config :money,
-        default_currency: :EUR,           # this allows you to do Money.new(100)
-        separator: ".",                   # change the default thousands separator for Money.to_string
-        delimiter: ",",                   # change the default decimal delimiter for Money.to_string
-        symbol: false,                    # don’t display the currency symbol in Money.to_string
-        symbol_on_right: false,           # position the symbol
-        symbol_space: false,              # add a space between symbol and number
-        fractional_unit: true,            # display units after the delimiter
-        strip_insignificant_zeros: false, # don’t display the insignificant zeros or the delimiter
-        code: false,                      # add the currency code after the number
-        minus_sign_first: true            # display the minus sign before the currency symbol for Money.to_string
+        default_currency: :EUR,                    # this allows you to do Money.new(100)
+        separator: ".",                            # change the default thousands separator for Money.to_string
+        delimiter: ",",                            # change the default decimal delimiter for Money.to_string
+        symbol: false,                             # don’t display the currency symbol in Money.to_string
+        symbol_on_right: false,                    # position the symbol
+        symbol_space: false,                       # add a space between symbol and number
+        fractional_unit: true,                     # display units after the delimiter
+        strip_insignificant_zeros: false,          # don’t display the insignificant zeros or the delimiter
+        code: false,                               # add the currency code after the number
+        minus_sign_first: true,                    # display the minus sign before the currency symbol for Money.to_string
+        strip_insignificant_fractional_unit: false # don't display the delimiter or fractional units if the fractional units are only insignificant zeros
 
   """
 
@@ -552,6 +553,7 @@ defmodule Money do
     * `:strip_insignificant_zeros` - default `false`, strip zeros after the delimiter
     * `:code` - default `false`, append the currency code after the number
     * `:minus_sign_first` - default `true`, display the minus sign before the currency symbol for negative values
+    * `:strip_insignificant_fractional_unit` - default `false`, don't display the delimiter or fractional units if the fractional units are only insignificant zeros
 
   ## Examples
 
@@ -581,6 +583,12 @@ defmodule Money do
 
       iex> Money.to_string(Money.new(-123450, :EUR), minus_sign_first: false)
       "€-1,234.50"
+
+      iex> Money.to_string(Money.new(123400, :EUR), strip_insignificant_fractional_unit: true)
+      "€1,234"
+
+      iex> Money.to_string(Money.new(123450, :EUR), strip_insignificant_fractional_unit: true)
+      "€1,234.50"
 
   It can also be interpolated (It implements the String.Chars protocol)
   To control the formatting, you can use the above options in your config,
@@ -696,7 +704,8 @@ defmodule Money do
          separator: separator,
          delimiter: delimiter,
          fractional_unit: fractional_unit,
-         strip_insignificant_zeros: strip_insignificant_zeros
+         strip_insignificant_zeros: strip_insignificant_zeros,
+         strip_insignificant_fractional_unit: strip_insignificant_fractional_unit
        }) do
     exponent = Currency.exponent(money)
     amount_abs = if amount < 0, do: -amount, else: amount
@@ -711,9 +720,13 @@ defmodule Money do
       |> Enum.map(&String.reverse/1)
 
     super_unit = super_unit |> reverse_group(3) |> Enum.join(separator)
-    sub_unit = prepare_sub_unit(sub_unit, %{strip_insignificant_zeros: strip_insignificant_zeros})
 
-    if fractional_unit && sub_unit != "" do
+    sub_unit =
+      sub_unit
+      |> prepare_sub_unit(%{strip_insignificant_zeros: strip_insignificant_zeros})
+      |> prepare_sub_unit(%{strip_insignificant_fractional_unit: strip_insignificant_fractional_unit})
+
+    if fractional_unit and sub_unit != "" do
       [super_unit, sub_unit] |> Enum.join(delimiter)
     else
       super_unit
@@ -724,6 +737,11 @@ defmodule Money do
   defp prepare_sub_unit([], _), do: ""
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: false}), do: value
   defp prepare_sub_unit(value, %{strip_insignificant_zeros: true}), do: Regex.replace(~r/0+$/, value, "")
+  defp prepare_sub_unit(value, %{strip_insignificant_fractional_unit: false}), do: value
+
+  defp prepare_sub_unit(value, %{strip_insignificant_fractional_unit: true}) do
+    if Regex.match?(~r/[1-9]+/, value), do: value, else: ""
+  end
 
   defp fail_currencies_must_be_equal(a, b) do
     raise ArgumentError, message: "Currency of #{a.currency} must be the same as #{b.currency}"

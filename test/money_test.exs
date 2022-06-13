@@ -282,6 +282,12 @@ defmodule MoneyTest do
     assert Money.to_string(zar(1_234_567_890), strip_insignificant_zeros: true) == "R12,345,678.9"
   end
 
+  test "to_string with strip_insignificant_fractional_unit" do
+    assert Money.to_string(usd(500), strip_insignificant_fractional_unit: true) == "$5"
+    assert Money.to_string(zar(1_234_567_890), strip_insignificant_fractional_unit: true) == "R12,345,678.90"
+    assert Money.to_string(xau(20305), strip_insignificant_fractional_unit: true) == "203.05"
+  end
+
   test "to_string with code true" do
     assert Money.to_string(usd(500), code: true) == "$5.00 USD"
     assert Money.to_string(eur(1234), code: true) == "€12.34 EUR"
