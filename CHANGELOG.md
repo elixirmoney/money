@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.11.0 – 2022-08-15
+
+### 🚀Enhancements
+
+- Suggest using varchar instead of char on postgres (#178)
+- Fix symbol_space with negative values (#180)
+- Fix to_string to use the minus_sign_first option (#181)
+- Adds support for strip_insignificant_fractional_unit option to to_string (#183)
+- Fix Canadian and Singaporean Dollar symbols (#185)
+
 ## 1.10.0 – 2022-04-10
 
 ### 🚀Enhancements

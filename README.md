@@ -22,7 +22,7 @@ Add the following to your `mix.exs`:
 
 ```elixir
 def deps do
-  [{:money, "~> 1.9"}]
+  [{:money, "~> 1.11"}]
 end
 ```
 
