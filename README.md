@@ -362,6 +362,10 @@ defp validate_money(changeset, field) do
 end
 ```
 
+### Lack of precision when using `Money.parse`
+
+Sometimes you need to work with large numbers (for example, cryptocurrencies) and `Float` precision is not enough. In this case it is better to use [Decimal](https://hex.pm/packages/decimal) package. Money already has support for Decimal and you just need to add it to your project dependencies.
+
 ## License
 
 MIT License please see the [LICENSE.md](./LICENSE.md) file.
