@@ -142,7 +142,7 @@ defmodule Money.Currency do
     NZD: %{name: "New Zealand Dollar", symbol: "$", exponent: 2, number: 554},
     OMR: %{name: "Rial Omani", symbol: "﷼", exponent: 3, number: 512},
     PAB: %{name: "Balboa US Dollar", symbol: "B/.", exponent: 2, number: 590},
-    PEN: %{name: "Nuevo Sol", symbol: "S/.", exponent: 2, number: 604},
+    PEN: %{name: "Nuevo Sol", symbol: "S/", exponent: 2, number: 604},
     PGK: %{name: "Kina", symbol: "K", exponent: 2, number: 598},
     PHP: %{name: "Philippine Peso", symbol: "₱", exponent: 2, number: 608},
     PKR: %{name: "Pakistan Rupee", symbol: "₨", exponent: 2, number: 586},
