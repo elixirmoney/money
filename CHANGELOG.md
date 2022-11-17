@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.12.0 – 2022-11-18
+
+### 🚀Enhancements
+
+- Fix PEN currency symbol (#191)
+- Migrate from travis ci to github actions (#193)
+- Support exponential notation for Money.parse (#192)
+- Add readme section about using Decimal (#194)
+- Bump dependencies (#186)(#187)(#196)
+
 ## 1.11.0 – 2022-08-15
 
 ### 🚀Enhancements
