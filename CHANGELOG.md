@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12.1 – 2022-11-23
+
+This release rolls back the breaking change in Money.parse .  
+Support exponential notation feature will be added in the next major release.
+
+### 🐛Bug Fixes
+
+- Remove support exponential notation for Money.parse (#192) (#198)
+
 ## 1.12.0 – 2022-11-18
 
 ### 🚀Enhancements
