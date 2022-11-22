@@ -204,12 +204,6 @@ defmodule Money do
   defp prepare_parse_string(["9" | tail], delimiter, acc),
     do: prepare_parse_string(tail, delimiter, ["9" | acc])
 
-  defp prepare_parse_string(["e" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["e" | acc])
-
-  defp prepare_parse_string(["E" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["E" | acc])
-
   defp prepare_parse_string([delimiter | tail], delimiter, acc),
     do: prepare_parse_string(tail, delimiter, ["." | acc])
 
