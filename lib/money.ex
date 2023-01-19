@@ -271,7 +271,7 @@ defmodule Money do
     end
   end
 
-  def compare(a, b), do: fail_currencies_must_be_equal(a, b)
+  def compare(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @doc """
   Compares two `Money` structs with each other.
@@ -435,7 +435,7 @@ defmodule Money do
   def add(%Money{} = m, addend) when is_float(addend),
     do: add(m, Kernel.round(addend * 100))
 
-  def add(a, b), do: fail_currencies_must_be_equal(a, b)
+  def add(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @spec subtract(t, t | integer | float) :: t
   @doc ~S"""
@@ -462,7 +462,7 @@ defmodule Money do
   def subtract(%Money{} = m, subtractend) when is_float(subtractend),
     do: subtract(m, Kernel.round(subtractend * 100))
 
-  def subtract(a, b), do: fail_currencies_must_be_equal(a, b)
+  def subtract(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @spec multiply(t, integer | float | Decimal.t()) :: t
   @doc ~S"""
@@ -744,7 +744,8 @@ defmodule Money do
   end
 
   defp fail_currencies_must_be_equal(a, b) do
-    raise ArgumentError, message: "Currency of #{a.currency} must be the same as #{b.currency}"
+    raise ArgumentError,
+      message: "Currency of #{inspect(a.currency)} must be the same as #{inspect(b.currency)}"
   end
 
   defp reverse_group(str, count) when is_binary(str) do
