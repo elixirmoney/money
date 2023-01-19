@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.2 – 2023-01-19
+
+- Better error messages for `Money.add` and `Monet.subtract` (#191)
+
 ## 1.12.1 – 2022-11-23
 
 This release rolls back the breaking change in Money.parse .  
