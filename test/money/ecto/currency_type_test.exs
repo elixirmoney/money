@@ -43,6 +43,10 @@ defmodule Money.Ecto.Currency.TypeTest do
     assert Type.dump(:CHF) == {:ok, "CHF"}
   end
 
+  test "dump/1 string" do
+    assert Type.dump("CHF") == {:ok, "CHF"}
+  end
+
   test "dump/1 other" do
     assert Type.dump({:a, :b}) == :error
   end
