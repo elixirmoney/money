@@ -160,6 +160,7 @@ defmodule Money.Currency do
     SEK: %{name: "Swedish Krona", symbol: "kr", exponent: 2, number: 752},
     SGD: %{name: "Singapore Dollar", symbol: "S$", exponent: 2, number: 702},
     SHP: %{name: "Saint Helena Pound", symbol: "£", exponent: 2, number: 654},
+    SLE: %{name: "Leone", symbol: "Le", exponent: 2, number: 925},
     SLL: %{name: "Leone", symbol: "Le", exponent: 2, number: 694},
     SOS: %{name: "Somali Shilling", symbol: "S", exponent: 2, number: 706},
     SRD: %{name: "Surinam Dollar", symbol: "$", exponent: 2, number: 968},
