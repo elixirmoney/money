@@ -32,7 +32,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def embed_as(_), do: :dump
 
-    @spec dump(any()) :: :error | {:ok, {integer(), String.t()}}
+    @spec dump(any()) :: :error | {:ok, %{String.t() => String.t() | integer()}}
     def dump(%Money{} = money) do
       {:ok, %{"amount" => money.amount, "currency" => to_string(money.currency)}}
     end
