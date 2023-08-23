@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.3 – 2023-08-23
+
+- Fix map_type dump typespec (#204)
+- Add SLE which is the new currency in Sierra Leone (#203)
+- Bugfix: {Currency.Type.dump/1} missing ISO string support (#201)
+
 ## 1.12.2 – 2023-01-19
 
 - Better error messages for `Money.add` and `Monet.subtract` (#191)
