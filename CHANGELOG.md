@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.4 – 2024-01-04
+
+- Allow phoenix_html 4.0 (#212)
+
 ## 1.12.3 – 2023-08-23
 
 - Fix map_type dump typespec (#204)
