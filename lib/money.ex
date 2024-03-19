@@ -642,10 +642,10 @@ defmodule Money do
     ## Examples
 
         iex> Money.to_decimal(Money.new(123456, :GBP))
-        #Decimal<1234.56>
+        Decimal.new("1234.56")
 
         iex> Money.to_decimal(Money.new(-123420, :EUR))
-        #Decimal<-1234.20>
+        Decimal.new("-1234.20")
 
     """
     def to_decimal(%Money{} = money) do
