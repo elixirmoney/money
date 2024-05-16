@@ -67,6 +67,7 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     @spec load(integer()) :: {:ok, Money.t()}
     def load(int) when is_integer(int), do: {:ok, Money.new(int)}
+    def load(%Decimal{} = decimal), do: {:ok, decimal |> Decimal.to_integer() |> Money.new()}
 
     @spec dump(integer() | Money.t()) :: {:ok, integer()}
     def dump(int) when is_integer(int), do: {:ok, int}
