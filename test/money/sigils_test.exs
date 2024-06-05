@@ -4,7 +4,7 @@ defmodule Money.SigilsTest do
 
   import Money.Sigils
 
-  # Set application setting before compilation of the followin tests
+  # Set application setting before compilation of the following tests
   Application.put_env(:money, :default_currency, :GBP)
 
   test "it can create a money object from a sigil" do
@@ -16,7 +16,7 @@ defmodule Money.SigilsTest do
     assert ~M[1_000_00] == Money.new(100_000, :GBP)
   end
 
-  # Revert the settins after compilation of the above tests
+  # Revert the settings after compilation of the above tests
   Application.delete_env(:money, :default_currency)
 
   test "it can create a money object from a sigil with a currency" do
