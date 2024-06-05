@@ -1,6 +1,6 @@
 # Money
 
-[![Build Status](https://travis-ci.org/elixirmoney/money.svg?branch=master)](https://travis-ci.org/elixirmoney/money)
+[![CI Status](https://github.com/elixirmoney/money/actions/workflows/ci.yml/badge.svg)](https://github.com/elixirmoney/money/actions/workflows/ci.yml)
 [![Module Version](https://img.shields.io/hexpm/v/money.svg)](https://hex.pm/packages/money)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/money/)
 [![Total Download](https://img.shields.io/hexpm/dt/money.svg)](https://hex.pm/packages/money)
