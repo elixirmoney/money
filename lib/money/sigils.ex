@@ -4,7 +4,7 @@ defmodule Money.Sigils do
   @doc ~S"""
   Handles the sigil `~M` for Money
 
-  The lower case `~m` variant does not exist as interpolation and excape
+  The lower case `~m` variant does not exist as interpolation and escape
   characters are not useful for Money sigils.
 
   ## Usage
