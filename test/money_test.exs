@@ -339,6 +339,18 @@ defmodule MoneyTest do
     end
   end
 
+  test "to_string configuration with custom_display_options" do
+    try do
+      Application.put_env(:money, :custom_display_options,
+        EUR: %{symbol: "€", symbol_on_right: true, symbol_space: true, separator: ".", delimiter: ","}
+      )
+
+      assert Money.to_string(eur(1_234_567_890)) == "12.345.678,90 €"
+    after
+      Application.delete_env(:money, :custom_display_options)
+    end
+  end
+
   test "to_string configuration with old delimeter" do
     try do
       Application.put_env(:money, :separator, ".")
