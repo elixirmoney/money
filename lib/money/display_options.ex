@@ -79,6 +79,12 @@ defmodule Money.DisplayOptions do
   end
 
   defp get_currency_custom_display_options(currency) do
-    Map.get(custom_display_options(), currency, %{})
+    display_options = Map.get(custom_display_options(), currency, %{})
+
+    case display_options[:symbol] do
+      nil -> display_options
+      true -> Map.put(display_options, :symbol, Currency.symbol(currency))
+      false -> Map.put(display_options, :symbol, "")
+    end
   end
 end
