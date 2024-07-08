@@ -3,7 +3,7 @@ defmodule MoneyTest do
   doctest Money
 
   require Money.Currency
-  import Money.Currency, only: [usd: 1, eur: 1, clf: 1, jpy: 1, omr: 1, xau: 1, zar: 1]
+  import Money.Currency, only: [usd: 1, eur: 1, clf: 1, jpy: 1, omr: 1, xau: 1, zar: 1, ars: 1, pen: 1, brl: 1]
 
   test "new/1 with default currency set" do
     try do
@@ -342,10 +342,18 @@ defmodule MoneyTest do
   test "to_string configuration with custom_display_options" do
     try do
       Application.put_env(:money, :custom_display_options,
-        EUR: %{symbol: true, symbol_on_right: true, symbol_space: true, separator: ".", delimiter: ","}
+        EUR: %{symbol: true, symbol_on_right: true, symbol_space: true, separator: ".", delimiter: ","},
+        JPY: %{symbol: true, symbol_on_right: true, separator: ","},
+        ARS: %{symbol: true, symbol_on_right: false, separator: ".", delimiter: ","},
+        PEN: %{symbol: true, symbol_on_right: false, symbol_space: true, separator: ",", delimiter: "."},
+        BRL: %{symbol: false, separator: ".", delimiter: ","}
       )
 
       assert Money.to_string(eur(1_234_567_890)) == "12.345.678,90 €"
+      assert Money.to_string(jpy(1_234_567_890)) == "1,234,567,890¥"
+      assert Money.to_string(ars(1_234_567_890)) == "$12.345.678,90"
+      assert Money.to_string(pen(1_234_567_890)) == "S/ 12,345,678.90"
+      assert Money.to_string(brl(1_234_567_890)) == "12.345.678,90"
     after
       Application.delete_env(:money, :custom_display_options)
     end
