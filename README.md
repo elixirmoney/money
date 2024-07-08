@@ -327,7 +327,7 @@ config :money,
 
 ### Custom Currencies Display Options
 
-In some we need to display the currency in a different way than the default. For example, we may want to display the currency symbol on the right side of the amount for some currencies. In order to do this, you can add the following configuration:
+In some cases, we may need to display the currency in a different way than the default format. For example, we may want to display the currency symbol on the right side of the amount for some currencies. To achieve this, you can add the following configuration:
 
 ```elixir
 config :money,
