@@ -5,3 +5,5 @@ erl_crash.dump
 doc/
 /.elixir_ls
 .DS_Store
+/blend/_build
+/blend/deps

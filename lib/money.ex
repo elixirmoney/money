@@ -144,6 +144,9 @@ defmodule Money do
       |> add_missing_leading_digit
 
     case @parser.parse(value) do
+      # pattern-match for supporting for Decimal 1.2 and greater https://github.com/elixirmoney/money/issues/213
+      {:ok, float} -> parse(float, currency, [])
+      # pattern-match for supporting for Decimal 2.0
       {float, _} -> parse(float, currency, [])
       :error -> :error
     end
