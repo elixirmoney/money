@@ -39,12 +39,17 @@ defmodule Money.DisplayOptions do
   def get(%Money{} = money, opts) do
     custom_currency_display_options = get_currency_custom_display_options(money.currency)
 
-    opts_without_symbol = Keyword.delete(opts, :symbol)
+    opts_with_symbol =
+      case Keyword.get(opts, :symbol) do
+        nil -> opts
+        true -> Keyword.put(opts, :symbol, Currency.symbol(money.currency))
+        false -> Keyword.put(opts, :symbol, "")
+      end
 
     money
     |> get_defaults(opts)
     |> Map.merge(custom_currency_display_options)
-    |> Map.merge(Enum.into(opts_without_symbol, %{}))
+    |> Map.merge(Enum.into(opts_with_symbol, %{}))
   end
 
   @spec get_defaults(Money.t(), Keyword.t()) :: t()
