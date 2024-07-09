@@ -3,7 +3,7 @@ Code.compile_file("blend/premix.exs")
 defmodule Money.Mixfile do
   use Mix.Project
 
-  @version "1.12.4"
+  @version "1.13.0"
   @github_url "https://github.com/elixirmoney/money"
 
   def project do

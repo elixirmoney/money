@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.0 – 2024-07-09
+
+- Add custom_display_options configuration (#225)
+- Update Money.parse/1 to work with decimal ~> 1.2 and ~> 2.0 (#227)
+
 ## 1.12.4 – 2024-01-04
 
 - Allow phoenix_html 4.0 (#212)
