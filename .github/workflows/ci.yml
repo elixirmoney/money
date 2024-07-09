@@ -19,5 +19,8 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
-      - run: mix deps.get
-      - run: mix test
+      - run: BLEND=decimal_1_2 mix deps.get
+      # Run tests for decimal ~> 1.2 only
+      - run: BLEND=decimal_1_2 mix test ./test/money_test.exs --only decimal_1_2
+      - run: BLEND=decimal_2_0 mix deps.get
+      - run: BLEND=decimal_2_0 mix test

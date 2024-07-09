@@ -26,6 +26,7 @@ defmodule MoneyTest do
     end
   end
 
+  @tag decimal_1_2: true
   test "parse/3" do
     assert Money.parse("$1,000.00", :USD) == {:ok, usd(100_000)}
     assert Money.parse("$ 1,000.00", :USD) == {:ok, usd(100_000)}
@@ -52,6 +53,7 @@ defmodule MoneyTest do
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
+  @tag decimal_1_2: true
   test "parse/1 big money" do
     assert Money.parse("$1,000,000,000,000,000.01", :USD) ==
              {:ok, usd(1_000_000_000_000_000_01)}
@@ -63,6 +65,7 @@ defmodule MoneyTest do
              {:ok, usd(1_000_000_000_000_000_000_000_01)}
   end
 
+  @tag decimal_1_2: true
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
@@ -71,6 +74,7 @@ defmodule MoneyTest do
     assert Money.parse("1000,0", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
   end
 
+  @tag decimal_1_2: true
   test "parse/2 with default currency set" do
     try do
       Application.put_env(:money, :default_currency, :GBP)
@@ -80,6 +84,7 @@ defmodule MoneyTest do
     end
   end
 
+  @tag decimal_1_2: true
   test "parse/2 with different exponents" do
     assert Money.parse(1_000.00, :EUR) == {:ok, eur(100_000)}
     assert Money.parse(1_000.00, :JPY) == {:ok, jpy(1000)}

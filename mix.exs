@@ -1,3 +1,5 @@
+Code.compile_file("blend/premix.exs")
+
 defmodule Money.Mixfile do
   use Mix.Project
 
@@ -27,6 +29,7 @@ defmodule Money.Mixfile do
       preferred_cli_env: [check: :test],
       dialyzer: [plt_add_apps: [:ecto, :phoenix_html, :decimal]]
     ]
+    |> Keyword.merge(maybe_lockfile_option())
   end
 
   def application do
@@ -38,15 +41,26 @@ defmodule Money.Mixfile do
       # Soft dependencies
       {:ecto, "~> 2.1 or ~> 3.0", optional: true},
       {:phoenix_html, "~> 2.0 or ~> 3.0 or ~> 4.0", optional: true},
-      {:decimal, "~> 1.0 or ~> 2.0", optional: true},
+      {:decimal, "~> 1.2 or ~> 2.0", optional: true},
 
       # Code style and analyzers
       {:credo, "~> 1.7.1", only: [:dev, :test], runtime: false, optional: true},
       {:dialyxir, "~> 1.4.2", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
-      {:ex_doc, "~> 0.21", only: [:dev, :docs]}
+      {:ex_doc, "~> 0.21", only: [:dev, :docs]},
+
+      # Needed to test diffent Decimal versions
+      {:blend, "~> 0.3.0", only: :dev}
     ]
+  end
+
+  defp maybe_lockfile_option do
+    case System.get_env("MIX_LOCKFILE") do
+      nil -> []
+      "" -> []
+      lockfile -> [lockfile: lockfile]
+    end
   end
 
   defp description do
