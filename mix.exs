@@ -10,7 +10,7 @@ defmodule Money.Mixfile do
       aliases: aliases(),
       name: "Money",
       version: @version,
-      elixir: "~> 1.0",
+      elixir: "~> 1.11",
       deps: deps(),
       docs: fn ->
         [
@@ -36,7 +36,7 @@ defmodule Money.Mixfile do
   defp deps do
     [
       # Soft dependencies
-      {:ecto, "~> 1.0 or ~> 2.0 or ~> 2.1 or ~> 3.0", optional: true},
+      {:ecto, "~> 2.1 or ~> 3.0", optional: true},
       {:phoenix_html, "~> 2.0 or ~> 3.0 or ~> 4.0", optional: true},
       {:decimal, "~> 1.0 or ~> 2.0", optional: true},
 
