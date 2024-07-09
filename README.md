@@ -325,6 +325,18 @@ config :money,
   ]
 ```
 
+### Custom Currencies Display Options
+
+In some cases, we may need to display the currency in a different way than the default format. For example, we may want to display the currency symbol on the right side of the amount for some currencies. To achieve this, you can add the following configuration:
+
+```elixir
+config :money,
+  custom_display_options: [
+    EUR: %{symbol_on_right: true, symbol_space: true, separator: ".", delimiter: ",", symbol: true},
+    JPY: %{symbol_on_right: true, separator: ".", delimiter: ",", symbol: true}
+  ]
+```
+
 ## Troubleshooting
 
 ### Validating amount in Ecto changeset
