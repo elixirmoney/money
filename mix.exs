@@ -1,4 +1,6 @@
-Code.compile_file("blend/premix.exs")
+if File.exists?("blend/premix.exs") do
+  Code.compile_file("blend/premix.exs")
+end
 
 defmodule Money.Mixfile do
   use Mix.Project
