@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.1 – 2024-07-10
+
+- fix release not including blend (which is a dev tool) (#229)
+
 ## 1.13.0 – 2024-07-09
 
 - Add custom_display_options configuration (#225)
