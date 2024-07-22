@@ -46,7 +46,8 @@ defmodule Money.Mixfile do
       {:decimal, "~> 1.2 or ~> 2.0", optional: true},
 
       # Code style and analyzers
-      {:credo, "~> 1.7.1", only: [:dev, :test], runtime: false, optional: true},
+      # Credo 1.7.7 requires Elixir 1.13+
+      {:credo, "== 1.7.6", only: [:dev, :test], runtime: false, optional: true},
       {:dialyxir, "~> 1.4.2", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
