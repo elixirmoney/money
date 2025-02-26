@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           - otp: 27.0
-            elixir: 1.17.2
+            elixir: 1.18.2
           - otp: 21.3
             elixir: 1.11.4
 
@@ -24,6 +24,8 @@ jobs:
           elixir-version: ${{matrix.elixir}}
       - run: BLEND=decimal_1_2 mix deps.get
       # Run tests for decimal ~> 1.2 only
+      - run: BLEND=decimal_1_2 MIX_ENV=test mix compile --warnings-as-errors
       - run: BLEND=decimal_1_2 mix test ./test/money_test.exs --only decimal_1_2
       - run: BLEND=decimal_2_0 mix deps.get
+      - run: BLEND=decimal_2_0 MIX_ENV=test mix compile --warnings-as-errors
       - run: BLEND=decimal_2_0 mix test

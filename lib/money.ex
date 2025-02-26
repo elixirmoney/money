@@ -82,6 +82,15 @@ defmodule Money do
   def new(int, currency) when is_integer(int),
     do: %Money{amount: int, currency: Currency.to_atom(currency)}
 
+  defp get_parser do
+    # We use a method to avoid Elixir type warnings, as we support both Decimal 1.2 and 2.0.
+    if Code.ensure_loaded?(Decimal) do
+      Decimal
+    else
+      Float
+    end
+  end
+
   @spec parse(String.t() | number | Decimal.t(), atom | String.t(), Keyword.t()) :: {:ok, t} | :error
   @doc ~S"""
   Parse a value into a `Money` type.
@@ -129,12 +138,6 @@ defmodule Money do
     end
   end
 
-  if Code.ensure_loaded?(Decimal) do
-    @parser Decimal
-  else
-    @parser Float
-  end
-
   def parse(str, currency, opts) when is_binary(str) do
     %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
@@ -143,7 +146,7 @@ defmodule Money do
       |> prepare_parse_string(delimiter)
       |> add_missing_leading_digit
 
-    case @parser.parse(value) do
+    case get_parser().parse(value) do
       # pattern-match for supporting for Decimal 1.2 and greater https://github.com/elixirmoney/money/issues/213
       {:ok, float} -> parse(float, currency, [])
       # pattern-match for supporting for Decimal 2.0
