@@ -50,6 +50,15 @@ defmodule MoneyTest do
     assert Money.parse(",25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(25)}
     assert Money.parse("-,25", :EUR, separator: ".", delimiter: ",") == {:ok, eur(-25)}
 
+    assert Money.parse("0E+1", :USD) == {:ok, usd(0)}
+    assert Money.parse("1000.0e1", :USD) == {:ok, usd(1_000_000)}
+    assert Money.parse("1000.0E1", :USD) == {:ok, usd(1_000_000)}
+    assert Money.parse("1000.0e+1", :USD) == {:ok, usd(1_000_000)}
+    assert Money.parse("1000.0E+1", :USD) == {:ok, usd(1_000_000)}
+    assert Money.parse("1000.0e-1", :USD) == {:ok, usd(10000)}
+    assert Money.parse("1000.0E-1", :USD) == {:ok, usd(10000)}
+    assert Money.parse("0.5e-1", :USD) == {:ok, usd(5)}
+
     assert Money.parse("1000.0", :WRONG) == :error
   end
 
