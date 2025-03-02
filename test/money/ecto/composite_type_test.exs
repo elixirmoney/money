@@ -33,6 +33,11 @@ defmodule Money.Ecto.Composite.TypeTest do
     assert Type.load({100, "JPY"}) == {:ok, Money.new(100, :JPY)}
   end
 
+  test "load/1 Tuple with `Decimal.new/1`: {Decimal.new/1, currency}" do
+    assert Type.load({Decimal.new("1"), "USD"}) == {:ok, Money.new(1, :USD)}
+    assert Type.load({Decimal.new("1000"), "MXN"}) == {:ok, Money.new(1000, :MXN)}
+  end
+
   test "dump/1 Money" do
     assert Type.dump(Money.new(1, :USD)) == {:ok, {1, "USD"}}
     assert Type.dump(Money.new(100, :JPY)) == {:ok, {100, "JPY"}}
