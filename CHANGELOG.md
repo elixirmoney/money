@@ -1,8 +1,13 @@
 # Changelog
 
+## 1.14.0 – 2025-03-10
+
+- Add support parsing scientific notation
+- Fix elixir 1.18 type warning (#239)
+
 ## 1.13.1 – 2024-07-10
 
-- fix release not including blend (which is a dev tool) (#229)
+- Fix release not including blend (which is a dev tool) (#229)
 
 ## 1.13.0 – 2024-07-09
 
