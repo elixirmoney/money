@@ -13,7 +13,7 @@ jobs:
         include:
           - otp: 27.0
             elixir: 1.18.2
-          - otp: 21.3
+          - otp: 24
             elixir: 1.11.4
 
     steps:
