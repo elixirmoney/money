@@ -257,6 +257,98 @@ defmodule MoneyTest do
            ]
   end
 
+  test "test div" do
+    # Basic division
+    assert Money.div(Money.new(100, :USD), 2) == usd(50)
+    assert Money.div(Money.new(200, :USD), 4) == usd(50)
+
+    # Half-up rounding with positive numbers
+    # 75.5 rounds up to 76
+    assert Money.div(Money.new(151, :USD), 2) == usd(76)
+    # 74.5 rounds up to 75
+    assert Money.div(Money.new(149, :USD), 2) == usd(75)
+    # 33.33... rounds to 33
+    assert Money.div(Money.new(100, :USD), 3) == usd(33)
+    # 33.66... rounds to 34
+    assert Money.div(Money.new(101, :USD), 3) == usd(34)
+    # 34.0 stays 34
+    assert Money.div(Money.new(102, :USD), 3) == usd(34)
+    # 34.33... rounds to 34
+    assert Money.div(Money.new(103, :USD), 3) == usd(34)
+    # 34.66... rounds to 35
+    assert Money.div(Money.new(104, :USD), 3) == usd(35)
+    # 35.0 stays 35
+    assert Money.div(Money.new(105, :USD), 3) == usd(35)
+
+    # Half-up rounding with negative numbers
+    # -75.5 rounds to -76
+    assert Money.div(Money.new(-151, :USD), 2) == usd(-76)
+    # -74.5 rounds to -75
+    assert Money.div(Money.new(-149, :USD), 2) == usd(-75)
+    # -33.33... rounds to -33
+    assert Money.div(Money.new(-100, :USD), 3) == usd(-33)
+    # -33.66... rounds to -34
+    assert Money.div(Money.new(-101, :USD), 3) == usd(-34)
+
+    # Division by negative numbers
+    assert Money.div(Money.new(151, :USD), -2) == usd(-76)
+    assert Money.div(Money.new(-151, :USD), -2) == usd(76)
+
+    # Division with float divisor
+    assert Money.div(Money.new(100, :USD), 2.0) == usd(50)
+    # 66.66... rounds to 67
+    assert Money.div(Money.new(100, :USD), 1.5) == usd(67)
+    # 40.0 stays 40
+    assert Money.div(Money.new(100, :USD), 2.5) == usd(40)
+
+    # Edge cases
+    # 0.5 rounds up to 1
+    assert Money.div(Money.new(1, :USD), 2) == usd(1)
+    # -0.5 rounds to -1
+    assert Money.div(Money.new(-1, :USD), 2) == usd(-1)
+    # 0 divided by anything is 0
+    assert Money.div(Money.new(0, :USD), 5) == usd(0)
+
+    # Division with Decimal divisor
+    assert Money.div(Money.new(100, :USD), Decimal.new("2")) == usd(50)
+    assert Money.div(Money.new(100, :USD), Decimal.new("2.0")) == usd(50)
+    # 66.66... rounds to 67 with half-up
+    assert Money.div(Money.new(100, :USD), Decimal.new("1.5")) == usd(67)
+    # 40.0 stays 40
+    assert Money.div(Money.new(100, :USD), Decimal.new("2.5")) == usd(40)
+    # Half-up rounding: 75.5 rounds up to 76
+    assert Money.div(Money.new(151, :USD), Decimal.new("2")) == usd(76)
+    # 33.33... rounds to 33
+    assert Money.div(Money.new(100, :USD), Decimal.new("3")) == usd(33)
+    # Negative numbers with Decimal
+    assert Money.div(Money.new(-151, :USD), Decimal.new("2")) == usd(-76)
+    assert Money.div(Money.new(151, :USD), Decimal.new("-2")) == usd(-76)
+
+    # Division by zero should raise ArithmeticError
+    assert_raise ArithmeticError, "division by zero", fn ->
+      Money.div(Money.new(100, :USD), 0)
+    end
+
+    assert_raise ArithmeticError, "division by zero", fn ->
+      Money.div(Money.new(100, :USD), 0.0)
+    end
+
+    assert_raise ArithmeticError, "division by zero", fn ->
+      Money.div(Money.new(100, :USD), Decimal.new("0"))
+    end
+
+    assert_raise ArithmeticError, "division by zero", fn ->
+      Money.div(Money.new(100, :USD), Decimal.new("0.0"))
+    end
+  end
+
+  test "test divide error cases" do
+    # Division by zero should raise ArithmeticError
+    assert_raise ArithmeticError, "division by zero", fn ->
+      Money.divide(Money.new(100, :USD), 0)
+    end
+  end
+
   test "test to_string" do
     assert Money.to_string(usd(500)) == "$5.00"
     assert Money.to_string(eur(1234)) == "€12.34"

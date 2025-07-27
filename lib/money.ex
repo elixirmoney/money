@@ -1,5 +1,5 @@
 defmodule Money do
-  import Kernel, except: [abs: 1, round: 1]
+  import Kernel, except: [abs: 1, round: 1, div: 2]
 
   @moduledoc """
   Defines a `Money` struct along with convenience methods for working with currencies.
@@ -510,19 +510,57 @@ defmodule Money do
 
   @spec divide(t, integer) :: [t]
   @doc ~S"""
-  Divides up `Money` by an amount
+  Divides up `Money` into a list of `Money` structs split as evenly as possible.
+
+  This function splits a Money amount into the specified number of parts, returning
+  a list of Money structs. When the amount cannot be divided evenly, the remainder
+  is distributed by adding 1 to the first N Money structs in the returned list,
+  where N is the remainder amount. Negative denominators are supported and will flip
+  the sign of all amounts.
+
+  ## Warning
+
+  **Memory Usage**: This function creates a list containing `denominator` number of
+  Money structs. For large denominators (e.g., > 100,000), this can consume
+  significant memory and potentially lead to out-of-memory (OOM) errors.
+  Consider using `Money.div/2` instead if you only need a single divided amount
 
   ## Examples
 
+      # Even division
       iex> Money.divide(Money.new(100, :USD), 2)
       [%Money{amount: 50, currency: :USD}, %Money{amount: 50, currency: :USD}]
 
+      # Uneven division - remainder distributed to first struct
       iex> Money.divide(Money.new(101, :USD), 2)
       [%Money{amount: 51, currency: :USD}, %Money{amount: 50, currency: :USD}]
 
+      # Multiple parts with remainder distribution
+      iex> Money.divide(Money.new(100, :USD), 3)
+      [%Money{amount: 34, currency: :USD}, %Money{amount: 33, currency: :USD}, %Money{amount: 33, currency: :USD}]
+
+      # Negative amounts
+      iex> Money.divide(Money.new(-7, :USD), 2)
+      [%Money{amount: -4, currency: :USD}, %Money{amount: -3, currency: :USD}]
+
+      # Negative denominators flip the sign
+      iex> Money.divide(Money.new(-7, :USD), -2)
+      [%Money{amount: 4, currency: :USD}, %Money{amount: 3, currency: :USD}]
+
+      # Large denominators can consume significant memory - USE WITH CAUTION!
+      # Money.divide(Money.new(1000000, :USD), 100000) # Creates 100,000 Money structs (~10MB)!
+
+  ## See Also
+
+  For simple division that returns a single Money struct, use `Money.div/2`.
+
   """
+  def divide(%Money{}, 0) do
+    raise ArithmeticError, "division by zero"
+  end
+
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
-    value = div(amount, denominator)
+    value = Kernel.div(amount, denominator)
     rem = rem(amount, denominator)
     do_divide(cur, value, rem, denominator, [])
   end
@@ -550,6 +588,75 @@ defmodule Money do
   defp increment_abs(n) when n < 0, do: n - 1
   defp decrement_abs(n) when n >= 0, do: n - 1
   defp decrement_abs(n) when n < 0, do: n + 1
+
+  @spec div(t, integer | float | Decimal.t()) :: t
+  @doc """
+  Divides a `Money` struct by a number and returns a single `Money` struct.
+
+  The divisor can be a number (integer or float) or a Decimal. The calculation is performed
+  in integer arithmetic with half-up rounding.
+
+  ## Examples
+
+      iex> Money.div(Money.new(100, :USD), 2)
+      %Money{amount: 50, currency: :USD}
+
+      iex> Money.div(Money.new(151, :USD), 2)
+      %Money{amount: 76, currency: :USD}
+
+      iex> Money.div(Money.new(100, :USD), 3)
+      %Money{amount: 33, currency: :USD}
+
+      iex> Money.div(Money.new(-151, :USD), 2)
+      %Money{amount: -76, currency: :USD}
+
+      iex> Money.div(Money.new(100, :USD), Decimal.new("1.5"))
+      %Money{amount: 67, currency: :USD}
+
+      iex> Money.div(Money.new(151, :USD), Decimal.new("2"))
+      %Money{amount: 76, currency: :USD}
+
+  Division by zero raises an ArithmeticError:
+
+      iex> Money.div(Money.new(100, :USD), 0)
+      ** (ArithmeticError) division by zero
+
+  """
+  def div(%Money{}, 0) do
+    raise ArithmeticError, "division by zero"
+  end
+
+  def div(%Money{}, 0.0) do
+    raise ArithmeticError, "division by zero"
+  end
+
+  def div(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor) do
+    result = amount / divisor
+    rounded_amount = Kernel.round(result)
+    Money.new(rounded_amount, cur)
+  end
+
+  def div(%Money{amount: amount, currency: cur}, divisor) when is_float(divisor) do
+    result = amount / divisor
+    rounded_amount = Kernel.round(result)
+    Money.new(rounded_amount, cur)
+  end
+
+  if Code.ensure_loaded?(Decimal) do
+    def div(%Money{amount: amount, currency: cur}, %Decimal{} = divisor) do
+      if Decimal.equal?(divisor, Decimal.new("0")) do
+        raise ArithmeticError, "division by zero"
+      else
+        result =
+          amount
+          |> Decimal.div(divisor)
+          |> Decimal.round(0, Decimal.Context.get().rounding)
+          |> Decimal.to_integer()
+
+        Money.new(result, cur)
+      end
+    end
+  end
 
   @spec to_string(t, Keyword.t()) :: String.t()
   @doc ~S"""
