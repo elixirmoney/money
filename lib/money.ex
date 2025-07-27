@@ -622,11 +622,7 @@ defmodule Money do
       ** (ArithmeticError) division by zero
 
   """
-  def div(%Money{}, 0) do
-    raise ArithmeticError, "division by zero"
-  end
-
-  def div(%Money{}, 0.0) do
+  def div(%Money{}, divisor) when divisor == +0.0 or divisor == -0.0 or divisor == 0 do
     raise ArithmeticError, "division by zero"
   end
 
