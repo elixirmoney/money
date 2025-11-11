@@ -69,6 +69,9 @@ defmodule Money do
     end
   end
 
+  @spec new(t) :: t
+  def new(%__MODULE__{} = money), do: money
+
   @spec new(integer, atom | String.t()) :: t
   @doc """
   Create a new `Money` struct from currency sub-units (cents)

@@ -26,6 +26,11 @@ defmodule MoneyTest do
     end
   end
 
+  test "new/1 with money struct" do
+    money = Money.new(123, :GBP)
+    assert Money.new(money) == money
+  end
+
   @tag decimal_1_2: true
   test "parse/3" do
     assert Money.parse("$1,000.00", :USD) == {:ok, usd(100_000)}
