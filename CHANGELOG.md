@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.15.0 – 2026-05-18
+
+- Allow Decimal 3.0 (#249)
+- Add Money.div/2 for single-value division with rounding (#245)
+- Fix currency symbols (#241)
+- Fix CI runners and minimum OTP version (#243)
+
 ## 1.14.0 – 2025-03-10
 
 - Add support parsing scientific notation
