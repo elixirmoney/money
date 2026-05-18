@@ -43,7 +43,7 @@ defmodule Money.Mixfile do
       # Soft dependencies
       {:ecto, "~> 2.1 or ~> 3.0", optional: true},
       {:phoenix_html, "~> 2.0 or ~> 3.0 or ~> 4.0", optional: true},
-      {:decimal, "~> 1.2 or ~> 2.0", optional: true},
+      {:decimal, "~> 1.2 or ~> 2.0 or ~> 3.0", optional: true},
 
       # Code style and analyzers
       # Credo 1.7.7 requires Elixir 1.13+
