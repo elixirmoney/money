@@ -580,7 +580,8 @@ defmodule Money do
     do_divide(currency, value, rem, count, acc)
   end
 
-  defp next_amount(0, -1, count) when count > 0, do: -1
+  defp next_amount(0, rem, count) when count > 0 and rem < 0, do: -1
+  defp next_amount(0, rem, count) when count < 0 and rem > 0, do: -1
   defp next_amount(value, 0, _count), do: value
   defp next_amount(value, _rem, _count), do: increment_abs(value)
 
