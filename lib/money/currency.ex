@@ -199,6 +199,7 @@ defmodule Money.Currency do
     XBC: %{name: "European Unit of Account 9(E.U.A.-9)", symbol: "", exponent: 2, number: 957},
     XBD: %{name: "European Unit of Account 17(E.U.A.-17)", symbol: "", exponent: 2, number: 958},
     XCD: %{name: "East Caribbean Dollar", symbol: "$", exponent: 2, number: 951},
+    XCG: %{name: "Caribbean Guilder", symbol: "Cg", exponent: 2, number: 532},
     XDR: %{name: "SDR", symbol: "SDR", exponent: 2, number: 960},
     XFU: %{name: "UIC-Franc", symbol: "", exponent: 2, number: 000},
     XOF: %{name: "CFA Franc BCEAO", symbol: "Fr", exponent: 0, number: 952},
