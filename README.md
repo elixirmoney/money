@@ -272,7 +272,7 @@ Bring `Money` to your Phoenix project.
 If you are using Phoenix, you can include money objects directly into your output and they will be correctly escaped.
 
 ```elixir
-<b><%= Money.new(12345,67, :GBP) %></b>
+<b><%= Money.new(1234567, :GBP) %></b>
 ```
 
 ## Configuration
