@@ -1,7 +1,7 @@
 defmodule Money.Mixfile do
   use Mix.Project
 
-  @version "1.2.1"
+  @version "1.2.7"
   @github_url "https://github.com/liuggio/money"
 
   def project do
@@ -49,6 +49,7 @@ defmodule Money.Mixfile do
 
   defp package do
     [
+     organization: "resuelve",
      maintainers: ["Giulio De Donato", "Andrew Timberlake"],
      contributors: ["Giulio De Donato", "Andrew Timberlake"],
      licenses: ["MIT"],

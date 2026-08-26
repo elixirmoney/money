@@ -35,7 +35,7 @@ if Code.ensure_compiled?(Ecto.Type) do
         end
     """
 
-    @behaviour Ecto.Type
+    use Ecto.Type
 
     @spec type :: atom
     def type, do: :moneyz

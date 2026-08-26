@@ -1,0 +1,31 @@
+name: Publish to hex.pm
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  publish-hexpm:
+    name: publish to hex.pm
+    runs-on: ubuntu-latest
+    container: elixir:1.14.5-otp-25-alpine
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          apk add --update bash openssl git
+          mix local.hex --force && mix local.rebar --force
+
+      - name: Auth hex to Resuelve organization
+        run: mix hex.organization auth resuelve --key ${{ secrets.HEX_KEY_READ_ONLY }}
+
+      - name: Install elixir dependencies
+        run: mix deps.get
+
+      - name: publish to hex.pm
+        run: mix hex.publish --organization resuelve --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_KEY_PUBLISH }}
