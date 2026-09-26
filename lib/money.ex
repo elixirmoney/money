@@ -627,9 +627,7 @@ defmodule Money do
   end
 
   def div(%Money{amount: amount, currency: cur}, divisor) when is_integer(divisor) do
-    result = amount / divisor
-    rounded_amount = Kernel.round(result)
-    Money.new(rounded_amount, cur)
+    Money.new(round_half_away(amount, divisor), cur)
   end
 
   def div(%Money{amount: amount, currency: cur}, divisor) when is_float(divisor) do
@@ -859,6 +857,18 @@ defmodule Money do
 
   defp prepare_sub_unit(value, %{strip_insignificant_fractional_unit: true}) do
     if Regex.match?(~r/[1-9]+/, value), do: value, else: ""
+  end
+
+  # `amount / divisor` is a float, so a cent count past 2^53 came back short.
+  defp round_half_away(amount, divisor) do
+    quotient = Kernel.div(amount, divisor)
+    remainder = Kernel.rem(amount, divisor)
+
+    if Kernel.abs(remainder) * 2 >= Kernel.abs(divisor) do
+      if amount * divisor >= 0, do: quotient + 1, else: quotient - 1
+    else
+      quotient
+    end
   end
 
   defp fail_currencies_must_be_equal(a, b) do

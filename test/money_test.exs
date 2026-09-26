@@ -261,6 +261,8 @@ defmodule MoneyTest do
     # Basic division
     assert Money.div(Money.new(100, :USD), 2) == usd(50)
     assert Money.div(Money.new(200, :USD), 4) == usd(50)
+    assert Money.div(Money.new(9_007_199_254_740_993, :USD), 1) == usd(9_007_199_254_740_993)
+    assert Money.div(Money.new(9_007_199_254_740_993, :USD), 2) == usd(4_503_599_627_370_497)
 
     # Half-up rounding with positive numbers
     # 75.5 rounds up to 76
