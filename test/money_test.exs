@@ -147,6 +147,17 @@ defmodule MoneyTest do
     assert Money.zero?(Money.new(0, :USD))
   end
 
+  test "zero/1" do
+    assert Money.zero(usd(123)) == usd(0)
+    assert Money.zero(Money.new(-50, :JPY)) == jpy(0)
+    assert Money.zero(:EUR) == eur(0)
+    assert Money.zero("usd") == usd(0)
+
+    assert_raise ArgumentError, fn ->
+      Money.zero(:ABC)
+    end
+  end
+
   test "test equals?" do
     assert Money.equals?(Money.new(123, :USD), usd(123))
     refute Money.equals?(Money.new(123, :CAD), usd(123))

@@ -334,6 +334,26 @@ defmodule Money do
     amount == 0
   end
 
+  @spec zero(t | atom | String.t()) :: t
+  @doc ~S"""
+  Returns a `Money` with a zero amount in the same currency as the given
+  `Money` or in the given currency.
+
+  ## Examples
+
+      iex> Money.zero(Money.new(100, :USD))
+      %Money{amount: 0, currency: :USD}
+
+      iex> Money.zero(:EUR)
+      %Money{amount: 0, currency: :EUR}
+
+      iex> Money.zero("gbp")
+      %Money{amount: 0, currency: :GBP}
+
+  """
+  def zero(%Money{currency: currency}), do: new(0, currency)
+  def zero(currency), do: new(0, currency)
+
   @spec positive?(t) :: boolean
   @doc ~S"""
   Returns true if the amount of a `Money` is greater than zero
