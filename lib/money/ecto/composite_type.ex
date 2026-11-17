@@ -29,10 +29,9 @@ if Code.ensure_loaded?(Ecto.Type) do
     @spec type() :: :money_with_currency
     def type, do: :money_with_currency
 
-    @spec load({integer(), atom() | String.t()}) :: {:ok, Money.t()}
-    def load({amount, currency}) do
-      {:ok, Money.new(amount, currency)}
-    end
+    @spec load({integer() | Decimal.t(), atom() | String.t()}) :: {:ok, Money.t()}
+    def load({amount, currency}) when is_integer(amount), do: {:ok, Money.new(amount, currency)}
+    def load({%Decimal{} = amount, currency}), do: {:ok, amount |> Decimal.to_integer() |> Money.new(currency)}
 
     @spec dump(any()) :: :error | {:ok, {integer(), String.t()}}
     def dump(%Money{} = money), do: {:ok, {money.amount, to_string(money.currency)}}
