@@ -865,7 +865,7 @@ defmodule Money do
     remainder = Kernel.rem(amount, divisor)
 
     if Kernel.abs(remainder) * 2 >= Kernel.abs(divisor) do
-      if amount * divisor >= 0, do: quotient + 1, else: quotient - 1
+      if amount >= 0 == divisor > 0, do: quotient + 1, else: quotient - 1
     else
       quotient
     end
