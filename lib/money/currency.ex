@@ -57,7 +57,9 @@ defmodule Money.Currency do
     BZD: %{name: "Belize Dollar", symbol: "$", exponent: 2, number: 084},
     CAD: %{name: "Canadian Dollar", symbol: "$", exponent: 2, number: 124},
     CDF: %{name: "Congolese Franc", symbol: "Fr", exponent: 2, number: 976},
+    CHE: %{name: "WIR Euro", symbol: "CHE", exponent: 2, number: 947},
     CHF: %{name: "Swiss Franc", symbol: "CHF", exponent: 2, number: 756},
+    CHW: %{name: "WIR Franc", symbol: "CHW", exponent: 2, number: 948},
     CLF: %{name: "Chilean Peso Unidades de fomento", symbol: "$", exponent: 4, number: 990},
     CLP: %{name: "Chilean Peso Unidades de fomento", symbol: "$", exponent: 0, number: 152},
     CNY: %{name: "Yuan Renminbi", symbol: "¥", exponent: 2, number: 156},
@@ -185,12 +187,15 @@ defmodule Money.Currency do
     USN: %{name: "US Dollar next-day funds", symbol: "$", exponent: 2, number: 997},
     UYI: %{name: "Peso Uruguayo Uruguay Peso en Unidades Indexadas", symbol: "$U", exponent: 0, number: 940},
     UYU: %{name: "Peso Uruguayo Uruguay Peso en Unidades Indexadas", symbol: "$U", exponent: 2, number: 858},
+    UYW: %{name: "Unidad Previsional", symbol: "UP", exponent: 4, number: 927},
     UZS: %{name: "Uzbekistan Sum", symbol: "лв", exponent: 2, number: 860},
+    VED: %{name: "Bolívar Soberano", symbol: "Bs.D", exponent: 2, number: 926},
     VEF: %{name: "Bolivar Fuerte", symbol: "Bs.", exponent: 2, number: 937},
     VES: %{name: "Venezuelan Bolivar Soberano", symbol: "Bs", exponent: 2, number: 928},
     VND: %{name: "Dong", symbol: "₫", exponent: 0, number: 704},
     VUV: %{name: "Vatu", symbol: "Vt", exponent: 0, number: 548},
     WST: %{name: "Tala", symbol: "$", exponent: 2, number: 882},
+    XAD: %{name: "Arab Accounting Dinar", symbol: "", exponent: 2, number: 396},
     XAF: %{name: "CFA Franc BEAC", symbol: "FCFA", exponent: 0, number: 950},
     XAG: %{name: "Silver", symbol: "", exponent: 2, number: 961},
     XAU: %{name: "Gold", symbol: "", exponent: 2, number: 959},
@@ -212,6 +217,7 @@ defmodule Money.Currency do
     YER: %{name: "Yemeni Rial", symbol: "﷼", exponent: 2, number: 886},
     ZAR: %{name: "Rand", symbol: "R", exponent: 2, number: 710},
     ZMW: %{name: "Zambian Kwacha", symbol: "K", exponent: 2, number: 967},
+    ZWG: %{name: "Zimbabwe Gold", symbol: "ZiG", exponent: 2, number: 924},
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
