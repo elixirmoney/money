@@ -14,7 +14,7 @@ defmodule Money.Mixfile do
       aliases: aliases(),
       name: "Money",
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.15",
       deps: deps(),
       docs: fn ->
         [
@@ -28,10 +28,13 @@ defmodule Money.Mixfile do
       end,
       description: description(),
       package: package(),
-      preferred_cli_env: [check: :test],
       dialyzer: [plt_add_apps: [:ecto, :phoenix_html, :decimal]]
     ]
     |> Keyword.merge(maybe_lockfile_option())
+  end
+
+  def cli do
+    [preferred_envs: [check: :test]]
   end
 
   def application do
@@ -46,15 +49,14 @@ defmodule Money.Mixfile do
       {:decimal, "~> 1.2 or ~> 2.0 or ~> 3.0", optional: true},
 
       # Code style and analyzers
-      # Credo 1.7.7 requires Elixir 1.13+
-      {:credo, "== 1.7.6", only: [:dev, :test], runtime: false, optional: true},
-      {:dialyxir, "~> 1.4.2", only: [:dev, :test], runtime: false, optional: true},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false, optional: true},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false, optional: true},
 
       # Docs
-      {:ex_doc, "~> 0.21", only: [:dev, :docs]},
+      {:ex_doc, "~> 0.40", only: [:dev, :docs]},
 
       # Needed to test diffent Decimal versions
-      {:blend, "~> 0.3.0", only: :dev}
+      {:blend, "~> 0.5", only: :dev}
     ]
   end
 

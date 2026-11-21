@@ -12,13 +12,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - otp: 27.0
-            elixir: 1.18.2
-          - otp: 24
-            elixir: 1.11.4
+          - otp: "29"
+            elixir: "1.20.5"
+          - otp: "24"
+            elixir: "1.15.8"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -30,3 +30,7 @@ jobs:
       - run: BLEND=decimal_2_0 mix deps.get
       - run: BLEND=decimal_2_0 MIX_ENV=test mix compile --warnings-as-errors
       - run: BLEND=decimal_2_0 mix test
+      # Run tests for the default lockfile (decimal ~> 3.0)
+      - run: mix deps.get
+      - run: MIX_ENV=test mix compile --warnings-as-errors
+      - run: mix test
