@@ -60,6 +60,16 @@ defmodule Money.CurrencyTest do
     assert_raise ArgumentError, fn -> Currency.exponent!(:ABC) end
   end
 
+  test "exponents follow ISO 4217 minor units" do
+    assert Currency.exponent!(:TND) == 3
+    assert Currency.exponent!(:CVE) == 2
+
+    assert Money.to_string(Money.new(1500, :TND)) == "د.ت1.500"
+    assert Money.to_string(Money.new(150, :CVE)) == "$1.50"
+    assert Money.parse!("1.5", :TND) == Money.new(1500, :TND)
+    assert Money.parse!("1.5", :CVE) == Money.new(150, :CVE)
+  end
+
   test "sub_units_count!/1" do
     assert Currency.sub_units_count!(:USD) == 100
     assert Currency.sub_units_count!(:JPY) == 1

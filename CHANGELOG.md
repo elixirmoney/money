@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** Fix TND and CVE exponents to match ISO 4217 (#258)
+  - TND (Tunisian Dinar) now has exponent 3 instead of 2 (1 dinar = 1000 millimes)
+  - CVE (Cabo Verde Escudo) now has exponent 2 instead of 0
+  - Stored integer amounts change meaning: an amount created as `Money.new(1500, :TND)` was
+    15.00 TND and is now 1.500 TND. Multiply stored TND amounts by 10 and CVE amounts by 100,
+    or keep the old exponent with `config :money, custom_currencies: [TND: %{...}]`.
+
 ## 1.15.0 – 2026-05-18
 
 - Allow Decimal 3.0 (#249)
