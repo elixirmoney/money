@@ -74,6 +74,24 @@ defmodule Money.CurrencyTest do
     assert_raise ArgumentError, fn -> Currency.number!(:ABC) end
   end
 
+  test "current ISO 4217 codes" do
+    for {code, number, exponent} <- [
+          {:CHE, 947, 2},
+          {:CHW, 948, 2},
+          {:UYW, 927, 4},
+          {:VED, 926, 2},
+          {:XAD, 396, 2},
+          {:ZWG, 924, 2}
+        ] do
+      assert Currency.exists?(code)
+      assert Currency.number!(code) == number
+      assert Currency.exponent!(code) == exponent
+      assert Currency.to_atom(number) == code
+    end
+
+    assert Money.to_string(Money.new(1050, :ZWG)) == "ZiG10.50"
+  end
+
   test "to_atom/1" do
     assert Currency.to_atom(:USD) == :USD
     assert Currency.to_atom("USD") == :USD
