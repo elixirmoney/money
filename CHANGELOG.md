@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** Fix TND and CVE exponents to match ISO 4217 (#259)
+  - TND (Tunisian Dinar) now has exponent 3 instead of 2 (1 dinar = 1000 millimes)
+  - CVE (Cabo Verde Escudo) now has exponent 2 instead of 0
+  - Stored integer amounts change meaning: an amount created as `Money.new(1500, :TND)` was
+    15.00 TND and is now 1.500 TND. Multiply stored TND amounts by 10 and CVE amounts by 100,
+    or keep the old exponent with `config :money, custom_currencies: [TND: %{...}]`.
+- Add missing ISO 4217 currencies: CHE, CHW, UYW, VED, XAD, ZWG (#257)
+- Add Money.zero/1 to create a zero amount (#255)
+- Keep integer division inside the integer range for large amounts (#254)
+- Add XCG currency (Caribbean guilder) (#251)
+- Add guards for Money: `is_money/1`, `is_zero/1`, `is_positive/1`, `is_negative/1` (#250)
+- Pin CI runner to ubuntu-24.04 (#256)
+
 ## 1.15.0 – 2026-05-18
 
 - Allow Decimal 3.0 (#249)
