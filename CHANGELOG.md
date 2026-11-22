@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix the Ecto types' `cast/1` raising instead of returning `:error` for a non-integer amount or an
+  unknown currency, such as `%{"amount" => "10.50"}` or `{100, "XXXX"}`, so changesets get a
+  validation error instead of crashing.
 - Document that `Money` can't be passed as the sorter module to `Enum.sort/2`, `Enum.min/2` or
   `Enum.max/2`, since `Money.compare/2` returns `-1`, `0` or `1`, and show sorting with `Money.cmp/2`.
 - Fix currency lookup by ISO number returning a currency that depends on VM state for numbers

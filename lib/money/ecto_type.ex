@@ -46,10 +46,10 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def cast(int) when is_integer(int), do: {:ok, Money.new(int)}
     def cast(%Money{} = money), do: {:ok, money}
-    def cast(%{"amount" => amount, "currency" => currency}), do: {:ok, Money.new(amount, currency)}
-    def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
-    def cast(%{amount: amount, currency: currency}), do: {:ok, Money.new(amount, currency)}
-    def cast(%{amount: amount}), do: {:ok, Money.new(amount)}
+    def cast(%{"amount" => amount, "currency" => currency}) when is_integer(amount), do: new_money(amount, currency)
+    def cast(%{"amount" => amount}) when is_integer(amount), do: {:ok, Money.new(amount)}
+    def cast(%{amount: amount, currency: currency}) when is_integer(amount), do: new_money(amount, currency)
+    def cast(%{amount: amount}) when is_integer(amount), do: {:ok, Money.new(amount)}
     def cast(_), do: :error
 
     @spec load(integer) :: {:ok, Money.t()}
@@ -61,5 +61,9 @@ if Code.ensure_loaded?(Ecto.Type) do
     def dump(int) when is_integer(int), do: {:ok, int}
     def dump(%Money{} = m), do: {:ok, m.amount}
     def dump(_), do: :error
+
+    defp new_money(amount, currency) do
+      if Money.Currency.exists?(currency), do: {:ok, Money.new(amount, currency)}, else: :error
+    end
   end
 end
