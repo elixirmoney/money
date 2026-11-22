@@ -366,6 +366,31 @@ defmodule MoneyTest do
            ]
   end
 
+  describe "divide/2 sign handling when |amount| < |denominator|" do
+    test "negative amount, positive denominator" do
+      assert amounts(Money.divide(Money.new(-2, :USD), 3)) == [-1, -1, 0]
+      assert amounts(Money.divide(Money.new(-3, :USD), 4)) == [-1, -1, -1, 0]
+    end
+
+    test "positive amount, negative denominator" do
+      assert amounts(Money.divide(Money.new(1, :USD), -3)) == [-1, 0, 0]
+      assert amounts(Money.divide(Money.new(2, :USD), -3)) == [-1, -1, 0]
+    end
+
+    test "shares always sum to the amount, sign flipped for negative denominators" do
+      for a <- -50..50, d <- Enum.to_list(-7..-1) ++ Enum.to_list(1..7) do
+        shares = Money.divide(Money.new(a, :USD), d)
+        expected = if d < 0, do: -a, else: a
+
+        assert Enum.sum(amounts(shares)) == expected, "divide(#{a}, #{d}) => #{inspect(amounts(shares))}"
+        assert length(shares) == abs(d)
+        assert Enum.max(amounts(shares)) - Enum.min(amounts(shares)) <= 1
+      end
+    end
+
+    defp amounts(list), do: Enum.map(list, & &1.amount)
+  end
+
   test "test div" do
     # Basic division
     assert Money.div(Money.new(100, :USD), 2) == usd(50)

@@ -632,34 +632,15 @@ defmodule Money do
   end
 
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
-    value = Kernel.div(amount, denominator)
-    rem = rem(amount, denominator)
-    do_divide(cur, value, rem, denominator, [])
+    count = Kernel.abs(denominator)
+    total = if denominator < 0, do: -amount, else: amount
+    value = Kernel.div(total, count)
+    remainder = Kernel.rem(total, count)
+    step = if remainder < 0, do: -1, else: 1
+
+    List.duplicate(new(value + step, cur), Kernel.abs(remainder)) ++
+      List.duplicate(new(value, cur), count - Kernel.abs(remainder))
   end
-
-  defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse()
-
-  defp do_divide(currency, value, 0, count, acc) do
-    acc = [new(next_amount(value, 0, count), currency) | acc]
-    count = decrement_abs(count)
-    do_divide(currency, value, 0, count, acc)
-  end
-
-  defp do_divide(currency, value, rem, count, acc) do
-    acc = [new(next_amount(value, rem, count), currency) | acc]
-    rem = decrement_abs(rem)
-    count = decrement_abs(count)
-    do_divide(currency, value, rem, count, acc)
-  end
-
-  defp next_amount(0, -1, count) when count > 0, do: -1
-  defp next_amount(value, 0, _count), do: value
-  defp next_amount(value, _rem, _count), do: increment_abs(value)
-
-  defp increment_abs(n) when n >= 0, do: n + 1
-  defp increment_abs(n) when n < 0, do: n - 1
-  defp decrement_abs(n) when n >= 0, do: n - 1
-  defp decrement_abs(n) when n < 0, do: n + 1
 
   @spec div(t, integer | float | Decimal.t()) :: t
   @doc """

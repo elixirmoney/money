@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix `Money.divide/2` returning shares with the wrong sign when the amount is smaller than the
+  denominator: `Money.divide(Money.new(-2, :USD), 3)` returned `[1, -1, 0]` (summing to 0) and
+  `Money.divide(Money.new(1, :USD), -3)` returned `[1, 0, 0]`.
 - **Breaking:** `Money.compare/2` now returns `:lt`, `:eq` or `:gt` (was `-1`, `0` or `1`), the same
   as `Money.cmp/2`. Elixir's `Enum.sort/2`, `Enum.min/2` and `Enum.max/2` call `compare/2` when given
   a module and expect atoms, so `Enum.sort(list, Money)` and `Enum.max(list, Money)` silently
