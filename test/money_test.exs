@@ -75,6 +75,38 @@ defmodule MoneyTest do
   end
 
   @tag decimal_1_2: true
+  describe "parse/3 rejects malformed input" do
+    test "multiple decimal delimiters" do
+      assert Money.parse("1.2.3", :USD) == :error
+      assert Money.parse("1,2,3.4.5", :USD) == :error
+      assert Money.parse("1,234,56", :EUR, separator: ".", delimiter: ",") == :error
+    end
+
+    test "signs in the middle or at the end" do
+      assert Money.parse("10-20", :USD) == :error
+      assert Money.parse("10-", :USD) == :error
+      assert Money.parse("--10", :USD) == :error
+      assert Money.parse("1+2", :USD) == :error
+    end
+
+    test "accounting-style negatives are rejected rather than read as positive" do
+      assert Money.parse("(10.00)", :USD) == :error
+      assert Money.parse("$(10.00)", :USD) == :error
+      assert Money.parse("(10.00", :USD) == :error
+    end
+
+    test "valid inputs still parse" do
+      assert Money.parse("$1,234.56", :USD) == {:ok, Money.new(123_456, :USD)}
+      assert Money.parse("-1,234.56", :USD) == {:ok, Money.new(-123_456, :USD)}
+      assert Money.parse("- $1,234.56", :USD) == {:ok, Money.new(-123_456, :USD)}
+      assert Money.parse("+5", :USD) == {:ok, Money.new(500, :USD)}
+      assert Money.parse("10.", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse(".5", :USD) == {:ok, Money.new(50, :USD)}
+      assert Money.parse("1.e3", :USD) == {:ok, Money.new(100_000, :USD)}
+      assert Money.parse("1 000,50", :EUR, separator: " ", delimiter: ",") == {:ok, Money.new(100_050, :EUR)}
+    end
+  end
+
   describe "parse/3 with a currency code before the amount" do
     test "codes containing E are not read as an exponent" do
       assert Money.parse("EUR 10", :EUR) == {:ok, Money.new(1000, :EUR)}

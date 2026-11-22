@@ -122,6 +122,10 @@ defmodule Money do
     * `:delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
 
+  Any text other than digits, signs, the delimiter and a scientific-notation exponent
+  is ignored, such as currency symbols, codes and separators. What remains must be a
+  single number: input such as `"1.2.3"`, `"10-20"` or `"(10.00)"` returns `:error`.
+
   Strings and Decimals may use scientific notation, such as `"1.5e3"`. To keep the work
   bounded for untrusted input whatever Decimal version is installed, `:error` is returned
   when the value expressed in the currency's sub-units is `1e1000` or more in magnitude
@@ -158,6 +162,9 @@ defmodule Money do
       iex> Money.parse("1e1000000", :USD)
       :error
 
+      iex> Money.parse("1.2.3", :USD)
+      :error
+
   """
   def parse(value, currency \\ nil, opts \\ [])
 
@@ -174,17 +181,25 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
-    value =
-      str
-      |> prepare_parse_string(delimiter)
-      |> add_missing_leading_digit
+    # Parentheses (accounting-style negatives) would otherwise be dropped and
+    # the amount read as positive.
+    if String.contains?(str, ["(", ")"]) do
+      :error
+    else
+      value =
+        str
+        |> prepare_parse_string(delimiter)
+        |> add_missing_leading_digit()
+        |> add_missing_fractional_digit()
 
-    case get_parser().parse(value) do
-      # pattern-match for supporting for Decimal 1.2 and greater https://github.com/elixirmoney/money/issues/213
-      {:ok, float} -> parse(float, currency, [])
-      # pattern-match for supporting for Decimal 2.0
-      {float, _} -> parse(float, currency, [])
-      :error -> :error
+      # Anything left unparsed, as in "1.2.3" or "10-20", is an error.
+      case get_parser().parse(value) do
+        # Decimal 1.x
+        {:ok, number} -> parse(number, currency, [])
+        # Decimal 2.0 and later, and Float
+        {number, ""} -> parse(number, currency, [])
+        _ -> :error
+      end
     end
   rescue
     _ -> :error
@@ -257,6 +272,13 @@ defmodule Money do
     do: "0." <> tail
 
   defp add_missing_leading_digit(str), do: str
+
+  # Float.parse/1 stops at a delimiter with no digit after it ("10." or "1.e3").
+  defp add_missing_fractional_digit(str) do
+    str
+    |> String.replace(".e", ".0e")
+    |> String.replace(~r/\.$/, ".0")
+  end
 
   @spec parse!(String.t() | number | Decimal.t(), atom | String.t(), Keyword.t()) :: t
   @doc ~S"""

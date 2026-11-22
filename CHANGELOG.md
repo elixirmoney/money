@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Breaking:** `Money.parse/3` returns `:error` for a string that isn't a single number once
+  symbols, codes and separators are removed. With Decimal 2 or later, or without Decimal, the
+  unparsed rest was ignored, so `"1.2.3"` gave 1.20, `"10-20"` gave 10.00, and `"(10.00)"` gave
+  a positive 10.00. Parentheses now always return `:error`.
 - Fix `Money.parse/3` reading the "E" of a currency code before the amount as an exponent:
   `"EUR 10"`, `"SEK 10"` and `"EGP 1.5"` returned `:error`. An `e`/`E` is now kept only after a
   digit or the delimiter and before a (signed) digit, as in `"1.5e3"`.
