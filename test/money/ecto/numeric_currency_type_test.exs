@@ -46,6 +46,15 @@ defmodule Money.Ecto.NumericCurrency.TypeTest do
     assert Type.load(901) == {:ok, :TWD}
   end
 
+  test "dump/1 accepts what cast/1 accepts" do
+    assert Type.dump("USD") == {:ok, 840}
+    assert Type.dump("usd") == {:ok, 840}
+    assert Type.dump(840) == {:ok, 840}
+    assert Type.dump(Money.new(100, :EUR)) == {:ok, 978}
+    assert Type.dump("nope") == :error
+    assert Type.dump(1111) == :error
+  end
+
   test "dump/1 atom" do
     assert Type.dump(:CHF) == {:ok, 756}
   end

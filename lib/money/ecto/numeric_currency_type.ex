@@ -48,8 +48,13 @@ if Code.ensure_loaded?(Ecto.Type) do
     @spec load(integer()) :: {:ok, atom()}
     def load(int) when is_integer(int), do: {:ok, Currency.to_atom(int)}
 
-    @spec dump(atom()) :: {:ok, integer()}
+    @spec dump(Money.t() | String.t() | atom() | integer()) :: {:ok, integer() | nil} | :error
     def dump(atom) when is_atom(atom), do: {:ok, Currency.number(atom)}
+
+    def dump(value) when is_binary(value) or is_integer(value) or is_struct(value, Money) do
+      with {:ok, atom} <- cast(value), do: {:ok, Currency.number(atom)}
+    end
+
     def dump(_), do: :error
   end
 end

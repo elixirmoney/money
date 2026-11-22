@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `Money.Ecto.NumericCurrency.Type.dump/1` accepts a currency string, ISO number or `Money` struct,
+  as `cast/1` does. It returned `:error` for them.
 - Fix `Money.Ecto.Map.Type.load/1` raising `FunctionClauseError` for an amount stored as a float,
   as some JSON columns return it. A whole float such as `100.0` now loads, and malformed data
   returns `:error`.
