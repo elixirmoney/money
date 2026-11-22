@@ -100,6 +100,83 @@ defmodule MoneyTest do
     assert Money.parse(1_000.00, :OMR) == {:ok, omr(1_000_000)}
   end
 
+  # Integer.pow/2 needs Elixir 1.12
+  defp pow10(n), do: String.to_integer("1" <> String.duplicate("0", n))
+
+  defp with_decimal_precision(precision, fun),
+    do: Decimal.Context.with(%{Decimal.Context.get() | precision: precision}, fun)
+
+  @tag decimal_1_2: true
+  test "parse/3 rejects scientific notation with out-of-range exponents" do
+    assert Money.parse("1e1000000", :USD) == :error
+    assert Money.parse("-1e1000000", :USD) == :error
+    assert Money.parse("1E+100000000", :USD) == :error
+    assert Money.parse("1e-1000000", :USD) == :error
+    assert Money.parse("1e-100000000", :USD) == :error
+
+    assert Money.parse(%Decimal{sign: 1, coef: 1, exp: 1_000_000}, :USD) == :error
+    assert Money.parse(%Decimal{sign: -1, coef: 1, exp: -1_000_000}, :USD) == :error
+
+    assert_raise ArgumentError, fn -> Money.parse!("1e1000000", :USD) end
+  end
+
+  @tag decimal_1_2: true
+  test "parse/3 accepts a Decimal zero with any exponent" do
+    assert Money.parse(%Decimal{sign: 1, coef: 0, exp: 100_000_000}, :USD) == {:ok, usd(0)}
+    assert Money.parse(%Decimal{sign: -1, coef: 0, exp: -100_000_000}, :USD) == {:ok, usd(0)}
+    assert_raise ArgumentError, fn -> Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) end
+
+    assert Money.round(usd(1), -1001) == usd(0)
+  end
+
+  @tag decimal_1_2: true
+  test "parse/3 accepts amounts of up to 1000 digits in sub-units" do
+    # Decimal 3.1.2+ also rejects results with more digits than the context precision
+    with_decimal_precision(2_000, fn ->
+      assert Money.parse("1e997", :USD) == {:ok, usd(pow10(999))}
+      assert Money.parse("-9.9e997", :USD) == {:ok, usd(-99 * pow10(998))}
+      assert Money.parse("1e998", :USD) == :error
+
+      assert Money.parse("1e999", :JPY) == {:ok, jpy(pow10(999))}
+      assert Money.parse("1e1000", :JPY) == :error
+
+      assert Money.parse("1e996", :OMR) == {:ok, omr(pow10(999))}
+      assert Money.parse("1e997", :OMR) == :error
+
+      assert Money.parse("1e-1002", :USD) == {:ok, usd(0)}
+      assert Money.parse("1e-1003", :USD) == :error
+      assert Money.parse("0e-999", :USD) == {:ok, usd(0)}
+    end)
+  end
+
+  @tag decimal_1_2: true
+  test "multiply/2 and div/2 reject Decimals with out-of-range exponents" do
+    for decimal <- [
+          %Decimal{sign: 1, coef: 1, exp: 1_000_000},
+          %Decimal{sign: -1, coef: 1, exp: 1_000_000},
+          %Decimal{sign: 1, coef: 1, exp: -1_000_000}
+        ] do
+      assert_raise ArgumentError, ~r/multiplier is out of range/, fn ->
+        Money.multiply(usd(100), decimal)
+      end
+
+      assert_raise ArgumentError, ~r/divisor is out of range/, fn ->
+        Money.div(usd(100), decimal)
+      end
+    end
+
+    with_decimal_precision(2_000, fn ->
+      assert Money.multiply(usd(1), %Decimal{sign: 1, coef: 1, exp: 999}) == usd(pow10(999))
+      assert Money.multiply(usd(100), %Decimal{sign: 1, coef: 1, exp: -999}) == usd(0)
+      assert Money.div(usd(100), %Decimal{sign: 1, coef: 1, exp: -999}) == usd(pow10(1001))
+      assert Money.div(usd(100), %Decimal{sign: 1, coef: 1, exp: 999}) == usd(0)
+    end)
+
+    zero = %Decimal{sign: 1, coef: 0, exp: 100_000_000}
+    assert Money.multiply(usd(100), zero) == usd(0)
+    assert_raise ArithmeticError, "division by zero", fn -> Money.div(usd(100), zero) end
+  end
+
   test "test factory USD" do
     assert Money.new(123, :USD) == usd(123)
   end

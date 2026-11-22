@@ -91,6 +91,26 @@ defmodule Money do
     end
   end
 
+  if Code.ensure_loaded?(Decimal) do
+    # Decimal before 3.0 accepts any exponent, and rounding costs time proportional to it
+    @decimal_max_digits 1_000
+
+    defp decimal_in_range?(%Decimal{coef: coef, exp: exp}, shift) when is_integer(coef) do
+      integer_digits = byte_size(Integer.to_string(coef)) + exp + shift
+      integer_digits > -@decimal_max_digits and integer_digits <= @decimal_max_digits
+    end
+
+    defp decimal_in_range?(%Decimal{}, _shift), do: true
+
+    defp ensure_decimal_in_range!(%Decimal{} = decimal, name) do
+      if not decimal_in_range?(decimal, 0) do
+        raise ArgumentError,
+              "#{name} is out of range, its magnitude must be at least " <>
+                "1e-#{@decimal_max_digits} and below 1e#{@decimal_max_digits}"
+      end
+    end
+  end
+
   @spec parse(String.t() | number | Decimal.t(), atom | String.t(), Keyword.t()) :: {:ok, t} | :error
   @doc ~S"""
   Parse a value into a `Money` type.
@@ -101,6 +121,13 @@ defmodule Money do
       "1,000"
     * `:delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
+
+  Strings and Decimals may use scientific notation, such as `"1.5e3"`. To keep the work
+  bounded for untrusted input whatever Decimal version is installed, `:error` is returned
+  when the value expressed in the currency's sub-units is `1e1000` or more in magnitude
+  (an amount of more than 1000 digits), or is non-zero and below `1e-1000`. Decimal 3
+  applies stricter limits of its own by default, such as rejecting results with more
+  digits than the context precision.
 
   ## Examples
 
@@ -124,6 +151,12 @@ defmodule Money do
 
       iex> Money.parse(Decimal.from_float(1_234.56), :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
+
+      iex> Money.parse("1.5e3", :USD)
+      {:ok, %Money{amount: 150000, currency: :USD}}
+
+      iex> Money.parse("1e1000000", :USD)
+      :error
 
   """
   def parse(value, currency \\ nil, opts \\ [])
@@ -163,12 +196,23 @@ defmodule Money do
 
   if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
-      {:ok,
-       decimal
-       |> Decimal.mult(Currency.sub_units_count!(currency))
-       |> Decimal.round(0, Decimal.Context.get().rounding)
-       |> Decimal.to_integer()
-       |> new(currency)}
+      exponent = Currency.exponent!(currency)
+
+      cond do
+        decimal.coef == 0 ->
+          {:ok, new(0, currency)}
+
+        decimal_in_range?(decimal, exponent) ->
+          {:ok,
+           decimal
+           |> Decimal.mult(Currency.sub_units_count!(currency))
+           |> Decimal.round(0, Decimal.Context.get().rounding)
+           |> Decimal.to_integer()
+           |> new(currency)}
+
+        true ->
+          :error
+      end
     end
   end
 
@@ -511,6 +555,9 @@ defmodule Money do
       iex> Money.multiply(Money.new(100, :USD), 1.5)
       %Money{amount: 150, currency: :USD}
 
+  A non-zero Decimal multiplier must be at least `1e-1000` and below `1e1000` in magnitude,
+  otherwise an `ArgumentError` is raised.
+
   """
   def multiply(%Money{amount: amount, currency: cur}, multiplier) when is_integer(multiplier),
     do: Money.new(amount * multiplier, cur)
@@ -519,13 +566,17 @@ defmodule Money do
     do: Money.new(Kernel.round(amount * multiplier), cur)
 
   if Code.ensure_loaded?(Decimal) do
-    def multiply(%Money{amount: amount, currency: cur}, %Decimal{} = multiplier),
-      do:
-        amount
-        |> Decimal.mult(multiplier)
-        |> Decimal.round(0, Decimal.Context.get().rounding)
-        |> Decimal.to_integer()
-        |> Money.new(cur)
+    def multiply(%Money{currency: cur}, %Decimal{coef: 0}), do: Money.new(0, cur)
+
+    def multiply(%Money{amount: amount, currency: cur}, %Decimal{} = multiplier) do
+      ensure_decimal_in_range!(multiplier, "multiplier")
+
+      amount
+      |> Decimal.mult(multiplier)
+      |> Decimal.round(0, Decimal.Context.get().rounding)
+      |> Decimal.to_integer()
+      |> Money.new(cur)
+    end
   end
 
   @spec divide(t, integer) :: [t]
@@ -641,6 +692,9 @@ defmodule Money do
       iex> Money.div(Money.new(100, :USD), 0)
       ** (ArithmeticError) division by zero
 
+  A non-zero Decimal divisor must be at least `1e-1000` and below `1e1000` in magnitude,
+  otherwise an `ArgumentError` is raised.
+
   """
   def div(%Money{}, divisor) when divisor == +0.0 or divisor == -0.0 or divisor == 0 do
     raise ArithmeticError, "division by zero"
@@ -657,18 +711,20 @@ defmodule Money do
   end
 
   if Code.ensure_loaded?(Decimal) do
-    def div(%Money{amount: amount, currency: cur}, %Decimal{} = divisor) do
-      if Decimal.equal?(divisor, Decimal.new("0")) do
-        raise ArithmeticError, "division by zero"
-      else
-        result =
-          amount
-          |> Decimal.div(divisor)
-          |> Decimal.round(0, Decimal.Context.get().rounding)
-          |> Decimal.to_integer()
+    def div(%Money{}, %Decimal{coef: 0}) do
+      raise ArithmeticError, "division by zero"
+    end
 
-        Money.new(result, cur)
-      end
+    def div(%Money{amount: amount, currency: cur}, %Decimal{} = divisor) do
+      ensure_decimal_in_range!(divisor, "divisor")
+
+      result =
+        amount
+        |> Decimal.div(divisor)
+        |> Decimal.round(0, Decimal.Context.get().rounding)
+        |> Decimal.to_integer()
+
+      Money.new(result, cur)
     end
   end
 
