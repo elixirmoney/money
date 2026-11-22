@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Document that `Money` can't be passed as the sorter module to `Enum.sort/2`, `Enum.min/2` or
+  `Enum.max/2`, since `Money.compare/2` returns `-1`, `0` or `1`, and show sorting with `Money.cmp/2`.
 - Fix currency lookup by ISO number returning a currency that depends on VM state for numbers
   shared by two currencies, so `Money.Ecto.NumericCurrency.Type` could store `:BYN` and load it
   back as `:BYR`.

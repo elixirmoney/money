@@ -302,6 +302,16 @@ defmodule Money do
 
   See `cmp/2` for a similar function that returns `:lt`, `:eq` or `:gt` instead.
 
+  Because it returns integers, don't pass `Money` as the sorter module to
+  `Enum.sort/2`, `Enum.min/2` or `Enum.max/2`: they expect `compare/2` to
+  return `:lt`, `:eq` or `:gt` and return wrong results. Use `cmp/2` instead:
+
+      iex> list = [Money.new(3, :USD), Money.new(1, :USD), Money.new(2, :USD)]
+      iex> Enum.sort(list, &(Money.cmp(&1, &2) != :gt))
+      [%Money{amount: 1, currency: :USD}, %Money{amount: 2, currency: :USD}, %Money{amount: 3, currency: :USD}]
+      iex> Enum.max(list, &(Money.cmp(&1, &2) != :lt))
+      %Money{amount: 3, currency: :USD}
+
   ## Examples
 
       iex> Money.compare(Money.new(100, :USD), Money.new(100, :USD))
