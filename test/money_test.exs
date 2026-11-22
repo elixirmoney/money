@@ -134,6 +134,8 @@ defmodule MoneyTest do
       assert Money.parse("15e-1", :USD) == {:ok, Money.new(150, :USD)}
       assert Money.parse("EUR 1.5e3", :EUR) == {:ok, Money.new(150_000, :EUR)}
       assert Money.parse("1,5e3", :EUR, delimiter: ",") == {:ok, Money.new(150_000, :EUR)}
+      assert Money.parse("10 E 5", :USD) == {:ok, Money.new(100_000_000, :USD)}
+      assert Money.parse("1.5 e -1", :USD) == {:ok, Money.new(15, :USD)}
     end
   end
 

@@ -249,15 +249,21 @@ defmodule Money do
         true -> acc
       end
 
-    prepare_parse_string(tail, delimiter, char, acc)
+    previous = if blank?(char), do: previous, else: char
+    prepare_parse_string(tail, delimiter, previous, acc)
   end
 
-  defp exponent_marker?(true = _after_number, [next | _]) when next in @digits, do: true
-
-  defp exponent_marker?(true = _after_number, [sign, next | _]) when sign in ["-", "+"] and next in @digits,
-    do: true
+  defp exponent_marker?(true = _after_number, tail) do
+    case tail |> Stream.reject(&blank?/1) |> Enum.take(2) do
+      [next | _] when next in @digits -> true
+      [sign, next] when sign in ["-", "+"] and next in @digits -> true
+      _ -> false
+    end
+  end
 
   defp exponent_marker?(_after_number, _tail), do: false
+
+  defp blank?(char), do: String.trim(char) == ""
 
   defp add_missing_leading_digit(<<"-.">> <> tail),
     do: "-0." <> tail
