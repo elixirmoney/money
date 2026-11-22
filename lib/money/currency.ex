@@ -552,6 +552,8 @@ defmodule Money.Currency do
     end)
   end
 
+  defp currency_doesnt_exist_error(%Money{currency: currency}), do: currency_doesnt_exist_error(currency)
+
   defp currency_doesnt_exist_error(currency),
     do: raise(ArgumentError, "currency #{currency} doesn’t exist")
 end

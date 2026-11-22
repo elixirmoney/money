@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fix the `Money.Currency` bang functions (`exponent!/1`, `symbol!/1` and others) looping forever
+  when given a `Money` struct with an unknown currency: building the error message called
+  `Money.to_string/2`, which raised the same error again. `Money.to_string/2` for such a struct now
+  raises `ArgumentError` naming the currency instead of an unrelated `ArithmeticError`.
 - The `~M` sigil accepts a lowercase currency code, as in `~M[1000]usd`, like `Money.new/2` does.
 - Clearer error messages: `Money.Currency.to_atom/1` (and so `Money.new/2`) names the currency it
   was given instead of printing an empty name for an unknown string or number, and `Money.parse/1`

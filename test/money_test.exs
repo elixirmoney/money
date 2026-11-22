@@ -581,6 +581,12 @@ defmodule MoneyTest do
     assert Money.to_string(Money.new(-100, :USD), symbol: false, symbol_space: true, code: true) == "-1.00 USD"
   end
 
+  test "to_string with an unknown currency raises a clear error" do
+    assert_raise ArgumentError, "currency FOO doesn’t exist", fn ->
+      Money.to_string(%Money{amount: 1, currency: :FOO})
+    end
+  end
+
   test "to_string with negative values symbol_on_right true" do
     opts = [symbol_on_right: true]
 

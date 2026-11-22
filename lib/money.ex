@@ -908,7 +908,7 @@ defmodule Money do
          strip_insignificant_zeros: strip_insignificant_zeros,
          strip_insignificant_fractional_unit: strip_insignificant_fractional_unit
        }) do
-    exponent = Currency.exponent(money)
+    exponent = Currency.exponent!(money)
     amount_abs = if amount < 0, do: -amount, else: amount
     amount_str = Integer.to_string(amount_abs)
 
