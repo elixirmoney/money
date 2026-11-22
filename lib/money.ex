@@ -491,7 +491,8 @@ defmodule Money do
 
   @spec add(t, t | integer | float) :: t
   @doc ~S"""
-  Adds two `Money` together or an integer (cents) amount to a `Money`
+  Adds two `Money` together, or adds to a `Money` either an integer amount of
+  sub-units (cents) or a float amount of whole currency units
 
   ## Examples
 
@@ -504,6 +505,9 @@ defmodule Money do
       iex> Money.add(Money.new(100, :USD), 5.55)
       %Money{amount: 655, currency: :USD}
 
+      iex> Money.add(Money.new(100, :JPY), 5.0)
+      %Money{amount: 105, currency: :JPY}
+
   """
   def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a + b, cur)
@@ -511,14 +515,15 @@ defmodule Money do
   def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
     do: Money.new(amount + addend, cur)
 
-  def add(%Money{} = m, addend) when is_float(addend),
-    do: add(m, Kernel.round(addend * 100))
+  def add(%Money{currency: cur} = m, addend) when is_float(addend),
+    do: add(m, Kernel.round(addend * Currency.sub_units_count!(cur)))
 
   def add(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @spec subtract(t, t | integer | float) :: t
   @doc ~S"""
-  Subtracts one `Money` from another or an integer (cents) from a `Money`
+  Subtracts one `Money` from another, or subtracts from a `Money` either an
+  integer amount of sub-units (cents) or a float amount of whole currency units
 
   ## Examples
 
@@ -531,6 +536,9 @@ defmodule Money do
       iex> Money.subtract(Money.new(150, :USD), 1.25)
       %Money{amount: 25, currency: :USD}
 
+      iex> Money.subtract(Money.new(1500, :BHD), 1.25)
+      %Money{amount: 250, currency: :BHD}
+
   """
   def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a - b, cur)
@@ -538,8 +546,8 @@ defmodule Money do
   def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
     do: Money.new(a - subtractend, cur)
 
-  def subtract(%Money{} = m, subtractend) when is_float(subtractend),
-    do: subtract(m, Kernel.round(subtractend * 100))
+  def subtract(%Money{currency: cur} = m, subtractend) when is_float(subtractend),
+    do: subtract(m, Kernel.round(subtractend * Currency.sub_units_count!(cur)))
 
   def subtract(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 

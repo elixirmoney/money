@@ -268,6 +268,12 @@ defmodule MoneyTest do
     assert Money.add(Money.new(100, :USD), 3.335) == Money.new(434, :USD)
   end
 
+  test "add/2 with a float uses the currency exponent" do
+    assert Money.add(Money.new(100, :JPY), 5.0) == Money.new(105, :JPY)
+    assert Money.add(Money.new(0, :BHD), 1.5) == Money.new(1500, :BHD)
+    assert Money.add(Money.new(0, :CLF), 0.0001) == Money.new(1, :CLF)
+  end
+
   test "add error" do
     assert_raise ArgumentError, fn ->
       Money.add(Money.new(124, :EUR), Money.new(123, :USD))
@@ -280,6 +286,11 @@ defmodule MoneyTest do
     assert Money.subtract(Money.new(200, :USD), 0.5) == Money.new(150, :USD)
     assert Money.subtract(Money.new(200, :USD), 0.333) == Money.new(167, :USD)
     assert Money.subtract(Money.new(200, :USD), 0.335) == Money.new(166, :USD)
+  end
+
+  test "subtract/2 with a float uses the currency exponent" do
+    assert Money.subtract(Money.new(100, :JPY), 1.0) == Money.new(99, :JPY)
+    assert Money.subtract(Money.new(1500, :BHD), 1.25) == Money.new(250, :BHD)
   end
 
   test "subtract error" do

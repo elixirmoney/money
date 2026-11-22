@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Breaking:** `Money.add/2` and `Money.subtract/2` with a float now use the currency's exponent.
+  The float was always multiplied by 100, so `Money.add(Money.new(100, :JPY), 5.0)` added 500 yen
+  and `Money.add(Money.new(0, :BHD), 1.5)` added 0.150 BHD.
 - Bound Decimal exponents in `Money.parse/3`, `Money.multiply/2` and `Money.div/2`, whatever
   Decimal version is installed. With Decimal before 3.0, input such as `"1e1000000"` built a
   million-digit integer and took seconds (denial of service on untrusted input).
