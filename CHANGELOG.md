@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Clearer error messages: `Money.Currency.to_atom/1` (and so `Money.new/2`) names the currency it
+  was given instead of printing an empty name for an unknown string or number, and `Money.parse/1`
+  without a default currency mentions `Money.parse/1` instead of `Money.new/1`.
 - Fix `Money.Currency.sub_units_count!/1` computing powers of ten with floats, which was off for
   custom currencies with an exponent of 23 or more: exponent 24 gave `999999999999999983222784`.
 - Fix `Money.to_string/2` rendering a negative amount as `"- 1.00"` when there is no symbol and

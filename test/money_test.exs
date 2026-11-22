@@ -148,6 +148,12 @@ defmodule MoneyTest do
     assert_raise ArgumentError, fn -> Money.parse!(1.5, :WRONG) end
   end
 
+  test "parse/1 without a default currency names parse in the error" do
+    Application.delete_env(:money, :default_currency)
+
+    assert_raise ArgumentError, ~r/to use Money.parse\/1/, fn -> Money.parse("1") end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}

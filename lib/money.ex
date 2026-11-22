@@ -178,7 +178,8 @@ defmodule Money do
     if currency do
       parse(value, currency, opts)
     else
-      raise ArgumentError, "to use Money.new/1 you must set a default currency in your application config."
+      raise ArgumentError,
+            "to use Money.parse/1 or Money.parse/2 without a currency you must set a default currency in your application config."
     end
   end
 

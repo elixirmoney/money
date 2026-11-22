@@ -142,6 +142,12 @@ defmodule Money.CurrencyTest do
     assert Money.parse("1", :ZZZ) == {:ok, Money.new(1_000_000_000_000_000_000_000_000, :ZZZ)}
   end
 
+  test "to_atom/1 names the given currency in the error" do
+    assert_raise ArgumentError, "currency nope doesn’t exist", fn -> Currency.to_atom("nope") end
+    assert_raise ArgumentError, "currency 1111 doesn’t exist", fn -> Currency.to_atom(1111) end
+    assert_raise ArgumentError, "currency WRONG doesn’t exist", fn -> Currency.to_atom(:WRONG) end
+  end
+
   test "custom_currency" do
     on_exit(fn ->
       Application.put_env(:money, :custom_currencies, [])

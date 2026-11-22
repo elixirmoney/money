@@ -361,9 +361,8 @@ defmodule Money.Currency do
     do: to_atom(currency)
 
   def to_atom(currency) do
-    currency = convert_currency(currency)
-    get!(currency)
-    currency
+    converted = convert_currency(currency)
+    if get(converted), do: converted, else: currency_doesnt_exist_error(currency)
   end
 
   @spec name(index_type()) :: String.t() | nil
