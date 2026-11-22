@@ -567,6 +567,14 @@ defmodule MoneyTest do
     assert Money.to_string(zar(-1_234_567_890)) == "-R12,345,678.90"
   end
 
+  test "to_string with negative values and no symbol puts the minus sign next to the number" do
+    assert Money.to_string(Money.new(-100, :USD), symbol: false, symbol_space: true) == "-1.00"
+    assert Money.to_string(Money.new(-100, :XAU), symbol_space: true) == "-1.00"
+    assert Money.to_string(Money.new(-100, :USD), symbol: false) == "-1.00"
+    assert Money.to_string(Money.new(100, :USD), symbol: false, symbol_space: true) == "1.00"
+    assert Money.to_string(Money.new(-100, :USD), symbol: false, symbol_space: true, code: true) == "-1.00 USD"
+  end
+
   test "to_string with negative values symbol_on_right true" do
     opts = [symbol_on_right: true]
 

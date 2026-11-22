@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `Money.to_string/2` rendering a negative amount as `"- 1.00"` when there is no symbol and
+  `symbol_space: true`, such as with `symbol: false` or a currency with an empty symbol (XAU).
 - Fix `Money.parse/3` raising `ArgumentError` for a number or Decimal with an unknown currency. It
   now returns `:error`, as it already did for strings. `Money.parse!/3` still raises.
 - `Money.Ecto.NumericCurrency.Type.dump/1` accepts a currency string, ISO number or `Money` struct,

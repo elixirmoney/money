@@ -819,7 +819,7 @@ defmodule Money do
         symbol_on_right ->
           [sign, number, space, symbol, code]
 
-        negative?(money) and symbol == " " ->
+        negative?(money) and symbol in ["", " "] ->
           [sign, number, code]
 
         negative?(money) and minus_sign_first ->
