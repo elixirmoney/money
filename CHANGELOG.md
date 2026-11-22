@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Bound Decimal exponents in `Money.parse/3`, `Money.multiply/2` and `Money.div/2`, whatever
+  Decimal version is installed. With Decimal before 3.0, input such as `"1e1000000"` built a
+  million-digit integer and took seconds (denial of service on untrusted input).
+  - `Money.parse/3` returns `:error` when the value in sub-units is `1e1000` or more in
+    magnitude (an amount of more than 1000 digits) or below `1e-1000`.
+  - `Money.multiply/2` and `Money.div/2` raise `ArgumentError` for a non-zero Decimal
+    multiplier or divisor outside that range.
 - **Breaking:** Fix TND and CVE exponents to match ISO 4217 (#259)
   - TND (Tunisian Dinar) now has exponent 3 instead of 2 (1 dinar = 1000 millimes)
   - CVE (Cabo Verde Escudo) now has exponent 2 instead of 0
