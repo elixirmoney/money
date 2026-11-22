@@ -221,6 +221,30 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
+  # Replaced currencies that share their successor's number
+  @preferred_by_number %{532 => :XCG, 933 => :BYN}
+
+  currencies_by_number =
+    @currencies
+    |> Enum.group_by(fn {_, %{number: number}} -> number end, &elem(&1, 0))
+    |> Map.new(fn
+      {number, [currency]} ->
+        {number, currency}
+
+      {number, currencies} ->
+        preferred = Map.get(@preferred_by_number, number)
+
+        if preferred not in currencies do
+          raise ArgumentError,
+                "currencies #{inspect(Enum.sort(currencies))} share the number #{number}, " <>
+                  "add the one to return to @preferred_by_number"
+        end
+
+        {number, preferred}
+    end)
+
+  @currencies_by_number currencies_by_number
+
   @type index_type() :: Money.t() | String.t() | atom | integer
 
   defp all_currencies do
@@ -515,15 +539,17 @@ defmodule Money.Currency do
   end
 
   defp convert_currency(currency) when is_integer(currency) do
-    case Enum.find(all_currencies(), fn {_, %{number: number}} -> number == currency end) do
-      {cur, _} -> cur
-      nil -> nil
-    end
-  rescue
-    _ -> nil
+    custom_currency_by_number(currency) || Map.get(@currencies_by_number, currency)
   end
 
   defp convert_currency(currency), do: currency
+
+  defp custom_currency_by_number(number) do
+    Enum.find_value(custom_currencies(), fn
+      {cur, %{number: ^number}} -> cur
+      _ -> nil
+    end)
+  end
 
   defp currency_doesnt_exist_error(currency),
     do: raise(ArgumentError, "currency #{currency} doesn’t exist")

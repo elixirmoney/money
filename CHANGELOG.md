@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+- Document that `Money` can't be passed as the sorter module to `Enum.sort/2`, `Enum.min/2` or
+  `Enum.max/2`, since `Money.compare/2` returns `-1`, `0` or `1`, and show sorting with `Money.cmp/2`.
+- Fix currency lookup by ISO number returning a currency that depends on VM state for numbers
+  shared by two currencies, so `Money.Ecto.NumericCurrency.Type` could store `:BYN` and load it
+  back as `:BYR`.
+  - A number shared by a replaced currency and its successor now always returns the successor:
+    532 returns `:XCG` (not `:ANG`) and 933 returns `:BYN` (not `:BYR`).
+- Fix currency lookup by ISO number (`Money.Currency.get(840)`, `Money.Ecto.NumericCurrency.Type`)
+  returning `nil` for every number when a custom currency without a `:number` is configured, as in
+  the README's custom currency example.
+- Fix `Money.parse/3` returning a wrong amount for a string that isn't a single number once
+  symbols, codes and separators are removed; it now returns `:error`. With Decimal 2 or later,
+  or without Decimal, the unparsed rest was ignored, so `"1.2.3"` gave 1.20, `"10-20"` gave
+  10.00, and `"(10.00)"` gave a positive 10.00. A digit inside parentheses now returns `:error`;
+  parentheses without digits, as in `"$10.00 (USD)"`, are still ignored.
+- Fix `Money.parse/3` reading the "E" of a currency code before the amount as an exponent:
+  `"EUR 10"`, `"SEK 10"` and `"EGP 1.5"` returned `:error`. An `e`/`E` is now kept only after a
+  digit or the delimiter and before a (signed) digit, as in `"1.5e3"`.
+- Fix `Money.divide/2` returning shares with the wrong sign when the amount is smaller than the
+  denominator: `Money.divide(Money.new(-2, :USD), 3)` returned `[1, -1, 0]` (summing to 0) and
+  `Money.divide(Money.new(1, :USD), -3)` returned `[1, 0, 0]`.
+- Fix `Money.add/2` and `Money.subtract/2` with a float ignoring the currency's exponent.
+  The float was always multiplied by 100, so `Money.add(Money.new(100, :JPY), 5.0)` added 500 yen
+  and `Money.add(Money.new(0, :BHD), 1.5)` added 0.150 BHD.
 - Bound Decimal exponents in `Money.parse/3`, `Money.multiply/2` and `Money.div/2`, whatever
   Decimal version is installed. With Decimal before 3.0, input such as `"1e1000000"` built a
   million-digit integer and took seconds (denial of service on untrusted input).

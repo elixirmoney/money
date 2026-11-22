@@ -122,6 +122,11 @@ defmodule Money do
     * `:delimiter` - default `"."`, sets the decimal delimiter.
       "1.23"
 
+  Any text other than digits, signs, the delimiter and a scientific-notation exponent
+  is ignored, such as currency symbols, codes and separators. What remains must be a
+  single number: input such as `"1.2.3"` or `"10-20"` returns `:error`, as does a digit
+  inside parentheses, such as the accounting negative `"(10.00)"`.
+
   Strings and Decimals may use scientific notation, such as `"1.5e3"`. To keep the work
   bounded for untrusted input whatever Decimal version is installed, `:error` is returned
   when the value expressed in the currency's sub-units is `1e1000` or more in magnitude
@@ -158,6 +163,9 @@ defmodule Money do
       iex> Money.parse("1e1000000", :USD)
       :error
 
+      iex> Money.parse("1.2.3", :USD)
+      :error
+
   """
   def parse(value, currency \\ nil, opts \\ [])
 
@@ -174,17 +182,22 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
-    value =
-      str
-      |> prepare_parse_string(delimiter)
-      |> add_missing_leading_digit
+    if Regex.match?(~r/\([^()]*\d[^()]*\)/, str) do
+      :error
+    else
+      value =
+        str
+        |> prepare_parse_string(delimiter)
+        |> add_missing_leading_digit()
+        |> add_missing_fractional_digit()
 
-    case get_parser().parse(value) do
-      # pattern-match for supporting for Decimal 1.2 and greater https://github.com/elixirmoney/money/issues/213
-      {:ok, float} -> parse(float, currency, [])
-      # pattern-match for supporting for Decimal 2.0
-      {float, _} -> parse(float, currency, [])
-      :error -> :error
+      case get_parser().parse(value) do
+        # Decimal 1.x
+        {:ok, number} -> parse(number, currency, [])
+        # Decimal 2.0 and later, and Float
+        {number, ""} -> parse(number, currency, [])
+        _ -> :error
+      end
     end
   rescue
     _ -> :error
@@ -216,61 +229,41 @@ defmodule Money do
     end
   end
 
-  defp prepare_parse_string(characters, delimiter, acc \\ [])
+  @digits ~w(0 1 2 3 4 5 6 7 8 9)
 
-  defp prepare_parse_string([], _delimiter, acc),
+  defp prepare_parse_string(string, delimiter) do
+    string
+    |> String.codepoints()
+    |> prepare_parse_string(delimiter, nil, [])
+  end
+
+  defp prepare_parse_string([], _delimiter, _previous, acc),
     do: acc |> Enum.reverse() |> Enum.join()
 
-  defp prepare_parse_string(["-" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["-" | acc])
+  defp prepare_parse_string([char | tail], delimiter, previous, acc) do
+    acc =
+      cond do
+        char in @digits or char in ["-", "+"] -> [char | acc]
+        char == delimiter -> ["." | acc]
+        char in ["e", "E"] and exponent_marker?(previous in @digits or previous == delimiter, tail) -> ["e" | acc]
+        true -> acc
+      end
 
-  defp prepare_parse_string(["0" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["0" | acc])
+    previous = if blank?(char), do: previous, else: char
+    prepare_parse_string(tail, delimiter, previous, acc)
+  end
 
-  defp prepare_parse_string(["1" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["1" | acc])
+  defp exponent_marker?(true = _after_number, tail) do
+    case tail |> Stream.reject(&blank?/1) |> Enum.take(2) do
+      [next | _] when next in @digits -> true
+      [sign, next] when sign in ["-", "+"] and next in @digits -> true
+      _ -> false
+    end
+  end
 
-  defp prepare_parse_string(["2" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["2" | acc])
+  defp exponent_marker?(_after_number, _tail), do: false
 
-  defp prepare_parse_string(["3" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["3" | acc])
-
-  defp prepare_parse_string(["4" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["4" | acc])
-
-  defp prepare_parse_string(["5" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["5" | acc])
-
-  defp prepare_parse_string(["6" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["6" | acc])
-
-  defp prepare_parse_string(["7" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["7" | acc])
-
-  defp prepare_parse_string(["8" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["8" | acc])
-
-  defp prepare_parse_string(["9" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["9" | acc])
-
-  defp prepare_parse_string(["e" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["e" | acc])
-
-  defp prepare_parse_string(["E" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["e" | acc])
-
-  defp prepare_parse_string(["+" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["+" | acc])
-
-  defp prepare_parse_string([delimiter | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["." | acc])
-
-  defp prepare_parse_string([_head | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, acc)
-
-  defp prepare_parse_string(string, delimiter, _acc),
-    do: prepare_parse_string(String.codepoints(string), delimiter)
+  defp blank?(char), do: String.trim(char) == ""
 
   defp add_missing_leading_digit(<<"-.">> <> tail),
     do: "-0." <> tail
@@ -279,6 +272,12 @@ defmodule Money do
     do: "0." <> tail
 
   defp add_missing_leading_digit(str), do: str
+
+  defp add_missing_fractional_digit(str) do
+    str
+    |> String.replace(".e", ".0e")
+    |> String.replace(~r/\.$/, ".0")
+  end
 
   @spec parse!(String.t() | number | Decimal.t(), atom | String.t(), Keyword.t()) :: t
   @doc ~S"""
@@ -309,6 +308,16 @@ defmodule Money do
   `-1` is returned, if both amounts are equal `0` is returned.
 
   See `cmp/2` for a similar function that returns `:lt`, `:eq` or `:gt` instead.
+
+  Because it returns integers, don't pass `Money` as the sorter module to
+  `Enum.sort/2`, `Enum.min/2` or `Enum.max/2`: they expect `compare/2` to
+  return `:lt`, `:eq` or `:gt` and return wrong results. Use `cmp/2` instead:
+
+      iex> list = [Money.new(3, :USD), Money.new(1, :USD), Money.new(2, :USD)]
+      iex> Enum.sort(list, &(Money.cmp(&1, &2) != :gt))
+      [%Money{amount: 1, currency: :USD}, %Money{amount: 2, currency: :USD}, %Money{amount: 3, currency: :USD}]
+      iex> Enum.max(list, &(Money.cmp(&1, &2) != :lt))
+      %Money{amount: 3, currency: :USD}
 
   ## Examples
 
@@ -491,7 +500,8 @@ defmodule Money do
 
   @spec add(t, t | integer | float) :: t
   @doc ~S"""
-  Adds two `Money` together or an integer (cents) amount to a `Money`
+  Adds two `Money` together, or adds to a `Money` either an integer amount of
+  sub-units (cents) or a float amount of whole currency units
 
   ## Examples
 
@@ -504,6 +514,9 @@ defmodule Money do
       iex> Money.add(Money.new(100, :USD), 5.55)
       %Money{amount: 655, currency: :USD}
 
+      iex> Money.add(Money.new(100, :JPY), 5.0)
+      %Money{amount: 105, currency: :JPY}
+
   """
   def add(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a + b, cur)
@@ -511,14 +524,15 @@ defmodule Money do
   def add(%Money{amount: amount, currency: cur}, addend) when is_integer(addend),
     do: Money.new(amount + addend, cur)
 
-  def add(%Money{} = m, addend) when is_float(addend),
-    do: add(m, Kernel.round(addend * 100))
+  def add(%Money{currency: cur} = m, addend) when is_float(addend),
+    do: add(m, Kernel.round(addend * Currency.sub_units_count!(cur)))
 
   def add(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @spec subtract(t, t | integer | float) :: t
   @doc ~S"""
-  Subtracts one `Money` from another or an integer (cents) from a `Money`
+  Subtracts one `Money` from another, or subtracts from a `Money` either an
+  integer amount of sub-units (cents) or a float amount of whole currency units
 
   ## Examples
 
@@ -531,6 +545,9 @@ defmodule Money do
       iex> Money.subtract(Money.new(150, :USD), 1.25)
       %Money{amount: 25, currency: :USD}
 
+      iex> Money.subtract(Money.new(1500, :BHD), 1.25)
+      %Money{amount: 250, currency: :BHD}
+
   """
   def subtract(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}),
     do: Money.new(a - b, cur)
@@ -538,8 +555,8 @@ defmodule Money do
   def subtract(%Money{amount: a, currency: cur}, subtractend) when is_integer(subtractend),
     do: Money.new(a - subtractend, cur)
 
-  def subtract(%Money{} = m, subtractend) when is_float(subtractend),
-    do: subtract(m, Kernel.round(subtractend * 100))
+  def subtract(%Money{currency: cur} = m, subtractend) when is_float(subtractend),
+    do: subtract(m, Kernel.round(subtractend * Currency.sub_units_count!(cur)))
 
   def subtract(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
@@ -631,34 +648,15 @@ defmodule Money do
   end
 
   def divide(%Money{amount: amount, currency: cur}, denominator) when is_integer(denominator) do
-    value = Kernel.div(amount, denominator)
-    rem = rem(amount, denominator)
-    do_divide(cur, value, rem, denominator, [])
+    count = Kernel.abs(denominator)
+    total = if denominator < 0, do: -amount, else: amount
+    value = Kernel.div(total, count)
+    remainder = Kernel.rem(total, count)
+    step = if remainder < 0, do: -1, else: 1
+
+    List.duplicate(new(value + step, cur), Kernel.abs(remainder)) ++
+      List.duplicate(new(value, cur), count - Kernel.abs(remainder))
   end
-
-  defp do_divide(_currency, _value, _rem, 0, acc), do: acc |> Enum.reverse()
-
-  defp do_divide(currency, value, 0, count, acc) do
-    acc = [new(next_amount(value, 0, count), currency) | acc]
-    count = decrement_abs(count)
-    do_divide(currency, value, 0, count, acc)
-  end
-
-  defp do_divide(currency, value, rem, count, acc) do
-    acc = [new(next_amount(value, rem, count), currency) | acc]
-    rem = decrement_abs(rem)
-    count = decrement_abs(count)
-    do_divide(currency, value, rem, count, acc)
-  end
-
-  defp next_amount(0, -1, count) when count > 0, do: -1
-  defp next_amount(value, 0, _count), do: value
-  defp next_amount(value, _rem, _count), do: increment_abs(value)
-
-  defp increment_abs(n) when n >= 0, do: n + 1
-  defp increment_abs(n) when n < 0, do: n - 1
-  defp decrement_abs(n) when n >= 0, do: n - 1
-  defp decrement_abs(n) when n < 0, do: n + 1
 
   @spec div(t, integer | float | Decimal.t()) :: t
   @doc """

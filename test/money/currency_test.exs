@@ -114,6 +114,25 @@ defmodule Money.CurrencyTest do
     assert_raise ArgumentError, fn -> Currency.to_atom("abc" <> "khgyujnk") end
   end
 
+  describe "ISO numbers" do
+    test "lookup by number returns the current currency" do
+      assert Currency.to_atom(933) == :BYN
+      assert Currency.to_atom(532) == :XCG
+      assert Currency.number!(:BYR) == 933
+      assert Currency.number!(:ANG) == 532
+    end
+
+    test "only replaced currencies share a number" do
+      dups =
+        Currency.all()
+        |> Enum.group_by(fn {_, %{number: n}} -> n end, &elem(&1, 0))
+        |> Enum.filter(fn {_, codes} -> length(codes) > 1 end)
+        |> Enum.map(fn {n, codes} -> {n, Enum.sort(codes)} end)
+
+      assert Enum.sort(dups) == [{532, [:ANG, :XCG]}, {933, [:BYN, :BYR]}]
+    end
+  end
+
   test "custom_currency" do
     on_exit(fn ->
       Application.put_env(:money, :custom_currencies, [])
@@ -133,6 +152,9 @@ defmodule Money.CurrencyTest do
     assert Currency.sub_units_count!(:BTC) == 100
     assert Currency.to_atom(:BTC) == :BTC
     assert %Money{amount: 1001, currency: :BTC} == Money.new(1001, :BTC)
+
+    assert Currency.get(840) == %{name: "US Dollar", symbol: "$", exponent: 2, number: 840}
+    assert Currency.to_atom(840) == :USD
     assert "₿10.01" == Money.to_string(Money.new(1001, :BTC))
   end
 end

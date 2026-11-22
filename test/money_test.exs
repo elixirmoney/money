@@ -75,6 +75,70 @@ defmodule MoneyTest do
   end
 
   @tag decimal_1_2: true
+  describe "parse/3 rejects malformed input" do
+    test "multiple decimal delimiters" do
+      assert Money.parse("1.2.3", :USD) == :error
+      assert Money.parse("1,2,3.4.5", :USD) == :error
+      assert Money.parse("1,234,56", :EUR, separator: ".", delimiter: ",") == :error
+    end
+
+    test "signs in the middle or at the end" do
+      assert Money.parse("10-20", :USD) == :error
+      assert Money.parse("10-", :USD) == :error
+      assert Money.parse("--10", :USD) == :error
+      assert Money.parse("1+2", :USD) == :error
+    end
+
+    test "digits inside parentheses are rejected rather than read as positive or joined" do
+      assert Money.parse("(10.00)", :USD) == :error
+      assert Money.parse("$(10.00)", :USD) == :error
+      assert Money.parse("$10 (incl. 5 tax)", :USD) == :error
+    end
+
+    test "parentheses without digits are ignored as before" do
+      assert Money.parse("$10.00 (USD)", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse("10 (approx)", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse("(10.00", :USD) == {:ok, Money.new(1000, :USD)}
+    end
+
+    test "valid inputs still parse" do
+      assert Money.parse("$1,234.56", :USD) == {:ok, Money.new(123_456, :USD)}
+      assert Money.parse("-1,234.56", :USD) == {:ok, Money.new(-123_456, :USD)}
+      assert Money.parse("- $1,234.56", :USD) == {:ok, Money.new(-123_456, :USD)}
+      assert Money.parse("+5", :USD) == {:ok, Money.new(500, :USD)}
+      assert Money.parse("10.", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse(".5", :USD) == {:ok, Money.new(50, :USD)}
+      assert Money.parse("1.e3", :USD) == {:ok, Money.new(100_000, :USD)}
+      assert Money.parse("1 000,50", :EUR, separator: " ", delimiter: ",") == {:ok, Money.new(100_050, :EUR)}
+    end
+  end
+
+  describe "parse/3 with a currency code before the amount" do
+    test "codes containing E are not read as an exponent" do
+      assert Money.parse("EUR 10", :EUR) == {:ok, Money.new(1000, :EUR)}
+      assert Money.parse("SEK 10", :SEK) == {:ok, Money.new(1000, :SEK)}
+      assert Money.parse("EGP 1.5", :EGP) == {:ok, Money.new(150, :EGP)}
+      assert Money.parse("EUR 1,234.56", :EUR) == {:ok, Money.new(123_456, :EUR)}
+      assert Money.parse("EUR -1,234.56", :EUR) == {:ok, Money.new(-123_456, :EUR)}
+    end
+
+    test "code after the amount keeps working" do
+      assert Money.parse("10 SEK", :SEK) == {:ok, Money.new(1000, :SEK)}
+      assert Money.parse("1,234.56 EUR", :EUR) == {:ok, Money.new(123_456, :EUR)}
+    end
+
+    test "scientific notation keeps working" do
+      assert Money.parse("1e3", :USD) == {:ok, Money.new(100_000, :USD)}
+      assert Money.parse("1.5E3", :USD) == {:ok, Money.new(150_000, :USD)}
+      assert Money.parse("1.5e+3", :USD) == {:ok, Money.new(150_000, :USD)}
+      assert Money.parse("15e-1", :USD) == {:ok, Money.new(150, :USD)}
+      assert Money.parse("EUR 1.5e3", :EUR) == {:ok, Money.new(150_000, :EUR)}
+      assert Money.parse("1,5e3", :EUR, delimiter: ",") == {:ok, Money.new(150_000, :EUR)}
+      assert Money.parse("10 E 5", :USD) == {:ok, Money.new(100_000_000, :USD)}
+      assert Money.parse("1.5 e -1", :USD) == {:ok, Money.new(15, :USD)}
+    end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
@@ -268,6 +332,12 @@ defmodule MoneyTest do
     assert Money.add(Money.new(100, :USD), 3.335) == Money.new(434, :USD)
   end
 
+  test "add/2 with a float uses the currency exponent" do
+    assert Money.add(Money.new(100, :JPY), 5.0) == Money.new(105, :JPY)
+    assert Money.add(Money.new(0, :BHD), 1.5) == Money.new(1500, :BHD)
+    assert Money.add(Money.new(0, :CLF), 0.0001) == Money.new(1, :CLF)
+  end
+
   test "add error" do
     assert_raise ArgumentError, fn ->
       Money.add(Money.new(124, :EUR), Money.new(123, :USD))
@@ -280,6 +350,11 @@ defmodule MoneyTest do
     assert Money.subtract(Money.new(200, :USD), 0.5) == Money.new(150, :USD)
     assert Money.subtract(Money.new(200, :USD), 0.333) == Money.new(167, :USD)
     assert Money.subtract(Money.new(200, :USD), 0.335) == Money.new(166, :USD)
+  end
+
+  test "subtract/2 with a float uses the currency exponent" do
+    assert Money.subtract(Money.new(100, :JPY), 1.0) == Money.new(99, :JPY)
+    assert Money.subtract(Money.new(1500, :BHD), 1.25) == Money.new(250, :BHD)
   end
 
   test "subtract error" do
@@ -343,6 +418,31 @@ defmodule MoneyTest do
              usd(1),
              usd(0)
            ]
+  end
+
+  describe "divide/2 sign handling when |amount| < |denominator|" do
+    test "negative amount, positive denominator" do
+      assert amounts(Money.divide(Money.new(-2, :USD), 3)) == [-1, -1, 0]
+      assert amounts(Money.divide(Money.new(-3, :USD), 4)) == [-1, -1, -1, 0]
+    end
+
+    test "positive amount, negative denominator" do
+      assert amounts(Money.divide(Money.new(1, :USD), -3)) == [-1, 0, 0]
+      assert amounts(Money.divide(Money.new(2, :USD), -3)) == [-1, -1, 0]
+    end
+
+    test "shares always sum to the amount, sign flipped for negative denominators" do
+      for a <- -50..50, d <- Enum.to_list(-7..-1) ++ Enum.to_list(1..7) do
+        shares = Money.divide(Money.new(a, :USD), d)
+        expected = if d < 0, do: -a, else: a
+
+        assert Enum.sum(amounts(shares)) == expected, "divide(#{a}, #{d}) => #{inspect(amounts(shares))}"
+        assert length(shares) == abs(d)
+        assert Enum.max(amounts(shares)) - Enum.min(amounts(shares)) <= 1
+      end
+    end
+
+    defp amounts(list), do: Enum.map(list, & &1.amount)
   end
 
   test "test div" do
