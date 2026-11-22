@@ -40,6 +40,17 @@ defmodule Money.Ecto.Map.TypeTest do
     assert Type.load(%{"amount" => 100, "currency" => "JPY"}) == {:ok, Money.new(100, :JPY)}
   end
 
+  test "load/1 map with a whole float amount" do
+    assert Type.load(%{"amount" => 100.0, "currency" => "USD"}) == {:ok, Money.new(100, :USD)}
+  end
+
+  test "load/1 returns :error for malformed data" do
+    assert Type.load(%{"amount" => 100.5, "currency" => "USD"}) == :error
+    assert Type.load(%{"amount" => "10.50", "currency" => "USD"}) == :error
+    assert Type.load(%{"amount" => 100}) == :error
+    assert Type.load(%{"foo" => 1}) == :error
+  end
+
   test "load/1 map with binary amount" do
     assert Type.load(%{"amount" => "1", "currency" => "USD"}) == {:ok, Money.new(1, :USD)}
     assert Type.load(%{"amount" => "100", "currency" => "JPY"}) == {:ok, Money.new(100, :JPY)}

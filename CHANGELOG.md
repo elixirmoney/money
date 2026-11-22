@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix `Money.Ecto.Map.Type.load/1` raising `FunctionClauseError` for an amount stored as a float,
+  as some JSON columns return it. A whole float such as `100.0` now loads, and malformed data
+  returns `:error`.
 - Fix the Ecto types' `cast/1` raising instead of returning `:error` for a non-integer amount or an
   unknown currency, such as `%{"amount" => "10.50"}` or `{100, "XXXX"}`, so changesets get a
   validation error instead of crashing.
