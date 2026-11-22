@@ -361,9 +361,8 @@ defmodule Money.Currency do
     do: to_atom(currency)
 
   def to_atom(currency) do
-    currency = convert_currency(currency)
-    get!(currency)
-    currency
+    converted = convert_currency(currency)
+    if get(converted), do: converted, else: currency_doesnt_exist_error(currency)
   end
 
   @spec name(index_type()) :: String.t() | nil
@@ -492,8 +491,10 @@ defmodule Money.Currency do
 
   """
   def sub_units_count!(currency) do
-    exponent = exponent!(currency)
-    round(:math.pow(10, exponent))
+    case exponent!(currency) do
+      exponent when is_integer(exponent) and exponent >= 0 -> Integer.pow(10, exponent)
+      exponent -> round(:math.pow(10, exponent))
+    end
   end
 
   @spec number(index_type()) :: integer | nil
@@ -550,6 +551,8 @@ defmodule Money.Currency do
       _ -> nil
     end)
   end
+
+  defp currency_doesnt_exist_error(%Money{currency: currency}), do: currency_doesnt_exist_error(currency)
 
   defp currency_doesnt_exist_error(currency),
     do: raise(ArgumentError, "currency #{currency} doesn’t exist")

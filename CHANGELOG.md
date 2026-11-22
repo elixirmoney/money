@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+- Fix the `Money.Currency` bang functions (`exponent!/1`, `symbol!/1` and others) looping forever
+  when given a `Money` struct with an unknown currency: building the error message called
+  `Money.to_string/2`, which raised the same error again. `Money.to_string/2` for such a struct now
+  raises `ArgumentError` naming the currency instead of an unrelated `ArithmeticError`.
+- The `~M` sigil accepts a lowercase currency code, as in `~M[1000]usd`, like `Money.new/2` does.
+- Clearer error messages: `Money.Currency.to_atom/1` (and so `Money.new/2`) names the currency it
+  was given instead of printing an empty name for an unknown string or number, and `Money.parse/1`
+  without a default currency mentions `Money.parse/1` instead of `Money.new/1`.
+- Fix `Money.Currency.sub_units_count!/1` computing powers of ten with floats, which was off for
+  custom currencies with an exponent of 23 or more: exponent 24 gave `999999999999999983222784`.
+- Fix `Money.to_string/2` rendering a negative amount as `"- 1.00"` when there is no symbol and
+  `symbol_space: true`, such as with `symbol: false` or a currency with an empty symbol (XAU).
+- Fix `Money.parse/3` raising `ArgumentError` for a number or Decimal with an unknown currency. It
+  now returns `:error`, as it already did for strings. `Money.parse!/3` still raises.
+- `Money.Ecto.NumericCurrency.Type.dump/1` accepts a currency string, ISO number or `Money` struct,
+  as `cast/1` does. It returned `:error` for them.
+- Fix `Money.Ecto.Map.Type.load/1` raising `FunctionClauseError` for an amount stored as a float,
+  as some JSON columns return it. A whole float such as `100.0` now loads, and malformed data
+  returns `:error`.
+- Fix the Ecto types' `cast/1` raising instead of returning `:error` for a non-integer amount or an
+  unknown currency, such as `%{"amount" => "10.50"}` or `{100, "XXXX"}`, so changesets get a
+  validation error instead of crashing.
 - Document that `Money` can't be passed as the sorter module to `Enum.sort/2`, `Enum.min/2` or
   `Enum.max/2`, since `Money.compare/2` returns `-1`, `0` or `1`, and show sorting with `Money.cmp/2`.
 - Fix currency lookup by ISO number returning a currency that depends on VM state for numbers

@@ -39,13 +39,22 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     def dump(_), do: :error
 
-    @spec load(map()) :: {:ok, Money.t()}
+    @spec load(map()) :: {:ok, Money.t()} | :error
     def load(%{"amount" => amount, "currency" => currency}) when is_integer(amount) do
       {:ok, Money.new(amount, currency)}
     end
 
-    def load(%{"amount" => amount, "currency" => currency}) when is_binary(amount) do
-      {:ok, Money.new(String.to_integer(amount), currency)}
+    def load(%{"amount" => amount, "currency" => currency}) when is_float(amount) and trunc(amount) == amount do
+      {:ok, Money.new(trunc(amount), currency)}
     end
+
+    def load(%{"amount" => amount, "currency" => currency}) when is_binary(amount) do
+      case Integer.parse(amount) do
+        {int, ""} -> {:ok, Money.new(int, currency)}
+        _ -> :error
+      end
+    end
+
+    def load(_), do: :error
   end
 end

@@ -133,6 +133,29 @@ defmodule Money.CurrencyTest do
     end
   end
 
+  test "sub_units_count!/1 is exact for large exponents" do
+    on_exit(fn -> Application.put_env(:money, :custom_currencies, []) end)
+
+    Application.put_env(:money, :custom_currencies, ZZZ: %{name: "Z", symbol: "z", exponent: 24})
+
+    assert Currency.sub_units_count!(:ZZZ) == 1_000_000_000_000_000_000_000_000
+    assert Money.parse("1", :ZZZ) == {:ok, Money.new(1_000_000_000_000_000_000_000_000, :ZZZ)}
+  end
+
+  test "to_atom/1 names the given currency in the error" do
+    assert_raise ArgumentError, "currency nope doesn’t exist", fn -> Currency.to_atom("nope") end
+    assert_raise ArgumentError, "currency 1111 doesn’t exist", fn -> Currency.to_atom(1111) end
+    assert_raise ArgumentError, "currency WRONG doesn’t exist", fn -> Currency.to_atom(:WRONG) end
+  end
+
+  test "bang functions raise for a Money with an unknown currency" do
+    money = %Money{amount: 1, currency: :FOO}
+
+    for fun <- [:get!, :name!, :symbol!, :exponent!, :number!, :sub_units_count!, :to_atom] do
+      assert_raise ArgumentError, "currency FOO doesn’t exist", fn -> apply(Currency, fun, [money]) end
+    end
+  end
+
   test "custom_currency" do
     on_exit(fn ->
       Application.put_env(:money, :custom_currencies, [])

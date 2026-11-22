@@ -45,23 +45,23 @@ if Code.ensure_loaded?(Ecto.Type) do
       end
     end
 
-    def cast(%{"amount" => amount, "currency" => currency}) do
+    def cast(%{"amount" => amount, "currency" => currency}) when is_integer(amount) do
       case same_as_default_currency?(currency) do
         true -> {:ok, Money.new(amount, currency)}
         _ -> :error
       end
     end
 
-    def cast(%{"amount" => amount}), do: {:ok, Money.new(amount)}
+    def cast(%{"amount" => amount}) when is_integer(amount), do: {:ok, Money.new(amount)}
 
-    def cast(%{amount: amount, currency: currency}) do
+    def cast(%{amount: amount, currency: currency}) when is_integer(amount) do
       case same_as_default_currency?(currency) do
         true -> {:ok, Money.new(amount, currency)}
         _ -> :error
       end
     end
 
-    def cast(%{amount: amount}), do: {:ok, Money.new(amount)}
+    def cast(%{amount: amount}) when is_integer(amount), do: {:ok, Money.new(amount)}
 
     def cast(_), do: :error
 

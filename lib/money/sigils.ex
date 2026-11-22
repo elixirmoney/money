@@ -21,7 +21,7 @@ defmodule Money.Sigils do
     do: Macro.escape(Money.new(to_integer(amount)))
 
   defmacro sigil_M({:<<>>, _meta, [amount]}, [_ | _] = currency),
-    do: Macro.escape(Money.new(to_integer(amount), List.to_atom(currency)))
+    do: Macro.escape(Money.new(to_integer(amount), List.to_string(currency)))
 
   defp to_integer(string) do
     string

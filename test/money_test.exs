@@ -139,6 +139,21 @@ defmodule MoneyTest do
     end
   end
 
+  test "parse/3 returns :error for an unknown currency whatever the value type" do
+    assert Money.parse("1.00", :WRONG) == :error
+    assert Money.parse(1, :WRONG) == :error
+    assert Money.parse(1.5, "nope") == :error
+    assert Money.parse(Decimal.new("1.5"), :WRONG) == :error
+    assert Money.parse(Decimal.new(0), :WRONG) == :error
+    assert_raise ArgumentError, fn -> Money.parse!(1.5, :WRONG) end
+  end
+
+  test "parse/1 without a default currency names parse in the error" do
+    Application.delete_env(:money, :default_currency)
+
+    assert_raise ArgumentError, ~r/to use Money.parse\/1/, fn -> Money.parse("1") end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
@@ -188,7 +203,7 @@ defmodule MoneyTest do
   test "parse/3 accepts a Decimal zero with any exponent" do
     assert Money.parse(%Decimal{sign: 1, coef: 0, exp: 100_000_000}, :USD) == {:ok, usd(0)}
     assert Money.parse(%Decimal{sign: -1, coef: 0, exp: -100_000_000}, :USD) == {:ok, usd(0)}
-    assert_raise ArgumentError, fn -> Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) end
+    assert Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) == :error
 
     assert Money.round(usd(1), -1001) == usd(0)
   end
@@ -556,6 +571,20 @@ defmodule MoneyTest do
     assert Money.to_string(eur(-1234)) == "-€12.34"
     assert Money.to_string(xau(-20305)) == "-203.05"
     assert Money.to_string(zar(-1_234_567_890)) == "-R12,345,678.90"
+  end
+
+  test "to_string with negative values and no symbol puts the minus sign next to the number" do
+    assert Money.to_string(Money.new(-100, :USD), symbol: false, symbol_space: true) == "-1.00"
+    assert Money.to_string(Money.new(-100, :XAU), symbol_space: true) == "-1.00"
+    assert Money.to_string(Money.new(-100, :USD), symbol: false) == "-1.00"
+    assert Money.to_string(Money.new(100, :USD), symbol: false, symbol_space: true) == "1.00"
+    assert Money.to_string(Money.new(-100, :USD), symbol: false, symbol_space: true, code: true) == "-1.00 USD"
+  end
+
+  test "to_string with an unknown currency raises a clear error" do
+    assert_raise ArgumentError, "currency FOO doesn’t exist", fn ->
+      Money.to_string(%Money{amount: 1, currency: :FOO})
+    end
   end
 
   test "to_string with negative values symbol_on_right true" do

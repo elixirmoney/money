@@ -25,6 +25,11 @@ defmodule Money.SigilsTest do
     assert ~M[1000]EUR == Money.new(1000, :EUR)
   end
 
+  test "it accepts a lowercase currency code" do
+    assert ~M[1000]usd == Money.new(1000, :USD)
+    assert ~M[1000]Eur == Money.new(1000, :EUR)
+  end
+
   # This is a convoluted test because I'm trying to test a failing compilation (I'd love a better way to do this)
   try do
     test "it fails to expand the sigil with an invalid currency code" do

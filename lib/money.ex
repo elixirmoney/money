@@ -145,6 +145,9 @@ defmodule Money do
       iex> Money.parse("1.234,56", :WRONG)
       :error
 
+      iex> Money.parse(1_234.56, :WRONG)
+      :error
+
       iex> Money.parse(1_234.56, :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
 
@@ -175,7 +178,8 @@ defmodule Money do
     if currency do
       parse(value, currency, opts)
     else
-      raise ArgumentError, "to use Money.new/1 you must set a default currency in your application config."
+      raise ArgumentError,
+            "to use Money.parse/1 or Money.parse/2 without a currency you must set a default currency in your application config."
     end
   end
 
@@ -204,14 +208,21 @@ defmodule Money do
   end
 
   def parse(number, currency, _opts) when is_number(number) do
-    {:ok, new(Kernel.round(number * Currency.sub_units_count!(currency)), currency)}
+    if Currency.exists?(currency) do
+      {:ok, new(Kernel.round(number * Currency.sub_units_count!(currency)), currency)}
+    else
+      :error
+    end
   end
 
   if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
-      exponent = Currency.exponent!(currency)
+      exponent = Currency.exponent(currency)
 
       cond do
+        is_nil(exponent) ->
+          :error
+
         decimal.coef == 0 ->
           {:ok, new(0, currency)}
 
@@ -809,7 +820,7 @@ defmodule Money do
         symbol_on_right ->
           [sign, number, space, symbol, code]
 
-        negative?(money) and symbol == " " ->
+        negative?(money) and symbol in ["", " "] ->
           [sign, number, code]
 
         negative?(money) and minus_sign_first ->
@@ -897,7 +908,7 @@ defmodule Money do
          strip_insignificant_zeros: strip_insignificant_zeros,
          strip_insignificant_fractional_unit: strip_insignificant_fractional_unit
        }) do
-    exponent = Currency.exponent(money)
+    exponent = Currency.exponent!(money)
     amount_abs = if amount < 0, do: -amount, else: amount
     amount_str = Integer.to_string(amount_abs)
 
