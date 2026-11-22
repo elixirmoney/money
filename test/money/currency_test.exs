@@ -133,6 +133,15 @@ defmodule Money.CurrencyTest do
     end
   end
 
+  test "sub_units_count!/1 is exact for large exponents" do
+    on_exit(fn -> Application.put_env(:money, :custom_currencies, []) end)
+
+    Application.put_env(:money, :custom_currencies, ZZZ: %{name: "Z", symbol: "z", exponent: 24})
+
+    assert Currency.sub_units_count!(:ZZZ) == 1_000_000_000_000_000_000_000_000
+    assert Money.parse("1", :ZZZ) == {:ok, Money.new(1_000_000_000_000_000_000_000_000, :ZZZ)}
+  end
+
   test "custom_currency" do
     on_exit(fn ->
       Application.put_env(:money, :custom_currencies, [])

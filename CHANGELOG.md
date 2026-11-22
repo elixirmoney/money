@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `Money.Currency.sub_units_count!/1` computing powers of ten with floats, which was off for
+  custom currencies with an exponent of 23 or more: exponent 24 gave `999999999999999983222784`.
 - Fix `Money.to_string/2` rendering a negative amount as `"- 1.00"` when there is no symbol and
   `symbol_space: true`, such as with `symbol: false` or a currency with an empty symbol (XAU).
 - Fix `Money.parse/3` raising `ArgumentError` for a number or Decimal with an unknown currency. It

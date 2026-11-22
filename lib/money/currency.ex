@@ -492,8 +492,10 @@ defmodule Money.Currency do
 
   """
   def sub_units_count!(currency) do
-    exponent = exponent!(currency)
-    round(:math.pow(10, exponent))
+    case exponent!(currency) do
+      exponent when is_integer(exponent) and exponent >= 0 -> Integer.pow(10, exponent)
+      exponent -> round(:math.pow(10, exponent))
+    end
   end
 
   @spec number(index_type()) :: integer | nil
