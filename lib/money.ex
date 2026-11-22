@@ -301,44 +301,43 @@ defmodule Money do
     end
   end
 
-  @spec compare(t, t) :: -1 | 0 | 1
+  @spec compare(t, t) :: :lt | :eq | :gt
   @doc ~S"""
   Compares two `Money` structs with each other.
   They must each be of the same currency and then their amounts are compared.
-  If the first amount is larger than the second `1` is returned, if less than
-  `-1` is returned, if both amounts are equal `0` is returned.
+  If the first amount is larger than the second `:gt` is returned, if less than
+  `:lt` is returned, if both amounts are equal `:eq` is returned.
 
-  See `cmp/2` for a similar function that returns `:lt`, `:eq` or `:gt` instead.
+  This follows the `compare/2` convention used by `Enum.sort/2`, `Enum.min/2`
+  and `Enum.max/2`, so `Money` can be passed to them as the sorter.
 
   ## Examples
 
       iex> Money.compare(Money.new(100, :USD), Money.new(100, :USD))
-      0
+      :eq
 
       iex> Money.compare(Money.new(100, :USD), Money.new(101, :USD))
-      -1
+      :lt
 
       iex> Money.compare(Money.new(101, :USD), Money.new(100, :USD))
-      1
+      :gt
+
+      iex> Enum.sort([Money.new(3, :USD), Money.new(1, :USD), Money.new(2, :USD)], {:desc, Money})
+      [%Money{amount: 3, currency: :USD}, %Money{amount: 2, currency: :USD}, %Money{amount: 1, currency: :USD}]
 
   """
-  def compare(%Money{currency: cur} = a, %Money{currency: cur} = b) do
-    case a.amount - b.amount do
-      x when x > 0 -> 1
-      x when x < 0 -> -1
-      x when x == 0 -> 0
+  def compare(%Money{amount: a, currency: cur}, %Money{amount: b, currency: cur}) do
+    cond do
+      a > b -> :gt
+      a < b -> :lt
+      true -> :eq
     end
   end
 
   def compare(%Money{} = a, %Money{} = b), do: fail_currencies_must_be_equal(a, b)
 
   @doc """
-  Compares two `Money` structs with each other.
-  They must each be of the same currency and then their amounts are compared.
-  If the first amount is larger than the second `:gt` is returned, if less than
-  `:lt` is returned, if both amounts are equal `:eq` is returned.
-
-  See `compare/2` for a similar function that returns `-1`, `0` or `1` instead.
+  Compares two `Money` structs with each other. Same as `compare/2`.
 
   ## Examples
 
@@ -353,13 +352,7 @@ defmodule Money do
 
   """
   @spec cmp(t, t) :: :lt | :eq | :gt
-  def cmp(a, b) do
-    case compare(a, b) do
-      x when x == -1 -> :lt
-      x when x == 0 -> :eq
-      x when x == 1 -> :gt
-    end
-  end
+  def cmp(a, b), do: compare(a, b)
 
   @spec zero?(t) :: boolean
   @doc ~S"""

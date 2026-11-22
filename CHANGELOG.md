@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Breaking:** `Money.compare/2` now returns `:lt`, `:eq` or `:gt` (was `-1`, `0` or `1`), the same
+  as `Money.cmp/2`. Elixir's `Enum.sort/2`, `Enum.min/2` and `Enum.max/2` call `compare/2` when given
+  a module and expect atoms, so `Enum.sort(list, Money)` and `Enum.max(list, Money)` silently
+  returned wrong results. Code that matches on `-1`, `0` or `1` must be updated.
 - **Breaking:** `Money.add/2` and `Money.subtract/2` with a float now use the currency's exponent.
   The float was always multiplied by 100, so `Money.add(Money.new(100, :JPY), 5.0)` added 500 yen
   and `Money.add(Money.new(0, :BHD), 1.5)` added 0.150 BHD.

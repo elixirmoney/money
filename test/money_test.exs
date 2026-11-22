@@ -197,9 +197,19 @@ defmodule MoneyTest do
   end
 
   test "test compare" do
-    assert Money.compare(Money.new(123, :USD), Money.new(123, :USD)) == 0
-    assert Money.compare(Money.new(121, :USD), Money.new(123, :USD)) == -1
-    assert Money.compare(Money.new(124, :USD), Money.new(123, :USD)) == 1
+    assert Money.compare(Money.new(123, :USD), Money.new(123, :USD)) == :eq
+    assert Money.compare(Money.new(121, :USD), Money.new(123, :USD)) == :lt
+    assert Money.compare(Money.new(124, :USD), Money.new(123, :USD)) == :gt
+  end
+
+  test "Money works as a sorter module for Enum functions" do
+    list = [Money.new(1, :USD), Money.new(3, :USD), Money.new(2, :USD)]
+
+    assert Enum.max(list, Money) == Money.new(3, :USD)
+    assert Enum.min([Money.new(2, :USD), Money.new(1, :USD), Money.new(3, :USD)], Money) == Money.new(1, :USD)
+    assert Enum.map(Enum.sort(list, Money), & &1.amount) == [1, 2, 3]
+    assert Enum.map(Enum.sort(list, {:asc, Money}), & &1.amount) == [1, 2, 3]
+    assert Enum.map(Enum.sort(list, {:desc, Money}), & &1.amount) == [3, 2, 1]
   end
 
   test "comparing error" do
