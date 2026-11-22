@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The `~M` sigil accepts a lowercase currency code, as in `~M[1000]usd`, like `Money.new/2` does.
 - Clearer error messages: `Money.Currency.to_atom/1` (and so `Money.new/2`) names the currency it
   was given instead of printing an empty name for an unknown string or number, and `Money.parse/1`
   without a default currency mentions `Money.parse/1` instead of `Money.new/1`.
