@@ -515,12 +515,10 @@ defmodule Money.Currency do
   end
 
   defp convert_currency(currency) when is_integer(currency) do
-    case Enum.find(all_currencies(), fn {_, %{number: number}} -> number == currency end) do
-      {cur, _} -> cur
-      nil -> nil
-    end
-  rescue
-    _ -> nil
+    Enum.find_value(all_currencies(), fn
+      {cur, %{number: ^currency}} -> cur
+      _ -> nil
+    end)
   end
 
   defp convert_currency(currency), do: currency

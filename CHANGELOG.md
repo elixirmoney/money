@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix currency lookup by ISO number (`Money.Currency.get(840)`, `Money.Ecto.NumericCurrency.Type`)
+  returning `nil` for every number when a custom currency without a `:number` is configured, as in
+  the README's custom currency example.
 - **Breaking:** `Money.parse/3` returns `:error` for a string that isn't a single number once
   symbols, codes and separators are removed. With Decimal 2 or later, or without Decimal, the
   unparsed rest was ignored, so `"1.2.3"` gave 1.20, `"10-20"` gave 10.00, and `"(10.00)"` gave
