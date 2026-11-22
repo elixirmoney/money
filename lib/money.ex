@@ -92,16 +92,9 @@ defmodule Money do
   end
 
   if Code.ensure_loaded?(Decimal) do
-    # Upper bound, in digits, on the magnitude of Decimal values that `parse/3`, `multiply/2`
-    # and `div/2` accept. Rounding a Decimal or converting it to an integer costs time and
-    # memory proportional to its exponent, and Decimal versions before 3.0 accept any
-    # exponent, so an input such as "1e1000000" would otherwise build a million-digit integer.
+    # Decimal before 3.0 accepts any exponent, and rounding costs time proportional to it
     @decimal_max_digits 1_000
 
-    # Checks that 10^-@decimal_max_digits <= |decimal * 10^shift| < 10^@decimal_max_digits,
-    # using only the coefficient's digit count and the exponent, so it stays cheap for any
-    # exponent. `digits + exp` is the number of digits before the decimal point (zero or
-    # negative for values below 1). Infinity and NaN are left to Decimal.
     defp decimal_in_range?(%Decimal{coef: coef, exp: exp}, shift) when is_integer(coef) do
       integer_digits = byte_size(Integer.to_string(coef)) + exp + shift
       integer_digits > -@decimal_max_digits and integer_digits <= @decimal_max_digits
@@ -206,7 +199,6 @@ defmodule Money do
       exponent = Currency.exponent!(currency)
 
       cond do
-        # Zero needs no Decimal arithmetic, whose cost grows with the exponent
         decimal.coef == 0 ->
           {:ok, new(0, currency)}
 

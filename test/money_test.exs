@@ -126,7 +126,6 @@ defmodule MoneyTest do
     assert Money.parse(%Decimal{sign: -1, coef: 0, exp: -100_000_000}, :USD) == {:ok, usd(0)}
     assert_raise ArgumentError, fn -> Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) end
 
-    # Rounding to many negative places yields a zero with a large exponent
     assert Money.round(usd(1), -1001) == usd(0)
   end
 
