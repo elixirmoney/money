@@ -8,6 +8,8 @@
   - Stored integer amounts change meaning: an amount created as `Money.new(1500, :TND)` was
     15.00 TND and is now 1.500 TND. Multiply stored TND amounts by 10 and CVE amounts by 100,
     or keep the old exponent with `config :money, custom_currencies: [TND: %{...}]`.
+- **Breaking:** Require Elixir 1.15 or later (was 1.11)
+- Update dev and test dependencies (credo 1.7, ex_doc 0.40, blend 0.5, dialyxir 1.4.9) and test against Decimal 3 in CI
 - Add missing ISO 4217 currencies: CHE, CHW, UYW, VED, XAD, ZWG (#257)
 - Add Money.zero/1 to create a zero amount (#255)
 - Keep integer division inside the integer range for large amounts (#254)

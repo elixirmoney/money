@@ -1,4 +1,15 @@
 defmodule Money.Guards do
+  @moduledoc """
+  Guards for matching on `Money` structs and their amounts.
+
+  Require or import this module to use the guards in function heads:
+
+      import Money.Guards
+
+      def charge(money) when is_positive(money), do: {:ok, money}
+      def charge(money) when is_money(money), do: {:error, :not_positive}
+  """
+
   @doc """
   Determines if a value is a Money struct.
 
