@@ -53,7 +53,7 @@ defmodule Money.Currency do
     BTN: %{name: "Indian Rupee Ngultrum", symbol: "Nu.", exponent: 2, number: 064},
     BWP: %{name: "Pula", symbol: "P", exponent: 2, number: 072},
     BYN: %{name: "Belarusian Ruble", symbol: "p.", exponent: 2, number: 933},
-    BYR: %{name: "Belarusian Ruble", symbol: "p.", exponent: 0, number: 974},
+    BYR: %{name: "Belarusian Ruble", symbol: "p.", exponent: 0, number: 933},
     BZD: %{name: "Belize Dollar", symbol: "$", exponent: 2, number: 084},
     CAD: %{name: "Canadian Dollar", symbol: "$", exponent: 2, number: 124},
     CDF: %{name: "Congolese Franc", symbol: "Fr", exponent: 2, number: 976},
@@ -221,8 +221,8 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
-  # XCG replaced ANG in 2025 and took over its number
-  @preferred_by_number %{532 => :XCG}
+  # Replaced currencies that share their successor's number
+  @preferred_by_number %{532 => :XCG, 933 => :BYN}
 
   currencies_by_number =
     @currencies

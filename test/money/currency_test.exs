@@ -117,19 +117,19 @@ defmodule Money.CurrencyTest do
   describe "ISO numbers" do
     test "lookup by number returns the current currency" do
       assert Currency.to_atom(933) == :BYN
-      assert Currency.to_atom(974) == :BYR
       assert Currency.to_atom(532) == :XCG
+      assert Currency.number!(:BYR) == 933
       assert Currency.number!(:ANG) == 532
     end
 
-    test "only ANG and XCG share a number" do
+    test "only replaced currencies share a number" do
       dups =
         Currency.all()
         |> Enum.group_by(fn {_, %{number: n}} -> n end, &elem(&1, 0))
         |> Enum.filter(fn {_, codes} -> length(codes) > 1 end)
         |> Enum.map(fn {n, codes} -> {n, Enum.sort(codes)} end)
 
-      assert dups == [{532, [:ANG, :XCG]}]
+      assert Enum.sort(dups) == [{532, [:ANG, :XCG]}, {933, [:BYN, :BYR]}]
     end
   end
 

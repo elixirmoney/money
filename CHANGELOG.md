@@ -7,8 +7,8 @@
 - Fix currency lookup by ISO number returning a currency that depends on VM state for numbers
   shared by two currencies, so `Money.Ecto.NumericCurrency.Type` could store `:BYN` and load it
   back as `:BYR`.
-  - BYR now has its ISO number 974 instead of BYN's 933.
-  - ANG and XCG share 532 (XCG replaced ANG); a lookup by 532 now always returns `:XCG`.
+  - A number shared by a replaced currency and its successor now always returns the successor:
+    532 returns `:XCG` (not `:ANG`) and 933 returns `:BYN` (not `:BYR`).
 - Fix currency lookup by ISO number (`Money.Currency.get(840)`, `Money.Ecto.NumericCurrency.Type`)
   returning `nil` for every number when a custom currency without a `:number` is configured, as in
   the README's custom currency example.
