@@ -181,8 +181,6 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
-    # Parentheses (accounting-style negatives) would otherwise be dropped and
-    # the amount read as positive.
     if String.contains?(str, ["(", ")"]) do
       :error
     else
@@ -192,7 +190,6 @@ defmodule Money do
         |> add_missing_leading_digit()
         |> add_missing_fractional_digit()
 
-      # Anything left unparsed, as in "1.2.3" or "10-20", is an error.
       case get_parser().parse(value) do
         # Decimal 1.x
         {:ok, number} -> parse(number, currency, [])
@@ -233,10 +230,6 @@ defmodule Money do
 
   @digits ~w(0 1 2 3 4 5 6 7 8 9)
 
-  # Keeps digits, signs and the delimiter (as "."). An "e" or "E" is kept only
-  # as a scientific-notation exponent, i.e. after a digit or the delimiter and
-  # before a (signed) digit, so a currency code such as "EUR" or "SEK" is
-  # dropped like any other text.
   defp prepare_parse_string(string, delimiter) do
     string
     |> String.codepoints()
@@ -273,7 +266,6 @@ defmodule Money do
 
   defp add_missing_leading_digit(str), do: str
 
-  # Float.parse/1 stops at a delimiter with no digit after it ("10." or "1.e3").
   defp add_missing_fractional_digit(str) do
     str
     |> String.replace(".e", ".0e")

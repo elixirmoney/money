@@ -153,7 +153,6 @@ defmodule Money.CurrencyTest do
     assert Currency.to_atom(:BTC) == :BTC
     assert %Money{amount: 1001, currency: :BTC} == Money.new(1001, :BTC)
 
-    # A custom currency without a :number must not break lookups by number
     assert Currency.get(840) == %{name: "US Dollar", symbol: "$", exponent: 2, number: 840}
     assert Currency.to_atom(840) == :USD
     assert "₿10.01" == Money.to_string(Money.new(1001, :BTC))

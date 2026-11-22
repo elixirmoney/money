@@ -221,8 +221,7 @@ defmodule Money.Currency do
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
 
-  # Currencies sharing an ISO number and the one a lookup by that number returns.
-  # XCG replaced ANG in 2025 and took over its number.
+  # XCG replaced ANG in 2025 and took over its number
   @preferred_by_number %{532 => :XCG}
 
   currencies_by_number =
