@@ -89,10 +89,16 @@ defmodule MoneyTest do
       assert Money.parse("1+2", :USD) == :error
     end
 
-    test "accounting-style negatives are rejected rather than read as positive" do
+    test "digits inside parentheses are rejected rather than read as positive or joined" do
       assert Money.parse("(10.00)", :USD) == :error
       assert Money.parse("$(10.00)", :USD) == :error
-      assert Money.parse("(10.00", :USD) == :error
+      assert Money.parse("$10 (incl. 5 tax)", :USD) == :error
+    end
+
+    test "parentheses without digits are ignored as before" do
+      assert Money.parse("$10.00 (USD)", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse("10 (approx)", :USD) == {:ok, Money.new(1000, :USD)}
+      assert Money.parse("(10.00", :USD) == {:ok, Money.new(1000, :USD)}
     end
 
     test "valid inputs still parse" do

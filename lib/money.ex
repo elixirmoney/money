@@ -124,7 +124,8 @@ defmodule Money do
 
   Any text other than digits, signs, the delimiter and a scientific-notation exponent
   is ignored, such as currency symbols, codes and separators. What remains must be a
-  single number: input such as `"1.2.3"`, `"10-20"` or `"(10.00)"` returns `:error`.
+  single number: input such as `"1.2.3"` or `"10-20"` returns `:error`, as does a digit
+  inside parentheses, such as the accounting negative `"(10.00)"`.
 
   Strings and Decimals may use scientific notation, such as `"1.5e3"`. To keep the work
   bounded for untrusted input whatever Decimal version is installed, `:error` is returned
@@ -181,7 +182,7 @@ defmodule Money do
   def parse(str, currency, opts) when is_binary(str) do
     %ParseOptions{separator: _separator, delimiter: delimiter} = ParseOptions.get(opts)
 
-    if String.contains?(str, ["(", ")"]) do
+    if Regex.match?(~r/\([^()]*\d[^()]*\)/, str) do
       :error
     else
       value =
