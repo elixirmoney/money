@@ -53,7 +53,7 @@ defmodule Money.Currency do
     BTN: %{name: "Indian Rupee Ngultrum", symbol: "Nu.", exponent: 2, number: 064},
     BWP: %{name: "Pula", symbol: "P", exponent: 2, number: 072},
     BYN: %{name: "Belarusian Ruble", symbol: "p.", exponent: 2, number: 933},
-    BYR: %{name: "Belarusian Ruble", symbol: "p.", exponent: 0, number: 933},
+    BYR: %{name: "Belarusian Ruble", symbol: "p.", exponent: 0, number: 974},
     BZD: %{name: "Belize Dollar", symbol: "$", exponent: 2, number: 084},
     CAD: %{name: "Canadian Dollar", symbol: "$", exponent: 2, number: 124},
     CDF: %{name: "Congolese Franc", symbol: "Fr", exponent: 2, number: 976},
@@ -220,6 +220,31 @@ defmodule Money.Currency do
     ZWG: %{name: "Zimbabwe Gold", symbol: "ZiG", exponent: 2, number: 924},
     ZWL: %{name: "Zimbabwe Dollar", symbol: "$", exponent: 2, number: 932}
   }
+
+  # Currencies sharing an ISO number and the one a lookup by that number returns.
+  # XCG replaced ANG in 2025 and took over its number.
+  @preferred_by_number %{532 => :XCG}
+
+  currencies_by_number =
+    @currencies
+    |> Enum.group_by(fn {_, %{number: number}} -> number end, &elem(&1, 0))
+    |> Map.new(fn
+      {number, [currency]} ->
+        {number, currency}
+
+      {number, currencies} ->
+        preferred = Map.get(@preferred_by_number, number)
+
+        if preferred not in currencies do
+          raise ArgumentError,
+                "currencies #{inspect(Enum.sort(currencies))} share the number #{number}, " <>
+                  "add the one to return to @preferred_by_number"
+        end
+
+        {number, preferred}
+    end)
+
+  @currencies_by_number currencies_by_number
 
   @type index_type() :: Money.t() | String.t() | atom | integer
 
@@ -515,13 +540,17 @@ defmodule Money.Currency do
   end
 
   defp convert_currency(currency) when is_integer(currency) do
-    Enum.find_value(all_currencies(), fn
-      {cur, %{number: ^currency}} -> cur
-      _ -> nil
-    end)
+    custom_currency_by_number(currency) || Map.get(@currencies_by_number, currency)
   end
 
   defp convert_currency(currency), do: currency
+
+  defp custom_currency_by_number(number) do
+    Enum.find_value(custom_currencies(), fn
+      {cur, %{number: ^number}} -> cur
+      _ -> nil
+    end)
+  end
 
   defp currency_doesnt_exist_error(currency),
     do: raise(ArgumentError, "currency #{currency} doesn’t exist")

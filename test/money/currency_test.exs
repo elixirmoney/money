@@ -114,6 +114,25 @@ defmodule Money.CurrencyTest do
     assert_raise ArgumentError, fn -> Currency.to_atom("abc" <> "khgyujnk") end
   end
 
+  describe "ISO numbers" do
+    test "lookup by number returns the current currency" do
+      assert Currency.to_atom(933) == :BYN
+      assert Currency.to_atom(974) == :BYR
+      assert Currency.to_atom(532) == :XCG
+      assert Currency.number!(:ANG) == 532
+    end
+
+    test "only ANG and XCG share a number" do
+      dups =
+        Currency.all()
+        |> Enum.group_by(fn {_, %{number: n}} -> n end, &elem(&1, 0))
+        |> Enum.filter(fn {_, codes} -> length(codes) > 1 end)
+        |> Enum.map(fn {n, codes} -> {n, Enum.sort(codes)} end)
+
+      assert dups == [{532, [:ANG, :XCG]}]
+    end
+  end
+
   test "custom_currency" do
     on_exit(fn ->
       Application.put_env(:money, :custom_currencies, [])
