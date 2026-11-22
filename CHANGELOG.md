@@ -12,18 +12,18 @@
 - Fix currency lookup by ISO number (`Money.Currency.get(840)`, `Money.Ecto.NumericCurrency.Type`)
   returning `nil` for every number when a custom currency without a `:number` is configured, as in
   the README's custom currency example.
-- **Breaking:** `Money.parse/3` returns `:error` for a string that isn't a single number once
-  symbols, codes and separators are removed. With Decimal 2 or later, or without Decimal, the
-  unparsed rest was ignored, so `"1.2.3"` gave 1.20, `"10-20"` gave 10.00, and `"(10.00)"` gave
-  a positive 10.00. A digit inside parentheses now returns `:error`; parentheses without
-  digits, as in `"$10.00 (USD)"`, are still ignored.
+- Fix `Money.parse/3` returning a wrong amount for a string that isn't a single number once
+  symbols, codes and separators are removed; it now returns `:error`. With Decimal 2 or later,
+  or without Decimal, the unparsed rest was ignored, so `"1.2.3"` gave 1.20, `"10-20"` gave
+  10.00, and `"(10.00)"` gave a positive 10.00. A digit inside parentheses now returns `:error`;
+  parentheses without digits, as in `"$10.00 (USD)"`, are still ignored.
 - Fix `Money.parse/3` reading the "E" of a currency code before the amount as an exponent:
   `"EUR 10"`, `"SEK 10"` and `"EGP 1.5"` returned `:error`. An `e`/`E` is now kept only after a
   digit or the delimiter and before a (signed) digit, as in `"1.5e3"`.
 - Fix `Money.divide/2` returning shares with the wrong sign when the amount is smaller than the
   denominator: `Money.divide(Money.new(-2, :USD), 3)` returned `[1, -1, 0]` (summing to 0) and
   `Money.divide(Money.new(1, :USD), -3)` returned `[1, 0, 0]`.
-- **Breaking:** `Money.add/2` and `Money.subtract/2` with a float now use the currency's exponent.
+- Fix `Money.add/2` and `Money.subtract/2` with a float ignoring the currency's exponent.
   The float was always multiplied by 100, so `Money.add(Money.new(100, :JPY), 5.0)` added 500 yen
   and `Money.add(Money.new(0, :BHD), 1.5)` added 0.150 BHD.
 - Bound Decimal exponents in `Money.parse/3`, `Money.multiply/2` and `Money.div/2`, whatever
