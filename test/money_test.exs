@@ -139,6 +139,15 @@ defmodule MoneyTest do
     end
   end
 
+  test "parse/3 returns :error for an unknown currency whatever the value type" do
+    assert Money.parse("1.00", :WRONG) == :error
+    assert Money.parse(1, :WRONG) == :error
+    assert Money.parse(1.5, "nope") == :error
+    assert Money.parse(Decimal.new("1.5"), :WRONG) == :error
+    assert Money.parse(Decimal.new(0), :WRONG) == :error
+    assert_raise ArgumentError, fn -> Money.parse!(1.5, :WRONG) end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
@@ -188,7 +197,7 @@ defmodule MoneyTest do
   test "parse/3 accepts a Decimal zero with any exponent" do
     assert Money.parse(%Decimal{sign: 1, coef: 0, exp: 100_000_000}, :USD) == {:ok, usd(0)}
     assert Money.parse(%Decimal{sign: -1, coef: 0, exp: -100_000_000}, :USD) == {:ok, usd(0)}
-    assert_raise ArgumentError, fn -> Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) end
+    assert Money.parse(%Decimal{sign: 1, coef: 0, exp: 0}, :WRONG) == :error
 
     assert Money.round(usd(1), -1001) == usd(0)
   end

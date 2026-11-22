@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `Money.parse/3` raising `ArgumentError` for a number or Decimal with an unknown currency. It
+  now returns `:error`, as it already did for strings. `Money.parse!/3` still raises.
 - `Money.Ecto.NumericCurrency.Type.dump/1` accepts a currency string, ISO number or `Money` struct,
   as `cast/1` does. It returned `:error` for them.
 - Fix `Money.Ecto.Map.Type.load/1` raising `FunctionClauseError` for an amount stored as a float,

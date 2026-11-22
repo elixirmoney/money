@@ -145,6 +145,9 @@ defmodule Money do
       iex> Money.parse("1.234,56", :WRONG)
       :error
 
+      iex> Money.parse(1_234.56, :WRONG)
+      :error
+
       iex> Money.parse(1_234.56, :USD)
       {:ok, %Money{amount: 123456, currency: :USD}}
 
@@ -204,14 +207,21 @@ defmodule Money do
   end
 
   def parse(number, currency, _opts) when is_number(number) do
-    {:ok, new(Kernel.round(number * Currency.sub_units_count!(currency)), currency)}
+    if Currency.exists?(currency) do
+      {:ok, new(Kernel.round(number * Currency.sub_units_count!(currency)), currency)}
+    else
+      :error
+    end
   end
 
   if Code.ensure_loaded?(Decimal) do
     def parse(%Decimal{} = decimal, currency, _opts) do
-      exponent = Currency.exponent!(currency)
+      exponent = Currency.exponent(currency)
 
       cond do
+        is_nil(exponent) ->
+          :error
+
         decimal.coef == 0 ->
           {:ok, new(0, currency)}
 
