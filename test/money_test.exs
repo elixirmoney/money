@@ -75,6 +75,30 @@ defmodule MoneyTest do
   end
 
   @tag decimal_1_2: true
+  describe "parse/3 with a currency code before the amount" do
+    test "codes containing E are not read as an exponent" do
+      assert Money.parse("EUR 10", :EUR) == {:ok, Money.new(1000, :EUR)}
+      assert Money.parse("SEK 10", :SEK) == {:ok, Money.new(1000, :SEK)}
+      assert Money.parse("EGP 1.5", :EGP) == {:ok, Money.new(150, :EGP)}
+      assert Money.parse("EUR 1,234.56", :EUR) == {:ok, Money.new(123_456, :EUR)}
+      assert Money.parse("EUR -1,234.56", :EUR) == {:ok, Money.new(-123_456, :EUR)}
+    end
+
+    test "code after the amount keeps working" do
+      assert Money.parse("10 SEK", :SEK) == {:ok, Money.new(1000, :SEK)}
+      assert Money.parse("1,234.56 EUR", :EUR) == {:ok, Money.new(123_456, :EUR)}
+    end
+
+    test "scientific notation keeps working" do
+      assert Money.parse("1e3", :USD) == {:ok, Money.new(100_000, :USD)}
+      assert Money.parse("1.5E3", :USD) == {:ok, Money.new(150_000, :USD)}
+      assert Money.parse("1.5e+3", :USD) == {:ok, Money.new(150_000, :USD)}
+      assert Money.parse("15e-1", :USD) == {:ok, Money.new(150, :USD)}
+      assert Money.parse("EUR 1.5e3", :EUR) == {:ok, Money.new(150_000, :EUR)}
+      assert Money.parse("1,5e3", :EUR, delimiter: ",") == {:ok, Money.new(150_000, :EUR)}
+    end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}

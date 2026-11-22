@@ -216,61 +216,39 @@ defmodule Money do
     end
   end
 
-  defp prepare_parse_string(characters, delimiter, acc \\ [])
+  @digits ~w(0 1 2 3 4 5 6 7 8 9)
 
-  defp prepare_parse_string([], _delimiter, acc),
+  # Keeps digits, signs and the delimiter (as "."). An "e" or "E" is kept only
+  # as a scientific-notation exponent, i.e. after a digit or the delimiter and
+  # before a (signed) digit, so a currency code such as "EUR" or "SEK" is
+  # dropped like any other text.
+  defp prepare_parse_string(string, delimiter) do
+    string
+    |> String.codepoints()
+    |> prepare_parse_string(delimiter, nil, [])
+  end
+
+  defp prepare_parse_string([], _delimiter, _previous, acc),
     do: acc |> Enum.reverse() |> Enum.join()
 
-  defp prepare_parse_string(["-" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["-" | acc])
+  defp prepare_parse_string([char | tail], delimiter, previous, acc) do
+    acc =
+      cond do
+        char in @digits or char in ["-", "+"] -> [char | acc]
+        char == delimiter -> ["." | acc]
+        char in ["e", "E"] and exponent_marker?(previous in @digits or previous == delimiter, tail) -> ["e" | acc]
+        true -> acc
+      end
 
-  defp prepare_parse_string(["0" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["0" | acc])
+    prepare_parse_string(tail, delimiter, char, acc)
+  end
 
-  defp prepare_parse_string(["1" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["1" | acc])
+  defp exponent_marker?(true = _after_number, [next | _]) when next in @digits, do: true
 
-  defp prepare_parse_string(["2" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["2" | acc])
+  defp exponent_marker?(true = _after_number, [sign, next | _]) when sign in ["-", "+"] and next in @digits,
+    do: true
 
-  defp prepare_parse_string(["3" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["3" | acc])
-
-  defp prepare_parse_string(["4" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["4" | acc])
-
-  defp prepare_parse_string(["5" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["5" | acc])
-
-  defp prepare_parse_string(["6" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["6" | acc])
-
-  defp prepare_parse_string(["7" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["7" | acc])
-
-  defp prepare_parse_string(["8" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["8" | acc])
-
-  defp prepare_parse_string(["9" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["9" | acc])
-
-  defp prepare_parse_string(["e" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["e" | acc])
-
-  defp prepare_parse_string(["E" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["e" | acc])
-
-  defp prepare_parse_string(["+" | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["+" | acc])
-
-  defp prepare_parse_string([delimiter | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, ["." | acc])
-
-  defp prepare_parse_string([_head | tail], delimiter, acc),
-    do: prepare_parse_string(tail, delimiter, acc)
-
-  defp prepare_parse_string(string, delimiter, _acc),
-    do: prepare_parse_string(String.codepoints(string), delimiter)
+  defp exponent_marker?(_after_number, _tail), do: false
 
   defp add_missing_leading_digit(<<"-.">> <> tail),
     do: "-0." <> tail

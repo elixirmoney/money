@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix `Money.parse/3` reading the "E" of a currency code before the amount as an exponent:
+  `"EUR 10"`, `"SEK 10"` and `"EGP 1.5"` returned `:error`. An `e`/`E` is now kept only after a
+  digit or the delimiter and before a (signed) digit, as in `"1.5e3"`.
 - Fix `Money.divide/2` returning shares with the wrong sign when the amount is smaller than the
   denominator: `Money.divide(Money.new(-2, :USD), 3)` returned `[1, -1, 0]` (summing to 0) and
   `Money.divide(Money.new(1, :USD), -3)` returned `[1, 0, 0]`.
