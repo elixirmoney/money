@@ -139,6 +139,26 @@ defmodule MoneyTest do
     end
   end
 
+  describe "parse/3 with a currency symbol that contains the delimiter" do
+    test "the dot in the symbol is not read as the delimiter" do
+      assert Money.parse("kr.1,234.56", :DKK) == {:ok, Money.new(123_456, :DKK)}
+      assert Money.parse("1,234.56 kr.", :DKK) == {:ok, Money.new(123_456, :DKK)}
+      assert Money.parse("kr. 100", :DKK) == {:ok, Money.new(10_000, :DKK)}
+      assert Money.parse("B/.-1.50", :PAB) == {:ok, Money.new(-150, :PAB)}
+    end
+
+    test "the output of to_string/2 parses back for every currency" do
+      for {currency, _} <- Money.Currency.all(),
+          opts <- [[], [symbol_on_right: true, symbol_space: true]] do
+        money = Money.new(-123_456, currency)
+        string = Money.to_string(money, opts)
+
+        assert Money.parse(string, currency) == {:ok, money},
+               "#{inspect(string)} did not parse back for #{currency}"
+      end
+    end
+  end
+
   test "parse/3 with options" do
     assert Money.parse("€1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
     assert Money.parse("€ 1.000,00", :EUR, separator: ".", delimiter: ",") == {:ok, eur(100_000)}
