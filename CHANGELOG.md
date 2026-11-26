@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fix `Money.parse/3` misreading a currency symbol that contains the delimiter, such as `"kr."`
+  (DKK), `"B/."` (PAB) or `"лв."` (BGN). The dot in the symbol was taken as the decimal point,
+  so `"kr. 100"` gave 0.10 DKK and the output of `Money.to_string/2` for 20 currencies returned
+  `:error`. The currency's own symbol is now removed before the amount is read.
 - Document that `Money` can't be passed as the sorter module to `Enum.sort/2`, `Enum.min/2` or
   `Enum.max/2`, since `Money.compare/2` returns `-1`, `0` or `1`, and show sorting with `Money.cmp/2`.
 - Fix currency lookup by ISO number returning a currency that depends on VM state for numbers

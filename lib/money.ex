@@ -187,6 +187,7 @@ defmodule Money do
     else
       value =
         str
+        |> remove_symbol(currency, delimiter)
         |> prepare_parse_string(delimiter)
         |> add_missing_leading_digit()
         |> add_missing_fractional_digit()
@@ -230,6 +231,18 @@ defmodule Money do
   end
 
   @digits ~w(0 1 2 3 4 5 6 7 8 9)
+
+  # A symbol such as "kr." or "B/." contains the delimiter, so it must go before the
+  # remaining characters are read, or its dot is taken as the decimal point.
+  defp remove_symbol(string, currency, delimiter) do
+    symbol = Currency.symbol(currency)
+
+    if is_binary(symbol) and String.contains?(symbol, delimiter) do
+      String.replace(string, symbol, "")
+    else
+      string
+    end
+  end
 
   defp prepare_parse_string(string, delimiter) do
     string
